@@ -7,3 +7,4 @@
 /public/*.js
 /index.js
 /typings
+/test/runtime

@@ -8,6 +8,9 @@ import * as express from 'express';
 import {dfvRouter} from "../src/dfvRouter";
 import {dfv} from "../public/dfv";
 import {dfvContext} from "../src/dfvContext";
+import {dfvForm} from "../src/dfvForm";
+import {dfvLog} from "../src/dfvLog";
+import {IFieldRes} from "../public/valid";
 
 
 var app = express();
@@ -16,14 +19,27 @@ var app = express();
 dfvRouter.load(app, [
     {
         menu: dfv.root + "/router",
-        onRouter: async (url, modReq, ctx: dfvContext, next) => {
-            return next(ctx._dat)
-        }
-    },
-    {
-        menu: dfv.root + "/router2",
-        onRouter: async (url, modReq, ctx: dfvContext, next) => {
-            return next(ctx._dat)
+        onRouter: async (url, modReq, ctx, next) => {
+            try {
+                if (!modReq)
+                    return await next({});
+
+                //入参验证
+                let paras = await dfvForm.check(modReq, ctx);
+                if (!paras.ok) {
+                    //验证失败
+                    dfvLog.write(url + " : " + JSON.stringify(paras));
+                    ctx.status = 500;
+                    return paras.msg;
+                }
+
+
+                return await next(paras.val)
+            } catch (e) {
+                dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
+                ctx.status = 500;
+                return "网络异常";
+            }
         }
     },
 ]);

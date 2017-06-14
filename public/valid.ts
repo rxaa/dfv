@@ -1,0 +1,554 @@
+import {ClassMetaData, MapString, dfv} from "./dfv";
+export enum validType{
+    int,
+    number,
+    string,
+    object,
+    file,
+}
+
+export class IFieldRes<T> {
+    /**
+     * 接收到的值
+     */
+    val: T;
+    /**
+     * 错误提示
+     */
+    msg: string = valid.errMsg_;
+
+    //字段缺省值
+    defaul: T;
+
+    /**
+     * 验证成功与否
+     */
+    ok: boolean = false;
+
+}
+
+
+export interface IncomingFormParse {
+    encoding: string;
+    uploadDir: string;
+    keepExtensions: boolean;
+    //最大字段长度
+    maxFieldsSize: number;
+    maxFields: number;
+    hash: string | boolean;
+    multiples: boolean;
+    type: string;
+    bytesReceived: number;
+    bytesExpected: number;
+
+    //最大文件字节长度
+    maxFileSize?: number;
+
+    //文件开始下载前检测
+    checkFile?: (name: string, file: FileMultiple) => boolean;
+
+    //是否关闭文件上传严格模式(未在modReq对象里指定的exp.file()的都不允许上传)
+    disableStrict?: boolean;
+
+    /**
+     * 所有已上传文件
+     */
+    fileList?: FileMultiple[];
+
+    fieldsMap: MapString<string | FileMultiple | any[]>;
+
+    modReqInst: any;
+}
+
+export interface FileMultiple {
+    size: number;
+    path: string;
+    name: string;
+    type: string;
+    lastModifiedDate?: Date;
+    hash?: string;
+
+    toJSON(): Object;
+}
+
+export class valid {
+
+    constructor(public func: (res: IFieldRes<any>) => boolean, public type: validType) {
+
+    }
+
+    static errMsg_ = "参数无效";
+    static netErr = "网络异常";
+
+    /**
+     * 设置class的验证字段
+     * @param obj
+     * @param key
+     * @param func
+     */
+    static setFieldCheckMetaData<T>(obj: ClassMetaData, key: string, func: (o: IFieldRes<T>) => boolean) {
+        dfv.setData(obj, "fieldCheckMap", key, func);
+    }
+
+    static getFieldCheckMetaData(obj: ClassMetaData, key: string) {
+        return dfv.getData(obj, "fieldCheckMap", key) as (o: IFieldRes<any>) => boolean;
+    }
+
+    static isFile(req: any) {
+        return req instanceof valid;
+    }
+
+
+    /**
+     * 不做权限验证
+     * @param target
+     */
+    static noAuth(target: { new(): any; }) {
+        dfv.setData(target, "exp.noValid", "", true);
+    }
+
+    static getNoAuth(target: { new(): any; }) {
+        return dfv.getData(target, "exp.noValid", "") as boolean;
+    }
+
+    /**
+     * multipart/form-data文件上传
+     */
+    static multipart(func: (mutl: IncomingFormParse) => void) {
+        return (target: { new(): any; }) => {
+            dfv.setData(target, "exp.multipart", "", func);
+        }
+    }
+
+    static getMultipart(target: { new(): any; }) {
+        return dfv.getData(target, "exp.multipart", "") as (mutl: IncomingFormParse) => void;
+    }
+
+    /**
+     * @装饰int类型数据验证
+     * @param func 验证回调函数
+     * @param msg 验证失败提示
+     * @returns {function(Object, string): undefined}
+     */
+    static int(func?: (num: IFieldRes<number>) => boolean, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
+                let ret = false;
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    obj.val = parseInt(obj.val);
+                    if (isNaN(obj.val)) {
+                        obj.val = obj.defaul;
+                        ret = false;
+                    }
+                    else
+                        ret = true;
+                }
+                if (msg)
+                    obj.msg = msg;
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 整数+大于0验证
+     * @param func
+     * @param msg
+     * @returns {function(Object, string): undefined}
+     */
+    static intNotZero(func?: ((num: IFieldRes<number>) => boolean) | null, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
+                let ret = false;
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    obj.val = parseInt(obj.val);
+                    if (isNaN(obj.val)) {
+                        obj.val = obj.defaul;
+                        ret = false;
+                    }
+                    else
+                        ret = obj.val > 0;
+                }
+                if (msg)
+                    obj.msg = msg;
+                else
+                    obj.msg = propertyKey + " 必须要大于0"
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+
+    /**
+     * 可为null整数
+     * @param func
+     * @param msg
+     * @returns {(target:Object, propertyKey:string)=>undefined}
+     */
+    static intNullAble(func?: ((num: IFieldRes<number | null>) => boolean) | null, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
+                let ret = true;
+                if (obj.val == null) {
+                    obj.val = null;
+                }
+                else {
+                    obj.val = parseInt(obj.val);
+                    if (isNaN(obj.val)) {
+                        obj.val = obj.defaul;
+                        ret = false;
+                    }
+                }
+                if (msg)
+                    obj.msg = msg;
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 浮点数验证
+     * @param func
+     * @param msg
+     * @returns {(target:Object, propertyKey:string)=>undefined}
+     */
+    static float(func?: (num: IFieldRes<number>) => boolean, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
+                let ret = false;
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    obj.val = parseFloat(obj.val);
+                    if (isNaN(obj.val)) {
+                        obj.val = obj.defaul;
+                        ret = false;
+                    }
+                    else
+                        ret = true;
+                }
+                if (msg)
+                    obj.msg = msg;
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 数组验证（默认不遍历数组验证其内容，自行调用扩展函数：r.val.eachTo验证）
+     * @param func
+     * @param msg
+     * @returns {(target:Object, propertyKey:string)=>undefined}
+     */
+    static array<T>(func?: (num: IFieldRes<T[]>) => boolean, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any[]>(target.constructor, propertyKey, obj => {
+                let ret = false;
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else if (!Array.isArray(obj.val)) {
+                    obj.val = obj.defaul;
+                }
+
+                if (msg)
+                    obj.msg = msg;
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 文件验证
+     * @param func
+     * @param msg
+     * @returns {exp}
+     */
+    static file(func?: (num: IFieldRes<FileMultiple>) => boolean, msg?: string): FileMultiple {
+        return new valid(file => {
+            let ret = true;
+
+            if (msg)
+                file.msg = msg;
+
+            if (file.val && !file.val.path) {
+                return false;
+            }
+
+            if (func) {
+                ret = func(file);
+            }
+            return ret;
+        }, validType.file) as any;
+    }
+
+    /**
+     * 数组文件(form表单的重复name，或者后面加[])
+     * @param func
+     * @param msg
+     * @returns {any}
+     */
+    static fileArray(func?: (num: IFieldRes<FileMultiple[]>) => boolean, msg?: string): FileMultiple[] {
+        return new valid(file => {
+            let ret = true;
+            if (file.val == null) {
+                file.val = [];
+            }
+            else if (!Array.isArray(file.val)) {
+                file.val = [];
+            }
+            if (msg)
+                file.msg = msg;
+
+            if (func) {
+                ret = func(file);
+            }
+
+            return ret;
+        }, validType.file) as any;
+    }
+
+
+    static object<T>(func: (num: IFieldRes<T>) => boolean, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
+                let ret = false;
+                if (obj.val == null || typeof obj.val != "object") {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    valid.checkObj(obj.val, obj.defaul, obj);
+
+                    if (!obj.ok)
+                        return false;
+                }
+
+                if (msg)
+                    obj.msg = msg;
+
+                if (func) {
+                    ret = func(obj);
+                }
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 字符串+非空验证
+     * @param func
+     * @param msg
+     * @returns {function(Object, string): undefined}
+     */
+    static stringNotEmpty(func?: RegExp | ((num: IFieldRes<string>) => boolean) | null, msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<string>(target.constructor, propertyKey, obj => {
+                let ret = false;
+
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    obj.val = obj.val + "";
+                    ret = obj.val.length > 0;
+                }
+                if (msg)
+                    obj.msg = msg;
+                else
+                    obj.msg = propertyKey + " 不能为空"
+
+                if (func instanceof RegExp) {
+                    ret = func.test(obj.val!);
+                }
+                else if (func instanceof Function) {
+                    ret = func(obj);
+                }
+
+                return ret;
+            });
+        }
+    }
+
+    static string(func?: RegExp | ((num: IFieldRes<string>) => boolean), msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<string>(target.constructor, propertyKey, obj => {
+                let ret = false;
+
+                if (obj.val == null) {
+                    obj.val = obj.defaul;
+                }
+                else {
+                    obj.val = obj.val + "";
+                    ret = true;
+                }
+                if (msg)
+                    obj.msg = msg;
+
+                if (func instanceof RegExp) {
+                    ret = func.test(obj.val!);
+                }
+                else if (func instanceof Function) {
+                    ret = func(obj);
+                }
+
+                return ret;
+            });
+        }
+    }
+
+    /**
+     * 可为null的字串类型验证
+     * @param func
+     * @param msg
+     * @returns {(target:Object, propertyKey:string)=>undefined}
+     */
+    static stringNullAble(func?: RegExp | ((num: IFieldRes<string | null>) => boolean), msg?: string) {
+        return (target: Object, propertyKey: string) => {
+            valid.setFieldCheckMetaData<string | null>(target.constructor, propertyKey, obj => {
+                let ret = true;
+
+                if (obj.val == null) {
+                    obj.val = null;
+                }
+                else {
+                    obj.val = obj.val + "";
+                }
+                if (msg)
+                    obj.msg = msg;
+
+                if (func instanceof RegExp) {
+                    ret = func.test(obj.val!);
+                }
+                else if (func instanceof Function) {
+                    ret = func(obj);
+                }
+
+                return ret;
+            });
+        }
+    }
+
+
+    /**
+     * 验证数据
+     * @param from 待验证数据
+     * @param objRes
+     * @returns {IFieldRes<T>}
+     */
+    static check<T>(from: T, objRes?: IFieldRes<T>): IFieldRes<T> {
+        return valid.checkObj(from, from, objRes);
+    }
+
+
+    /**
+     * 验证并转换数据
+     * @param from 待验证数据
+     * @param toObj 经类型转换后的验证结果
+     * @param objRes IFieldRes
+     * @returns {IFieldRes<T>}
+     */
+    static checkObj<T>(from: any, toObj: T, objRes?: IFieldRes<T>): IFieldRes<T> {
+        if (objRes == null) {
+            objRes = new IFieldRes<T>();
+        }
+
+        objRes.ok = true;
+
+        for (var key in toObj) {
+            objRes.defaul = toObj[key] as any;
+            var type = typeof objRes.defaul;
+
+            if (type === "function")
+                continue;
+
+            objRes.val = from[key];
+            objRes.msg = key + " " + valid.errMsg_;
+
+            if (objRes.defaul instanceof valid) {
+                objRes.ok = (objRes.defaul as any as valid).func(objRes);
+
+                if (toObj !== from)
+                    toObj[key as any] = objRes.val;
+                //验证失败
+                if (!objRes.ok) {
+                    break;
+                }
+                continue;
+            }
+
+            //回调函数验证
+            var func = valid.getFieldCheckMetaData(toObj.constructor, key);
+            if (func) {
+                objRes.ok = func(objRes);
+
+                if (toObj !== from)
+                    toObj[key as any] = objRes.val;
+
+                //验证失败
+                if (!objRes.ok) {
+                    break;
+                }
+                continue;
+            }
+
+
+            //无回调,判断default类型
+            if (objRes.val == null) {
+                objRes.val = objRes.defaul;
+            }
+            else if (type === "number") {
+                objRes.val = parseFloat(objRes.val as any) as any;
+                if (isNaN(objRes.val as any))
+                    objRes.val = objRes.defaul;
+            }
+            else if (type === "string") {
+                objRes.val = (objRes.val + "") as any;
+            }
+            else if (objRes.defaul && type === "object") {
+                //验证子对象
+                if (typeof objRes.val != "object") {
+                    objRes.ok = false;
+                    break;
+                }
+                valid.checkObj(objRes.val, objRes.defaul, objRes);
+                //验证失败
+                if (!objRes.ok) {
+                    break;
+                }
+            }
+
+            if (toObj !== from)
+                toObj[key as any] = objRes.val;
+        }
+
+        objRes.val = toObj;
+        return objRes;
+    }
+}

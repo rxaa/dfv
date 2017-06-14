@@ -10,14 +10,14 @@ export class dfvFile {
      * @param mode
      * @returns {boolean}
      */
-    static async mkdirs(dirname: string, mode?: string | number) {
-        if (await dfvFile.exists(dirname)) {
-            return;
-        }
+    static mkdirs(dirname: string, mode?: string | number): Promise<void> {
+        return dfvFile.exists(dirname).then(res => {
+            if (res)
+                return;
 
-        await dfvFile.mkdirs(path.dirname(dirname), mode);
-
-        await dfvFile.mkdir(dirname, mode);
+            return dfvFile.mkdirs(path.dirname(dirname), mode)
+                .then(() => dfvFile.mkdir(dirname, mode));
+        });
     }
 
 
@@ -76,8 +76,8 @@ export class dfvFile {
     }
 
     static exists(path: string | Buffer) {
-        return new Promise<void>((reso, reject) =>
-            fs.exists(path, err => err ? reject(err) : reso()));
+        return new Promise<boolean>((reso, reject) =>
+            fs.exists(path, res => reso(res)));
     }
 
     /**

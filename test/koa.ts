@@ -24,6 +24,9 @@ app.use(async (ctx: Koa.Context, next: Function) => {
     try {
         await next()
     } catch (err) {
+        ctx.params
+        ctx.request.query
+        ctx.request.body
         console.error(err)
         ctx.status = 500;
         ctx.body = "服务器内部错误";

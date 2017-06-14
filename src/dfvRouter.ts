@@ -28,6 +28,12 @@ export interface RouterPara {
     extPara?: any,
 }
 
+export interface ReqRes {
+    request: any;
+    response: any;
+    params: any;
+}
+
 export class dfvRouter {
 
     koaRouter: any
@@ -159,13 +165,27 @@ export class dfvRouter {
 
         dfvRouter.onRouterLoad(url, modReq, respData, method);
 
-        this.koaRouter[method](url, async (ctx, next) => {
-            var ret = await this.router.onRouter(url, modReq, ctx, dat => res(ctx, dat), this.router)
-            if (ret !== void 0)
-                ctx.body = ret;
+        this.koaRouter[method](url, (ctx: dfvContext & ReqRes, next) => {
+
+            ctx.isKoa = true;
+            ctx.request.params = ctx.params;
+
+            return this.router.onRouter(url, modReq, ctx, dat => res(ctx, dat), this.router)
+                .then(ret => {
+                    if (ret !== void 0)
+                        ctx.body = ret;
+                })
         })
     }
 
+    /**
+     * 添加express router
+     * @param method
+     * @param url
+     * @param modReq
+     * @param res
+     * @param respData
+     */
     private addExpressMethod<T>(method: "get" | "post" | "all" | "put" | "delete",
                                 url: string,
                                 modReq: { new(): T; } | null,
@@ -175,7 +195,9 @@ export class dfvRouter {
         dfvRouter.onRouterLoad(url, modReq, respData, method);
 
         this.app[method](url, (req, resp) => {
-            var ctx = {request: req, response: resp} as any as dfvContext;
+
+            var ctx = {request: req, response: resp, isKoa: false} as any as dfvContext;
+
             this.router.onRouter(url, modReq, ctx as dfvContext, dat => res(ctx, dat), this.router)
                 .then(ret => {
                     if (ret !== void 0)
@@ -187,7 +209,7 @@ export class dfvRouter {
                     if (ctx.status !== void 0)
                         resp.status(ctx.status);
 
-                    if (ctx.body != void 0)
+                    if (ctx.body !== void 0)
                         resp.send(ctx.body)
                 })
                 .catch(err => {
