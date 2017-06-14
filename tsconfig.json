@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": false,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "pretty": true,
+    "jsx": "react"
+  },
+  "exclude": [
+//    "public",
+    "runtime",
+    "node_modules"
+  ]
+}

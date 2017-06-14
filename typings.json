@@ -1,0 +1,28 @@
+{
+  "globalDependencies": {
+    "koa-compress": "registry:dt/koa-compress",
+    "mocha": "registry:dt/mocha",
+    "node": "registry:dt/node",
+    "socket.io": "registry:dt/socket.io",
+    "socket.io-client": "registry:dt/socket.io-client"
+  },
+  "dependencies": {
+    "accepts": "registry:dt/accepts",
+    "chokidar": "registry:dt/chokidar",
+    "cookies": "registry:dt/cookies",
+    "express": "registry:dt/express",
+    "express-serve-static-core": "registry:dt/express-serve-static-core",
+    "formidable": "registry:dt/formidable",
+    "http-assert": "registry:dt/http-assert",
+    "keygrip": "registry:dt/keygrip",
+    "koa": "registry:dt/koa",
+    "koa-bodyparser": "registry:dt/koa-bodyparser",
+    "koa-compose": "registry:dt/koa-compose",
+    "koa-logger": "registry:dt/koa-logger",
+    "koa-router": "registry:dt/koa-router",
+    "mime": "registry:dt/mime",
+    "mongodb": "registry:dt/mongodb",
+    "mysql": "registry:dt/mysql",
+    "serve-static": "registry:dt/serve-static"
+  }
+}
