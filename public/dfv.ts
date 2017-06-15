@@ -1,3 +1,7 @@
+import {dfvFuncExtInit} from "./dfvFuncExt";
+
+dfvFuncExtInit();
+
 export interface MapString<T> {
     [index: string]: T;
 }
@@ -514,6 +518,15 @@ export class dfv {
         return "";
     }
 
+    static tempMenu = dfv.root + "/runtime/temp/";
+
+    /**
+     * 获取当前缓存目录
+     */
+    static getTemp() {
+        let now = new Date();
+        return dfv.tempMenu + now.getDate() + "/";
+    }
 }
 
 

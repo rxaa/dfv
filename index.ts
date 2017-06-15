@@ -4,9 +4,9 @@ import {dfvContext} from "./src/dfvContext";
 import {dfvLib} from "./src/dfvLib";
 import {dfvLog} from "./src/dfvLog";
 import {dfvFile} from "./src/dfvFile";
+import {dfvForm} from "./src/dfvForm";
 
-
-export {dfvLib, dfvFile, dfvLog, dfvContext, dfvRouter}
+export {dfvLib, dfvFile, dfvLog, dfvContext, dfvForm, dfvRouter}
 
 
 module.exports.dfv = dfv

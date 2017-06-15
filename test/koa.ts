@@ -12,6 +12,8 @@ import logger = require('koa-logger')
 import {dfvRouter} from "../src/dfvRouter";
 import {dfv} from "../public/dfv";
 import {dfvContext} from "../src/dfvContext";
+import {dfvForm} from "../src/dfvForm";
+import {dfvLog} from "../src/dfvLog";
 
 /**
  * 中间件集合：
@@ -55,7 +57,26 @@ dfvRouter.load(app, [
     {
         menu: dfv.root + "/router",
         onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
-            return next(ctx._dat)
+            try {
+                if (!modReq)
+                    return await next({});
+
+                //入参验证
+                let paras = await dfvForm.check(modReq, ctx);
+                if (!paras.ok) {
+                    //验证失败
+                    dfvLog.write(url + " : " + JSON.stringify(paras));
+                    ctx.status = 500;
+                    return paras.msg;
+                }
+
+
+                return await next(paras.val)
+            } catch (e) {
+                dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
+                ctx.status = 500;
+                return "网络异常";
+            }
         }
     },
     {
@@ -67,8 +88,8 @@ dfvRouter.load(app, [
 ]);
 
 
-http.createServer(app.callback()).listen(80, () => {
-    console.log('koa server listening on port 80');
+http.createServer(app.callback()).listen(3001, () => {
+    console.log('koa server listening on port 3001');
 }).on('connection', function (socket: net.Socket) {
     //console.log("A new connection was made by a client.");
     socket.setTimeout(5 * 60 * 1000);

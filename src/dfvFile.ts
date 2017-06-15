@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import {dfv} from "../public/dfv";
 
 export class dfvFile {
 
@@ -104,5 +105,26 @@ export class dfvFile {
         })
     }
 
+
+    /**
+     * 创建缓存目录
+     */
+    static async createTemp() {
+        if (!await dfvFile.exists(dfv.tempMenu)) {
+            await dfvFile.mkdirs(dfv.tempMenu)
+            for (let i = 1; i <= 31; i++) {
+                await dfvFile.mkdir(dfv.tempMenu + i + "/");
+            }
+        }
+    }
+
+    /**
+     * 清空2天前的缓存
+     */
+    static clearTemp() {
+        let now = new Date();
+        now.setDate(now.getDate() - 2)
+        return dfvFile.deleteFolderRecursive(dfv.tempMenu + now.getDate() + "/");
+    }
 
 }

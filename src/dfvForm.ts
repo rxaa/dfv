@@ -2,7 +2,6 @@ import * as formidable from "formidable";
 import {FileMultiple, IFieldRes, valid} from "../public/valid";
 import {dfv, MapString} from "../public/dfv";
 import * as fs from "fs";
-import * as http from "http";
 import {dfvContext} from "./dfvContext";
 import {dfvLog} from "./dfvLog";
 

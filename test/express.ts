@@ -11,9 +11,15 @@ import {dfvContext} from "../src/dfvContext";
 import {dfvForm} from "../src/dfvForm";
 import {dfvLog} from "../src/dfvLog";
 import {IFieldRes} from "../public/valid";
+import * as bodyParser from 'body-parser';
 
 
 var app = express();
+
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(bodyParser.json());
 
 //加载路由
 dfvRouter.load(app, [
@@ -50,8 +56,8 @@ app.use(function responser(req: express.Request, resp: express.Response, next: (
 });
 
 
-http.createServer(app).listen(80, () => {
-    console.log('express server listening on port 80');
+http.createServer(app).listen(3002, () => {
+    console.log('express server listening on port 3002');
 }).on('connection', function (socket: net.Socket) {
     //console.log("A new connection was made by a client.");
     socket.setTimeout(5 * 60 * 1000);

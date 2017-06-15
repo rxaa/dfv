@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "accepts": "registry:dt/accepts",
+    "body-parser": "registry:dt/body-parser",
     "chokidar": "registry:dt/chokidar",
     "cookies": "registry:dt/cookies",
     "express": "registry:dt/express",

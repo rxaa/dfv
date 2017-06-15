@@ -1,7 +1,4 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as os from 'os'
-import * as crypto from 'crypto'
+import * as crypto from "crypto";
 import {dfv} from "../public/dfv";
 
 export class PreciseTime {
@@ -41,6 +38,7 @@ export class dfvLib {
     static init(root: string) {
         dfv.root = root;
         require('source-map-support').install();
+        require("../public/dfvFuncExt");
     }
 
     /**

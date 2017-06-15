@@ -42,8 +42,7 @@ export class dfvContext {
     static joinParams(ctx: dfvContext) {
         let req = (ctx as any).request;
         if (req.method == "POST") {
-            dfv.joinObjFast(req.body, req.query)
-            dfv.joinObjFast(req.body, req.params);
+            dfv.joinObjFast(req.body, req.query, req.params)
             return req.body;
         }
         else {

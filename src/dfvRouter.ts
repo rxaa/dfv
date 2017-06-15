@@ -2,7 +2,6 @@ import {dfvContext} from "./dfvContext";
 import * as path from "path";
 import * as fs from "fs";
 import {dfvLog} from "./dfvLog";
-const Router = require("koa-router");
 
 
 export type onRouterFunc = (url: string,
@@ -39,7 +38,9 @@ export class dfvRouter {
     koaRouter: any
 
     constructor(public app: any, public router: RouterPara) {
+        //通过context属性判断koa
         if (app.context) {
+            const Router = require("koa-router");
             this.koaRouter = new Router();
             app.use(this.koaRouter.routes())
         }
@@ -57,8 +58,8 @@ export class dfvRouter {
 
     /**
      * 加载路由文件
-     * @param http Express或
-     * @param menu 路由文件目录,以及异常捕获函数
+     * @param http Express或koa
+     * @param menu 路由文件目录,以及router函数
      */
     static load(http: any, menu: RouterPara[]) {
         for (let m of menu) {
@@ -66,14 +67,14 @@ export class dfvRouter {
 
             console.log("load Routes :" + routesPath);
 
-            let ExpEx = new dfvRouter(http, m);
-            dfvRouter.allRouter.push(ExpEx);
+            let route = new dfvRouter(http, m);
+            dfvRouter.allRouter.push(route);
 
             fs.readdirSync(routesPath).forEach(function (file) {
                 if (file.endsWith(".js")) {
                     var routePath = path.join(routesPath, file);
                     try {
-                        require(routePath)(ExpEx, m.extPara);
+                        require(routePath)(route, m.extPara);
                     } catch (e) {
                         dfvLog.err(e);
                     }
