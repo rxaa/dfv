@@ -1,4 +1,6 @@
 import {ClassMetaData, dfv, MapString} from "./dfv";
+import {BindField} from "./dfvBind";
+import {dfvFront} from "./dfvFront";
 
 
 export enum validType{
@@ -459,7 +461,7 @@ export class valid {
 
 
     /**
-     * 验证数据
+     * 验证数据（后端）
      * @param from 待验证数据
      * @param objRes
      * @returns {IFieldRes<T>}
@@ -553,6 +555,94 @@ export class valid {
         objRes.val = toObj;
         return objRes;
     }
+
+
+    /**
+     * 异步验验证数据(前端)
+     * @param from 待验证数据
+     * @param objRes
+     * @returns {IFieldRes<T>}
+     */
+    static checkAsync<T>(from: T, objRes?: IFieldRes<T>): Promise<IFieldRes<T>> {
+        return valid.checkObjAsync(from, from, objRes);
+    }
+
+    /**
+     * 异步验证并转换数据
+     * @param from 待验证数据
+     * @param toObj 经类型转换后的验证结果
+     * @param objRes IFieldRes
+     * @returns {IFieldRes<T>}
+     */
+    static async checkObjAsync<T>(from: any, toObj: T, objRes?: IFieldRes<T>): Promise<IFieldRes<T>> {
+        if (!objRes)
+            objRes = new IFieldRes<any>();
+        objRes.ok = true;
+        var bindList: BindField[] = [];
+        for (var key in from) {
+            BindField.initGetBindList(bl => {
+                objRes!.defaul = from[key];
+                bindList = bl;
+            });
+
+            var type = typeof objRes.defaul;
+
+            if (type === "function")
+                continue;
+
+
+            objRes.val = objRes.defaul;
+            objRes.msg = key + " " + valid.errMsg_;
+
+
+            if (bindList.length > 0) {
+                for (let it of bindList) {
+                    for (let bind of it.htmlBind) {
+                        if (bind.html && bind.editAble && bind.onSet) {
+                            try {
+                                bind.isEditOnSet = false;
+                                await bind.onSet(objRes.val, bind, it);
+                            } catch (e) {
+                                objRes.msg = e.message;
+                                objRes.ok = false;
+                                return objRes;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (objRes.defaul && type == "object") {
+                valid.checkObj(objRes.defaul, objRes.defaul, objRes);
+                //验证失败
+                if (!objRes.ok) {
+                    return objRes;
+                }
+            }
+            if (objRes.defaul && objRes.defaul instanceof Array) {
+                for (let arr of objRes.defaul) {
+                    if (arr && typeof arr == "object") {
+                        valid.checkObj(arr, arr, objRes);
+                        //验证失败
+                        if (!objRes.ok) {
+                            return objRes;
+                        }
+                    }
+                }
+            }
+
+            //回调函数验证
+            var func = valid.getFieldCheckMetaData(from.constructor, key);
+            if (func) {
+                objRes.ok = func(objRes);
+                //验证失败
+                if (!objRes.ok) {
+                    return objRes;
+                }
+            }
+        }
+
+        return objRes;
+    }
+
 }
-
-
