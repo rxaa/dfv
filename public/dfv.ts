@@ -159,7 +159,7 @@ export class dfv {
     static joinObjFast<T1, T2>(v1: T1, v2: T2): T1 & T2
     static joinObjFast(...values: any[]) {
         var first = values[0];
-        for (let i = 1; i < values.length; i++) {
+        for (var i = 1; i < values.length; i++) {
             var next = values[i];
             for (var key in next) {
                 first[key] = next[key];
@@ -183,7 +183,7 @@ export class dfv {
         }
         let newObj = new clas();
 
-        for (let i = 0; i < values.length; i++) {
+        for (var i = 0; i < values.length; i++) {
             var next = values[i];
             dfv.setParent(newObj.constructor, next.constructor);
             for (var key in next) {

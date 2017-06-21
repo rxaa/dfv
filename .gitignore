@@ -8,3 +8,5 @@
 /index.js
 /typings
 /test/runtime
+/test/public/all.js
+/test/front/Front.js

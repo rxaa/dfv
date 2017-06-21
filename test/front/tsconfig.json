@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "target": "es5",
+    "removeComments": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "outFile": "../public/all.js",
+    "lib": [
+      "dom",
+      "es2015.promise",
+      "es5"
+    ],
+    "strictNullChecks": true,
+    "sourceMap": false,
+    "watch": true,
+    "jsx": "react"
+  }
+}

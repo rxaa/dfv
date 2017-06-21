@@ -459,6 +459,22 @@ export class valid {
         }
     }
 
+    /**
+     * 将对象转为可绑定对象
+     * @param className 对象类名或对象
+     * @returns {any}
+     */
+    static bindAble<T>(className: {new(): T}|T): T {
+        if (typeof className === "function") {
+            let ret = new (className as {new(): T})();
+            BindField.init(ret)
+            return ret;
+        }
+        BindField.init(className)
+        return className as T;
+    }
+
+
 
     /**
      * 验证数据（后端）

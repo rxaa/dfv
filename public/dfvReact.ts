@@ -1,9 +1,10 @@
 /// <reference path="../src/reactExp.d.ts" />
 
-
 import {BindField, BindFieldType, dfvBindDom} from "./dfvBind";
 import {dfvFront} from "./dfvFront";
 import {dfv} from "./dfv";
+
+
 export const singleTag = {
     "meta": true,
     "img": true,
@@ -82,7 +83,8 @@ async function setBind(bindFun: dfvBindDom, bind: BindField, elem: HTMLElement, 
     if (bindFun.onSet) {
         bindFun.isEditOnSet = true;
         try {
-            var res = await bindFun.onSet(getVal(bind, val), bindFun, bind);
+            var res = getVal(bind, val);
+            res = await bindFun.onSet(res, bindFun, bind);
         } catch (e) {
         }
         try {

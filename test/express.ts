@@ -7,11 +7,10 @@ import * as net from "net";
 import * as express from 'express';
 import {dfvRouter} from "../src/dfvRouter";
 import {dfv} from "../public/dfv";
-import {dfvContext} from "../src/dfvContext";
 import {dfvForm} from "../src/dfvForm";
 import {dfvLog} from "../src/dfvLog";
-import {IFieldRes} from "../public/valid";
 import * as bodyParser from 'body-parser';
+import * as path from "path";
 
 
 var app = express();
@@ -21,10 +20,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 //加载路由
 dfvRouter.load(app, [
     {
-        menu: dfv.root + "/router",
+        menu: path.join(dfv.root, 'router'),
         onRouter: async (url, modReq, ctx, next) => {
             try {
                 if (!modReq)

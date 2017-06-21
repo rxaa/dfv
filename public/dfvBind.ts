@@ -1,5 +1,6 @@
-import {MapNumber} from "./dfv";
+import {dfv, MapNumber} from "./dfv";
 import {dfvFront} from "./dfvFront";
+import {IFieldRes, valid} from "./valid";
 export enum BindFieldType{
     string,
     number,
@@ -8,6 +9,60 @@ export enum BindFieldType{
     object,
 }
 
+export interface BindParas {
+    //是否取消双向绑定
+    cancelDoubleBind: boolean,
+
+    //验证失败回调（默认为显示给旁边的span）
+    onError: (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => void;
+}
+
+
+/**
+ * 绑定一个表达式
+ * @param func
+ * @param onSet
+ * @param ext
+ * @returns {dfvBindDom}
+ */
+export function dfvBind(func: (e: HTMLElement) => any,
+                     onSet?: (val: any, bind: dfvBindDom, field: BindField) => any,
+                     ext?: BindParas) {
+    let bind = new dfvBindDom(func, async (val: any, bind: dfvBindDom, field: BindField) => {
+        try {
+            bind.onError(null, val, bind, field);
+            if (field.fieldName && field.parent) {
+                //回调函数验证
+                var func = valid.getFieldCheckMetaData(field.parent.constructor, field.fieldName);
+                if (func) {
+                    let objRes = new IFieldRes<any>();
+                    objRes.val = val;
+                    objRes.ok = func(objRes);
+
+                    if (!objRes.ok)
+                        throw dfv.err(objRes.msg);
+
+
+                    val = objRes.val;
+                }
+            }
+
+            if (onSet)
+                return await onSet(val, bind, field);
+            else
+                return val;
+        } catch (e) {
+            bind.onError(e, val, bind, field);
+            throw e;
+        }
+    });
+    if (ext) {
+        bind.cancelDoubleBind = ext.cancelDoubleBind;
+        if (ext.onError)
+            bind.onError = ext.onError
+    }
+    return bind;
+}
 
 /**
  * 每个dfvBindDom对应一个绑定的html dom元素
@@ -33,15 +88,46 @@ export class dfvBindDom {
      */
     public isEditOnSet = false;
 
+    //是否取消双向绑定
+    public cancelDoubleBind: boolean;
+
     constructor(//绑定的函数
         public bindFunc: (e: HTMLElement) => any,
-        //是否取消双向绑定
-        public cancelDoubleBind: boolean,
         /**
          * 验证函数
          */
-        public onSet?: (val: any, bind: dfvBindDom, field: BindField) =>any) {
+        public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any) {
 
+    }
+
+    /**
+     *  查找下一个或下下个span
+     * @param e
+     * @returns {HTMLSpanElement}
+     */
+    static findNextSpan(e: HTMLElement | null): HTMLSpanElement | null {
+        let span = e ? (e.nextElementSibling || e.nextSibling) as HTMLSpanElement : null;
+        if (span && span.localName != "span") {
+            span = (span.nextElementSibling || span.nextSibling) as HTMLSpanElement;
+            if (span && span.localName != "span") {
+                span = null;
+            }
+        }
+        return span
+    }
+
+    onError = (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => {
+
+        let span = dfvBindDom.findNextSpan(bind.html);
+        if (span) {
+            if (err) {
+                span.innerHTML = err.message;
+                if (bind.html && (bind.html as HTMLInputElement).select)
+                    (bind.html as HTMLInputElement).select();
+            }
+            else
+                span.innerHTML = ""
+        }
     }
 }
 
@@ -53,11 +139,11 @@ export class BindField {
      * 用于从对象get属性获取BindField
      * @type {any}
      */
-    static getBindList: BindField[]|null = null;
+    static getBindList: BindField[] | null = null;
     static bindListMap: MapNumber<boolean> = {};
 
     //初始化bind字段获取
-    static initGetBindList(func: (list: BindField[])=>void) {
+    static initGetBindList(func: (list: BindField[]) => void) {
         let getBindListOld = BindField.getBindList;
         let bindListMapOld = BindField.bindListMap;
         BindField.getBindList = [];
@@ -83,8 +169,7 @@ export class BindField {
      */
     public htmlBind = Array<dfvBindDom>();
 
-    constructor(
-        //绑定属性的值
+    constructor(//绑定属性的值
         public val: any,
         //属性类型
         public type: BindFieldType,
@@ -98,9 +183,9 @@ export class BindField {
     /**
      * 属性监听函数列表
      */
-    watcherLists: Array<(dat: any, ele: any, index: number)=>void> = [];
+    watcherLists: Array<(dat: any, ele: any, index: number) => void> = [];
 
-    addWatcherFunc(func: (dat: any, ele: any, index: number)=>void) {
+    addWatcherFunc(func: (dat: any, ele: any, index: number) => void) {
         this.watcherLists.push(func);
     }
 
@@ -118,7 +203,7 @@ export class BindField {
      * @param bindFun
      */
     addWatcherElem(elem: HTMLElement, key: string, bindFun: dfvBindDom) {
-        this.addWatcherFunc((v, e, ind)=> {
+        this.addWatcherFunc((v, e, ind) => {
             //oninput自己触发的事件
             if (e === elem)
                 return;
@@ -283,6 +368,10 @@ export class BindField {
 
     getVal() {
         return this.val;
+    }
+
+    check() {
+
     }
 
     /**

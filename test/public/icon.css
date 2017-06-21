@@ -1,0 +1,261 @@
+.rotate_hover:hover {
+    -webkit-animation: rotate 0.7s linear infinite;
+    animation: rotate 0.7s linear infinite;
+    cursor: pointer;
+}
+
+.spin {
+    -webkit-animation: rotate 0.8s linear infinite;
+    animation: rotate 0.8s linear infinite;
+}
+
+
+.anmi_rotate-90 {
+    -webkit-animation: rotate-90 0.3s linear 1;
+    animation: rotate-90 0.3s linear 1;
+    animation-fill-mode: forwards;
+}
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes rotate-90 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(-90deg);
+    }
+}
+
+@keyframes rotate-90 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-90deg);
+    }
+}
+
+
+.icon_err {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: #e94238;
+}
+
+.icon_close {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: #3db1e9;
+}
+
+.icon_err:before, .icon_err:after,
+.icon_close:before, .icon_close:after {
+    content: '';
+    height: 6px;
+    width: 28px;
+    background: #fff;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    position: absolute;
+    top: 17px;
+    left: 6px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.icon_err:after,
+.icon_close:after {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.icon_add {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: #3bd883;
+}
+
+.icon_add:before, .icon_add:after {
+    content: '';
+    height: 6px;
+    width: 28px;
+    background: #fff;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    position: absolute;
+    top: 17px;
+    left: 6px;
+}
+
+.icon_add:after {
+    height: 28px;
+    width: 6px;
+    top: 6px;
+    left: 17px;
+}
+
+.icon_ok {
+    height: 40px;
+    width: 40px;
+    position: relative;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: #3db1e9;
+}
+
+.icon_ok:after, .icon_ok:before {
+    content: '';
+    height: 28px;
+    width: 6px;
+    background: #fff;
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.icon_ok:before {
+    content: '';
+    height: 12px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    top: 18px;
+    left: 8px;
+}
+
+.icon_sub {
+    height: 40px;
+    width: 40px;
+    position: relative;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    background: #ffc45a;
+}
+
+.icon_sub:after {
+    content: '';
+    height: 6px;
+    width: 28px;
+    background: #fff;
+    position: absolute;
+    top: 17px;
+    left: 6px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.icon_next {
+    height: 24px;
+}
+
+.icon_next:before {
+    content: '';
+    height: 0;
+    width: 0;
+    display: block;
+    border: 12px transparent solid;
+    border-right-width: 0;
+    border-left-color: #3db1e9;
+    top: 0px;
+    left: 0px;
+}
+
+.icon_prev {
+    height: 24px;
+}
+
+.icon_prev:before {
+    content: '';
+    height: 0;
+    width: 0;
+    display: block;
+    border: 12px transparent solid;
+    border-left-width: 0;
+    border-right-color: #3db1e9;
+}
+
+.icon_search {
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 40px;
+    position: relative;
+}
+
+.icon_search:before, .icon_search:after {
+    content: '';
+    height: 20px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.icon_search:before {
+    width: 20px;
+    border: 3px #3db1e9 solid;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+}
+
+.icon_search:after {
+    width: 7px;
+    background: #3db1e9;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    top: 17px;
+    left: 24px;
+}
+
+.icon-reset {
+    width: 26px;
+    height: 26px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    border: 2px solid;
+    border-left-color: transparent;
+    position: relative;
+}
+
+.icon-reset:before {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -5px;
+    bottom: 0;
+    border: 6px solid;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+    display: block;
+}
