@@ -12,7 +12,7 @@ export class Front {
 
 
     static async notEmpty(val: any) {
-        await dfv.sleep(1000)
+        // await dfv.sleep(1000)
         if (val == null || val == 0 || val == "")
             throw dfv.err("不能为空");
 
@@ -42,6 +42,6 @@ export class Front {
 
     private static async onCheck() {
         let res = await valid.checkAsync(Front.dat);
-        alert(JSON.stringify(res) + "\r\n" + JSON.stringify(Front.dat))
+        dfvFront.alert(JSON.stringify(res) + "\r\n" + JSON.stringify(Front.dat))
     }
 }

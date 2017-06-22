@@ -1,3 +1,4 @@
+import {dfvWindow, PopWindowPara} from "./dfvWindow";
 export enum HttpType {
     GET,
     POST,
@@ -38,10 +39,6 @@ export const InputType = {
     text: "text",
 }
 
-export interface PopWindow {
-    close();
-}
-
 export class dfvFront {
     /**
      * 设置body内容
@@ -63,6 +60,126 @@ export class dfvFront {
     static onCatchError = (err: Error) => {
         dfvFront.msgErr(err + "", 10 * 1000);
         console.error(err);
+    }
+
+    /**
+     * 弹出对话框
+     * @param cont 内容
+     * @param title 标题
+     * @param ext
+     */
+    static alert(title: string | HTMLElement, cont?: string | HTMLElement, ext: PopWindowPara = {}) {
+        return new dfvWindow().procParas(ext).show(title, cont)
+    }
+
+
+    /**
+     * 弹出错误对话框
+     * @param cont 内容
+     * @param title 标题
+     * @param ext
+     */
+    static alertErr(title: string | HTMLElement, cont?: string | HTMLElement, ext: PopWindowPara = {}) {
+        ext.isErr = true;
+        return new dfvWindow().procParas(ext).show(title, cont)
+    }
+
+    /**
+     * 弹出一个会自动关闭的消息窗口
+     * @param cont 内容
+     * @param ext 其他参数
+     */
+    static msg(cont: string | HTMLElement, ext: PopWindowPara = {}) {
+        if (!window.document) {
+            window.alert(cont)
+            return;
+        }
+        if (ext.closeTime === void 0)
+            ext.closeTime = 3000;
+        return new dfvWindow().procParas(ext).show(cont);
+    }
+
+    static msgErr(cont: string | HTMLElement, ext: PopWindowPara = {}) {
+        ext.isErr = true;
+        return dfvFront.msg(cont, ext);
+    }
+
+    /**
+     * 关闭进度窗口
+     */
+    static loadStop() {
+        if (!window.document) {
+            return
+        }
+        let spinner = document.getElementById("load_global");
+        if (spinner)
+            document.body.removeChild(spinner);
+
+        let cover_div = document.getElementById("load_cover");
+        if (cover_div)
+            document.body.removeChild(cover_div);
+
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    static isLoading(): boolean {
+        return document.getElementsByClassName("spinner").length > 0;
+    }
+
+    /**
+     * 显示加载中进度条
+     * @param coverAll 是否覆盖整个窗口
+     * @param black 黑色背景
+     * @param msg 文字提示
+     */
+    static loadStart(coverAll?: boolean, black?: boolean, msg?: string) {
+        if (!window.document) {
+            return
+        }
+
+        dfvFront.loadStop();
+        if (!msg) {
+            msg = "加载中"
+        }
+
+        let ele = document.createElement("div");
+        ele.className = "spinner anim_height"
+        ele.id = "load_global";
+        ele.innerHTML =
+            "<div class=\"spinner-container container1\">" +
+            "    <div class=\"circle1\"></div>" +
+            "    <div class=\"circle2\"></div>" +
+            "    <div class=\"circle3\"></div>" +
+            "    <div class=\"circle4\"></div>" +
+            "  </div>" +
+            "  <div class=\"spinner-container container2\">" +
+            "    <div class=\"circle1\"></div>" +
+            "    <div class=\"circle2\"></div>" +
+            "    <div class=\"circle3\"></div>" +
+            "    <div class=\"circle4\"></div>" +
+            "  </div>" +
+            "  <div class=\"spinner-container container3\">" +
+            "    <div class=\"circle1\"></div>" +
+            "    <div class=\"circle2\"></div>" +
+            "    <div class=\"circle3\"></div>" +
+            "    <div class=\"circle4\"></div>" +
+            `</div><q style='margin-top: 30px'>${msg}</q>`;
+
+        if (coverAll && !document.getElementById("load_cover")) {
+            let cover = document.createElement("div");
+            cover.id = "load_cover"
+            cover.className = "cover_div"
+            if (black)
+                cover.className = "cover_div cover_black"
+            document.body.appendChild(cover);
+        }
+
+        document.body.appendChild(ele);
+        // ele.style.height = "80px";
+
     }
 
     /**
@@ -116,7 +233,7 @@ export class dfvFront {
 
     static appendJS(str: string, ele: HTMLElement) {
         let scriptRegExp = /<script[^>]*>((.|\n|\r)*?(?=<\/script>))<\/script>/ig;
-        let result: RegExpExecArray|null = null;
+        let result: RegExpExecArray | null = null;
         while ((result = scriptRegExp.exec(str)) != null) {
             var script = document.createElement("script");
             script.text = result[1];
@@ -137,4 +254,84 @@ export class dfvFront {
         ele.className = newClass;
     }
 
+    static scrollToTop() {
+        window.scrollTo(window.scrollX, 0);
+    }
+
+    static setFocus(sel: HTMLInputElement, start: number, end: number) {
+        if (sel.setSelectionRange) {
+            sel.focus();
+            sel.setSelectionRange(start, end);
+        } else if ((sel as any).createTextRange) {
+            var range = (sel as any).createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', start);
+            range.select();
+        }
+    }
+
+    static setFocusEnd(sel: HTMLInputElement) {
+        let length = sel.value.length;
+        dfvFront.setFocus(sel, length, length);
+    }
+
+    /**
+     * 广度优先遍历element的子成员
+     * @param elem HTMLElement或元素id
+     * @param callback
+     */
+    static eachElement(eleme: HTMLElement|string|number|null, callback: (res: HTMLElement) => void|boolean) {
+        var elem = eleme as HTMLElement;
+
+        if (typeof eleme === "string") {
+            elem = document.getElementById(eleme + "")  as HTMLElement;
+        }
+        else if (typeof eleme === "number") {
+            elem = document.getElementById(eleme + "")  as HTMLElement;
+        }
+
+        if (eleme == null)
+            return;
+
+        let eleList: HTMLElement[] = [];
+
+        for (; ;) {
+            for (let i = 0; i < elem.children.length; i++) {
+
+                let e = elem.children[i] as HTMLElement;
+
+                if (callback(e) === false)
+                    return;
+
+                if (!e.children)
+                    continue;
+
+                if (e.children.length > 0) {
+                    eleList.push(e);
+                }
+            }
+
+            if (eleList.length == 0)
+                return;
+
+            elem = eleList.pop() as HTMLElement;
+        }
+    }
+
+    /**
+     * 将object转换为form表单格式字串
+     * @param obj
+     * @returns {string}
+     */
+    static objToForm(obj: Object) {
+        let ret = "";
+        for (let k in obj) {
+            ret += k + "=" + encodeURIComponent(obj[k]) + "&";
+        }
+        if (ret.length > 0)
+            return ret.substr(0, ret.length - 1);
+
+        return ret;
+    }
 }

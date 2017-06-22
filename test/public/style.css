@@ -111,26 +111,26 @@ ul, ol, li {
     border-bottom: 1px solid #ddd;
 }
 
-
 .table_grey th,
-.table_grey td{
+.table_grey td {
     border-left: 1px solid #ddd;
     border-top: 1px solid #ddd;
     padding: 6px;
 }
 
-.table_grey tr:hover{
-    background: #f5f7fa;
-}
-.table_grey td:hover{
+.table_grey tr:hover {
     background: #f5f7fa;
 }
 
+.table_grey td:hover {
+    background: #f5f7fa;
+}
 
-.table_grey tr{
+.table_grey tr {
     background: #FFFFFF;
 }
-.table_grey th{
+
+.table_grey th {
     background: #f5fafe;
 }
 
@@ -316,6 +316,12 @@ ul, ol, li {
 
 .absol {
     position: absolute;
+}
+
+.absol_close {
+    position: absolute;
+    right: -10px;
+    top: -10px;
 }
 
 .relat {
