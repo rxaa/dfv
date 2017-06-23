@@ -3,3 +3,4 @@
 /test
 /typings
 /src/*.ts
+/src/db/*.ts

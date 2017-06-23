@@ -3,6 +3,7 @@
 *.js.map
 *.d.ts
 /src/*.js
+/src/db/*.js
 /test/*.js
 /public/*.js
 /index.js
