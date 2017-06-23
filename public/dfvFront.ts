@@ -57,6 +57,10 @@ export class dfvFront {
         dfvFront.addEle(elem, args, true);
     }
 
+    /**
+     * 公共异常处理函数
+     * @param err
+     */
     static onCatchError = (err: Error) => {
         dfvFront.msgErr(err + "", 10 * 1000);
         console.error(err);
@@ -99,6 +103,12 @@ export class dfvFront {
         return new dfvWindow().procParas(ext).show(cont);
     }
 
+    /**
+     * 弹出一个会自动关闭的错误提示消息窗口
+     * @param cont
+     * @param ext
+     * @returns {undefined|dfvWindow}
+     */
     static msgErr(cont: string | HTMLElement, ext: PopWindowPara = {}) {
         ext.isErr = true;
         return dfvFront.msg(cont, ext);
@@ -231,6 +241,11 @@ export class dfvFront {
         }
     }
 
+    /**
+     * 执行指定js代码，
+     * @param str
+     * @param ele
+     */
     static appendJS(str: string, ele: HTMLElement) {
         let scriptRegExp = /<script[^>]*>((.|\n|\r)*?(?=<\/script>))<\/script>/ig;
         let result: RegExpExecArray | null = null;
@@ -241,6 +256,11 @@ export class dfvFront {
         }
     }
 
+    /**
+     * 移除className属性中的name
+     * @param ele
+     * @param name
+     */
     static classRemove(ele: HTMLElement, name: string) {
         let res = ele.className.split(" ");
         let newClass = "";
@@ -258,6 +278,12 @@ export class dfvFront {
         window.scrollTo(window.scrollX, 0);
     }
 
+    /**
+     * 设置input焦点
+     * @param sel
+     * @param start
+     * @param end
+     */
     static setFocus(sel: HTMLInputElement, start: number, end: number) {
         if (sel.setSelectionRange) {
             sel.focus();
@@ -271,6 +297,10 @@ export class dfvFront {
         }
     }
 
+    /**
+     * 将input焦点设置结尾
+     * @param sel
+     */
     static setFocusEnd(sel: HTMLInputElement) {
         let length = sel.value.length;
         dfvFront.setFocus(sel, length, length);
@@ -278,7 +308,7 @@ export class dfvFront {
 
     /**
      * 广度优先遍历element的子成员
-     * @param elem HTMLElement或元素id
+     * @param eleme
      * @param callback
      */
     static eachElement(eleme: HTMLElement|string|number|null, callback: (res: HTMLElement) => void|boolean) {

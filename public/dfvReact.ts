@@ -79,19 +79,34 @@ function getVal(bind: BindField, val: any): any {
         return val + "";
 }
 
-async function setBind(bindFun: dfvBindDom, bind: BindField, elem: HTMLElement, val: any) {
+function setVal(bind: BindField, val: any, elem: HTMLElement) {
+    try {
+        bind.setVal(val, elem);
+    } catch (e) {
+        dfvFront.onCatchError(e)
+    }
+}
+
+function setBind(bindFun: dfvBindDom, bind: BindField, elem: HTMLElement, val: any) {
     if (bindFun.onSet) {
         bindFun.isEditOnSet = true;
-        try {
-            var res = getVal(bind, val);
-            res = await bindFun.onSet(res, bindFun, bind);
+        let res = getVal(bind, val);
+try {
+            let ret = bindFun.onSet(res, bindFun, bind);
+
+            if (ret instanceof Promise) {
+                /**
+                 * 异步验证不应该被频繁触发，待修订
+                 */
+                ret.then(r => setVal(bind, r, elem))
+                    .catch(e => setVal(bind, res, elem))
+                return;
+            }
+
+            res = ret;
         } catch (e) {
         }
-        try {
-            bind.setVal(res, elem);
-        } catch (e) {
-            dfvFront.onCatchError(e)
-        }
+        setVal(bind, res, elem);
     }
     else {
         bind.setVal(getVal(bind, val), elem);

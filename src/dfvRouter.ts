@@ -35,7 +35,7 @@ export interface ReqRes {
 
 export class dfvRouter {
 
-    koaRouter: any
+    private koaRouter: any
 
     constructor(public app: any, public router: RouterPara) {
         //通过context属性判断koa

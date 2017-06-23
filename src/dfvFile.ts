@@ -89,15 +89,7 @@ export class dfvFile {
      */
     static mkdir(path: string | Buffer, mode?: string | number) {
         return new Promise<void>((reso, reject) => {
-            let cb = err => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    reso();
-                }
-            }
-
+            let cb = err => err ? reject(err) : reso();
             if (mode)
                 fs.mkdir(path, mode as string, cb);
             else

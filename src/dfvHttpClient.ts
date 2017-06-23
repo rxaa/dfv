@@ -198,6 +198,11 @@ export class dfvHttpClient {
         headers: {},
     };
 
+    /**
+     * 开启cookie解析，默认关闭
+     * @param able
+     * @returns {dfvHttpClient}
+     */
     enableCookie(able = true) {
         if (able)
             this.cookie = new HttpCookie();
@@ -239,16 +244,29 @@ export class dfvHttpClient {
         return this.url.protocol === "http:";
     }
 
+    /**
+     * 每次请求的结果
+     * @type {any}
+     */
     resp: RespContent | null = null;
 
 
     agent = dfvHttpClient.agent;
 
+    /**
+     * 设置请求头信息
+     * @param key
+     * @param val
+     * @returns {dfvHttpClient}
+     */
     setHeader(key: string, val: string | number) {
         this.options.headers![key] = val;
         return this;
     }
 
+    /**
+     * 请求头相关
+     */
     header = {
         set: (key: string, val: string) => {
             this.options.headers![key] = val;
@@ -285,7 +303,7 @@ export class dfvHttpClient {
     }
 
     /**
-     * 重置url与header
+     * 重置url与header，保留cookie信息
      * @param host
      */
     setUrl(host: string) {
@@ -447,6 +465,11 @@ export class dfvHttpClient {
         }
     }
 
+    /**
+     * 根据有无post参数，自动选择get或post
+     * @param post
+     * @returns {Promise<string>}
+     */
     content(post?: string) {
         if (post)
             this.setPost();

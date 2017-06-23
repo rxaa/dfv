@@ -1,6 +1,10 @@
 import {dfv, MapNumber} from "./dfv";
 import {dfvFront} from "./dfvFront";
 import {IFieldRes, valid} from "./valid";
+
+/**
+ * 绑定字段的类型
+ */
 export enum BindFieldType{
     string,
     number,
@@ -10,24 +14,32 @@ export enum BindFieldType{
 }
 
 export interface BindParas {
-    //是否取消双向绑定
+    /**
+     * 是否取消双向绑定
+     */
     cancelDoubleBind: boolean,
 
-    //验证失败回调（默认为显示给旁边的span）
+    /**
+     * 验证失败回调（默认为显示给旁边的span）
+     * @param err 异常信息，为空则表示无异常
+     * @param val 值
+     * @param bind 绑定的dom信息
+     * @param field 绑定的字段信息
+     */
     onError: (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => void;
 }
 
 
 /**
  * 绑定一个表达式
- * @param func
- * @param onSet
- * @param ext
+ * @param func 表达式
+ * @param onSet 验证函数（可为async）,验证成功返回val,否则抛异常
+ * @param ext 额外参数
  * @returns {dfvBindDom}
  */
 export function dfvBind(func: (e: HTMLElement) => any,
-                     onSet?: (val: any, bind: dfvBindDom, field: BindField) => any,
-                     ext?: BindParas) {
+                        onSet?: (val: any, bind: dfvBindDom, field: BindField) => any,
+                        ext?: BindParas) {
     let bind = new dfvBindDom(func, async (val: any, bind: dfvBindDom, field: BindField) => {
         try {
             bind.onError(null, val, bind, field);
@@ -88,15 +100,19 @@ export class dfvBindDom {
      */
     public isEditOnSet = false;
 
-    //是否取消双向绑定
+    /**
+     * 是否取消双向绑定
+     */
     public cancelDoubleBind: boolean;
 
-    constructor(//绑定的函数
-        public bindFunc: (e: HTMLElement) => any,
-        /**
-         * 验证函数
-         */
-        public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any) {
+    constructor(/**
+                 * 绑定的函数
+                 */
+                public bindFunc: (e: HTMLElement) => any,
+                /**
+                 * 验证函数
+                 */
+                public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any) {
 
     }
 
@@ -142,7 +158,10 @@ export class BindField {
     static getBindList: BindField[] | null = null;
     static bindListMap: MapNumber<boolean> = {};
 
-    //初始化bind字段获取
+    /**
+     * 初始化bind字段获取
+     * @param func
+     */
     static initGetBindList(func: (list: BindField[]) => void) {
         let getBindListOld = BindField.getBindList;
         let bindListMapOld = BindField.bindListMap;
@@ -169,14 +188,22 @@ export class BindField {
      */
     public htmlBind = Array<dfvBindDom>();
 
-    constructor(//绑定属性的值
-        public val: any,
-        //属性类型
-        public type: BindFieldType,
-        //属性名
-        public fieldName?: string,
-        //属性所属对象
-        public parent?: any) {
+    constructor(/**
+                 * 绑定属性的值
+                 */
+                public val: any,
+                /**
+                 * 属性类型
+                 */
+                public type: BindFieldType,
+                /**
+                 * 属性名
+                 */
+                public fieldName?: string,
+                /**
+                 * 属性所属对象
+                 */
+                public parent?: any) {
 
     }
 

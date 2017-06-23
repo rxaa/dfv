@@ -5,7 +5,7 @@ import {dfv} from "../public/dfv";
 
 export class dfvContext {
     /**
-     * response 状态吗
+     * response 状态码
      */
     status = 0;
 

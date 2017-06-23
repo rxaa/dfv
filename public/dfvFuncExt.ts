@@ -77,7 +77,15 @@ declare global {
          */
         add(index: number, val: T | T[]): this;
 
+        /**
+         * 同map函数，支持async与await
+         * @param callbackfn
+         */
         mapPromise<U>(callbackfn: (value: T, index: number, array: T[]) => Promise<U>): Promise<U[]>;
+        /**
+         * 遍历array并将func返回结果拼接为string,支持async与await
+         * @param callbackfn
+         */
         mapStringPromise(callbackfn: (value: T, index: number) => Promise<any>): Promise<string>;
 
     }

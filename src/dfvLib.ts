@@ -35,6 +35,10 @@ export class PreciseTime {
 
 export class dfvLib {
 
+    /**
+     * 初始化：指定项目根目录，source-map-support，加载扩展函数
+     * @param root
+     */
     static init(root: string) {
         dfv.root = root;
         require('source-map-support').install();

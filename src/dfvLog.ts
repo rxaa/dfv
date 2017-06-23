@@ -16,9 +16,17 @@ export class dfvLog {
      */
     static enableFile = true;
 
+    /**
+     * 开启控制台提示
+     * @type {boolean}
+     */
     static enableConsole = true;
 
 
+    /**
+     * 将Error写入日志
+     * @param err
+     */
     static err(err: Error) {
         dfvLog.write(null, err);
     }
@@ -37,6 +45,12 @@ export class dfvLog {
     }
 
 
+    /**
+     * 将字串与Error写入文件
+     * @param str
+     * @param err
+     * @param logFile 可选，指定文件名
+     */
     static write(str: string | null, err?: Error | null, logFile?: string) {
 
         if (!logFile)

@@ -3,10 +3,6 @@ import {dfvFront} from "./dfvFront";
 
 export interface PopWindowPara {
     /**
-     * 窗口关闭事件
-     */
-    onClose?: () => void | boolean;
-    /**
      * 是否不覆盖全屏
      */
     notCover?: boolean;
@@ -23,9 +19,12 @@ export interface PopWindowPara {
 
 export class dfvWindow {
 
+    //主窗口
     private dialog: HTMLDivElement | null;
 
+    //cover层
     private divCover: HTMLDivElement | null;
+    //内容层
     private divContent: HTMLDivElement | null;
 
     static coverZ = 999;
@@ -34,6 +33,10 @@ export class dfvWindow {
         dfvWindow.coverZ++;
     }
 
+    /**
+     * 添加一个黑色半透明的遮盖层
+     * @returns {dfvWindow}
+     */
     addCover() {
         if (!this.divCover) {
             this.divCover = document.createElement("div");
@@ -44,13 +47,16 @@ export class dfvWindow {
         return this;
     }
 
+    /**
+     * 处理PopWindowPara参数
+     * @param para
+     * @returns {dfvWindow}
+     */
     procParas(para: PopWindowPara) {
         if (para && para.closeTime! > 0) {
             this.autoClose(para.closeTime)
         }
         this.isError = para.isErr!!;
-        if (para.onClose)
-            this.onClose = para.onClose;
         if (!para.notCover)
             this.addCover();
 
@@ -58,9 +64,19 @@ export class dfvWindow {
     }
 
 
+    /**
+     * 是否显示红色错误提示样式
+     * @type {boolean}
+     */
     isError = false;
 
-    public show(title: string | HTMLElement, content?: string | HTMLElement | null,) {
+    /**
+     * 显示窗口
+     * @param title 标题
+     * @param content 内容
+     * @returns {dfvWindow}
+     */
+    public show(title: string | HTMLElement, content?: string | HTMLElement | null) {
         if (this.dialog)
             return this;
 
@@ -78,7 +94,7 @@ export class dfvWindow {
                         </div>
                 }
                 <div className="absol_close">
-                    <tt onclick={() => this.close()}
+                    <tt onclick={() => this.onButtonCancelClick()}
                         className={"rotate_hover " + c2}/>
                 </div>
             </div>
@@ -92,17 +108,33 @@ export class dfvWindow {
         return this;
     }
 
-    public showWithOk(content: string | HTMLElement | null,
-                      title: string | HTMLElement,
+    /**
+     * 显示带一个【确定】按钮的窗口
+     * @param title
+     * @param content
+     * @param onOk 按钮回调
+     * @returns {dfvWindow}
+     */
+    public showWithOk(title: string | HTMLElement,
+                      content: string | HTMLElement | null,
                       onOk: (e: HTMLElement) => void) {
-        this.show(this.okWindow(content, onOk), title)
+        this.show(title, this.okWindow(content, onOk))
         return this;
     }
 
-    onClose = (): boolean | void => {
-        return true;
+    /**
+     * 关闭按钮点击事件回调
+     */
+    onButtonCancelClick = () => {
+        close();
     }
 
+
+    /**
+     * 将窗口设为自动关闭
+     * @param time 自动关闭时间：毫秒
+     * @returns {dfvWindow}
+     */
     autoClose(time: number = 3000) {
         setTimeout(() => {
             this.close()
@@ -110,16 +142,15 @@ export class dfvWindow {
         return this;
     }
 
-    close() {
+    /**
+     * 关闭窗口
+     */
+    close = () => {
         try {
             clearInterval(this.resizeTime);
 
             //窗口已关闭
             if (!this.divContent || !this.dialog) {
-                return;
-            }
-
-            if (this.onClose() === false) {
                 return;
             }
 
@@ -155,6 +186,9 @@ export class dfvWindow {
     }
 
 
+    /**
+     * 修正窗口大小与位置
+     */
     private reSize = () => {
         if (!this.dialog || !this.divContent)
             return;
@@ -171,6 +205,13 @@ export class dfvWindow {
 
     private resizeTime: any;
 
+
+    /**
+     * 确定按钮的文字
+     * @type {string}
+     */
+    buttonOkText = "确定";
+
     private okWindow(content: string | HTMLElement | null, onOk: (e: HTMLElement) => void) {
         return (
             <div>
@@ -179,7 +220,7 @@ export class dfvWindow {
                 </div>
                 <div class="h_m">
                     <button class="button_blue pad6-12 mar5t font_0 bold" onclick={e => onOk(e.currentTarget)}>
-                        确定
+                        {this.buttonOkText}
                     </button>
                 </div>
             </div>

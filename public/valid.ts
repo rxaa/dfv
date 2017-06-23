@@ -488,7 +488,7 @@ export class valid {
 
 
     /**
-     * 验证并转换数据
+     * 验证并转换数据（后端）
      * @param from 待验证数据
      * @param toObj 经类型转换后的验证结果
      * @param objRes IFieldRes
@@ -584,7 +584,7 @@ export class valid {
     }
 
     /**
-     * 异步验证并转换数据
+     * 异步验证并转换数据(前端)
      * @param from 待验证数据
      * @param toObj 经类型转换后的验证结果
      * @param objRes IFieldRes

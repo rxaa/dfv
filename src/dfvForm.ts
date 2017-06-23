@@ -10,7 +10,9 @@ export interface IncomingFormParse {
     encoding: string;
     uploadDir: string;
     keepExtensions: boolean;
-    //最大字段长度
+    /**
+     * 最大字段长度
+     */
     maxFieldsSize: number;
     maxFields: number;
     hash: string | boolean;
@@ -19,13 +21,21 @@ export interface IncomingFormParse {
     bytesReceived: number;
     bytesExpected: number;
 
-    //最大文件字节长度
+    /**
+     * 最大文件字节长度
+     */
     maxFileSize?: number;
 
-    //文件开始下载前检测
+    /**
+     * 文件开始下载前检测
+     * @param name 字段名
+     * @param file 文件信息
+     */
     checkFile?: (name: string, file: FileMultiple) => boolean;
 
-    //是否关闭文件上传严格模式，默认false(未在入参验证对象里指定的exp.file()的都不允许上传)
+    /**
+     * 是否关闭文件上传严格模式，默认false(未在入参验证对象里指定的exp.file()的都不允许上传)
+     */
     disableStrict?: boolean;
 
     /**

@@ -83,6 +83,11 @@ export class dfv {
 
     private static funcReg = /function\s*(\w*)/i;
 
+    /**
+     * 生成可显示（带showMsg属性）异常
+     * @param msg
+     * @returns {Error}
+     */
     static err(msg: string) {
         var err = Error(msg);
         (err as ShowAbleErr).showMsg = true;
@@ -276,6 +281,11 @@ export class dfv {
     }
 
 
+    /**
+     * 判断是否整数
+     * @param val
+     * @returns {boolean}
+     */
     static isInt(val: string) {
         if (val == null || val.length == 0) {
             return false;
@@ -483,6 +493,11 @@ export class dfv {
         return ret;
     }
 
+    /**
+     * 设置clas的parent元信息
+     * @param clas
+     * @param parent
+     */
     static setParent(clas: { new(): any; } | Function, parent: { new(): any; } | Function) {
         let meta = dfv.getData(clas, "class_parent", "") as any[];
         if (meta == null) {
@@ -499,6 +514,11 @@ export class dfv {
     }
 
 
+    /**
+     * 生成字串的hase值
+     * @param str
+     * @returns {number}
+     */
     static hashCode(str: string) {
         var hash = 0, i, chr, len;
         if (str.length === 0) return hash;
@@ -510,6 +530,11 @@ export class dfv {
         return hash;
     }
 
+    /**
+     * 从字串中截取文件名
+     * @param file
+     * @returns {any}
+     */
     static getFileName(file: string) {
         let pos = file.lastIndexOf("/");
         if (pos >= 0) {
