@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const TestReq1_1 = require("../models/TestReq1");
+const db_1 = require("../db");
 module.exports = (http) => {
     http.all("/user/get", null, (ctx, dat) => {
         return "ok";
@@ -23,6 +24,23 @@ module.exports = (http) => {
     }));
     http.all("/user/test3", TestReq1_1.TestReq1, (ctx, dat) => __awaiter(this, void 0, void 0, function* () {
         return dat;
+    }));
+    http.all("/mysql/test1", null, (ctx, dat) => __awaiter(this, void 0, void 0, function* () {
+        let ret = Array();
+        try {
+            yield db_1.db.mysql.queryEach("select * from rb_sort", (row) => {
+                ret.push(row);
+                throw Error("错误");
+            });
+        }
+        catch (e) {
+            console.error(e);
+        }
+        return ret;
+    }));
+    http.all("/mysql/test2", null, (ctx, dat) => __awaiter(this, void 0, void 0, function* () {
+        let ret = yield db_1.db.mysql.queryPromise("select * from rb_sort limit 100");
+        return ret;
     }));
     http.all("/test", null, (ctx, dat) => __awaiter(this, void 0, void 0, function* () {
         return `

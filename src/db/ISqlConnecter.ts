@@ -42,8 +42,21 @@ export interface IUpdateRes {
 
 
 export interface ISqlConnecter {
+
+    /**
+     * 少量数据查询，查询结果为数组
+     * @param sqlStr
+     * @param res
+     */
     query(sqlStr: string, res: (err: Error, rows: any[] | null) => void);
     queryPromise(sqlStr: string): Promise<any[]>;
+
+    /**
+     * 大量数据查询
+     * @param sqlStr sql语句
+     * @param eachFunc 每读取到一行数据，就会触发此函数(可为async,抛异常则中断each)
+     */
+    queryEach(sqlStr: string, eachFunc: (row: any) => void | Promise<void>): Promise<void>;
 
     update(sqlStr: string, res: (err: Error | null, resault: IUpdateRes) => void);
     updatePromise(sqlStr: string): Promise<IUpdateRes>;
@@ -51,7 +64,14 @@ export interface ISqlConnecter {
      * 获取链接名
      */
     getConnectName(): string;
+    /**
+     * 获取最大缓存数
+     */
     getMaxCache(): number;
 
+    /**
+     * 执行事务操作
+     * @param func 事务内容（通过抛异常来rollback中断事务）
+     */
     transaction(func: () => Promise<void>): Promise<void>;
 }

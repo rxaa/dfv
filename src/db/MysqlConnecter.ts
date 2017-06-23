@@ -168,6 +168,11 @@ export class MysqlConnecter implements ISqlConnecter {
         return this.config.maxCache;
     }
 
+
+    /**
+     * 执行事务操作
+     * @param func 事务内容（通过抛异常来rollback中断事务）
+     */
     transaction(func: () => Promise<void>): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.pool.getConnection((err, conn) => {
@@ -225,5 +230,75 @@ export class MysqlConnecter implements ISqlConnecter {
         });
     }
 
+
+    queryEach(sqlStr: string, func: (row: any) => (void | Promise<void>)): Promise<void> {
+        let errStack = new Error();
+
+        let lastErr: any = null;
+        // let i = 0;
+
+        return new Promise<void>((reso, reject) => {
+            this.pool.getConnection((err, conn) => {
+                if (err) {
+                    if (this.config.sqlErrorLog)
+                        dfvLog.write("POOL getConnection error:\r\n" + sqlStr, err);
+                    reject(err);
+                    return;
+                }
+
+
+                if (this.config.sqlQueryLog) {
+                    dfvLog.write(sqlStr);
+                }
+
+                let query = conn.query(sqlStr);
+                query
+                    .on('error', (err) => {
+                        lastErr = err;
+                        // Handle error, an 'end' event will be emitted after this as well
+                        if (this.config.sqlErrorLog) {
+                            errStack.message = err.message
+                            errStack.name = err.name;
+                            dfvLog.write("queryAll error:\r\n" + sqlStr, errStack);
+                        }
+                        conn.release();
+                        reject(err);
+                    })
+                    .on('fields', (fields) => {
+                        // the field packets for the rows to follow
+                    })
+                    .on('result', async (row, index) => {
+
+                        if (lastErr) {
+                            // console.error("lastErr 统计" + (++i))
+                            return;
+                        }
+
+                        // Pausing the connnection is useful if your processing involves I/O
+                        conn.pause();
+                        try {
+                            await func(row);
+                            conn.resume();
+                        } catch (e) {
+                            lastErr = e;
+                            try {
+                                // conn.resume();
+                                conn.destroy();
+                            } catch (e) {
+                                dfvLog.write("queryAll destroy error:\r\n" + sqlStr, e);
+                            }
+                            reject(e);
+                        }
+                    })
+                    .on('end', function () {
+                        // all rows have been received
+                        if (!lastErr) {
+                            conn.release();
+                            reso();
+                        }
+                    });
+            });
+        })
+    }
 
 }
