@@ -257,7 +257,7 @@ export class MysqlConnecter implements ISqlConnecter {
                         lastErr = err;
                         // Handle error, an 'end' event will be emitted after this as well
                         if (this.config.sqlErrorLog) {
-                            errStack.message = err.message
+                            errStack.message = err.message;
                             errStack.name = err.name;
                             dfvLog.write("queryAll error:\r\n" + sqlStr, errStack);
                         }
@@ -298,7 +298,7 @@ export class MysqlConnecter implements ISqlConnecter {
                         }
                     });
             });
-        })
+        });
     }
 
 }

@@ -1,10 +1,11 @@
 import {dfv, MapString} from "../public/dfv";
 import {dfvLog} from "./dfvLog";
 export class dfvTime {
+
     static timeMap: MapString<NodeJS.Timer> = {};
-    lastExecTime = new Date();
-    func: (() => (void | Promise<void>)) | null = null;
-    id: number = dfvTime.incEventId++;
+    private lastExecTime = new Date();
+    private func: (() => (void | Promise<void>)) | null = null;
+    private id: number = dfvTime.incEventId++;
 
     private static incEventId = 0;
     private static eventMap = new Map<number, dfvTime>();
@@ -32,9 +33,9 @@ export class dfvTime {
      * @param intervalTime 事件执行的时间间隔(毫秒)
      * @param func
      */
-    static intervalEvent(intervalTime: number, func: (e: dfvTime)=>(void|Promise<void>)) {
+    static intervalEvent(intervalTime: number, func: (e: dfvTime) => (void | Promise<void>)) {
         let ev = new dfvTime();
-        ev.func = ()=> {
+        ev.func = () => {
             if (Date.now() > ev.lastExecTime.getTime() + intervalTime) {
                 ev.lastExecTime = new Date();
                 func(ev);
@@ -51,9 +52,9 @@ export class dfvTime {
      * @param minutes
      * @param func
      */
-    static dailyEvent(hours: number, minutes: number, func: (e: dfvTime)=>(void|Promise<void>)) {
+    static dailyEvent(hours: number, minutes: number, func: (e: dfvTime) => (void | Promise<void>)) {
         let ev = new dfvTime();
-        ev.func = ()=> {
+        ev.func = () => {
             var now = new Date();
             // var h = ev.lastExecTime.getDate();
             if (ev.lastExecTime.getDate() != now.getDate() && now.getHours() >= hours && now.getMinutes() >= minutes) {
@@ -136,6 +137,11 @@ export class dfvTime {
         return id;
     }
 
+    /**
+     * 移除延时事件
+     * @param id 事件id
+     * @returns {boolean}
+     */
     static removeTimeOut(id: string): boolean {
         let t = dfvTime.timeMap[id];
         if (t) {

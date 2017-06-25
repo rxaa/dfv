@@ -3,16 +3,19 @@
     "module": "commonjs",
     "target": "es6",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "sourceMap": true,
     "declaration": true,
     "removeComments": false,
     "strictNullChecks": true,
-    "noImplicitAny": false,
-    "pretty": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noImplicitReturns": true,
     "jsx": "react"
   },
   "exclude": [
-//    "public",
+    //    "public",
     "runtime",
     "node_modules"
   ]

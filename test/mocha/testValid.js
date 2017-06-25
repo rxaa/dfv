@@ -5,9 +5,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
 const valid_1 = require("../../public/valid");
+const dfv_1 = require("../../public/dfv");
 let ReqTest = class ReqTest {
     constructor() {
         this.id = 1;
@@ -17,10 +21,12 @@ let ReqTest = class ReqTest {
     }
 };
 __decorate([
-    valid_1.valid.int(r => r.val > 0, "aaa必须大于0")
+    valid_1.valid.int(r => r.val > 0, "aaa必须大于0"),
+    __metadata("design:type", Object)
 ], ReqTest.prototype, "aaa", void 0);
 __decorate([
-    valid_1.valid.string(/^123$/, "bbb错误")
+    valid_1.valid.string(/^123$/, "bbb错误"),
+    __metadata("design:type", Object)
 ], ReqTest.prototype, "bbb", void 0);
 ReqTest = __decorate([
     valid_1.valid.noAuth
@@ -36,10 +42,12 @@ class ReqTest2 {
     }
 }
 __decorate([
-    valid_1.valid.int(r => r.val > 0, "aaa必须大于0")
+    valid_1.valid.int(r => r.val > 0, "aaa必须大于0"),
+    __metadata("design:type", Object)
 ], ReqTest2.prototype, "aaa", void 0);
 __decorate([
-    valid_1.valid.string()
+    valid_1.valid.string(),
+    __metadata("design:type", Object)
 ], ReqTest2.prototype, "bbb", void 0);
 class ReqTest3 {
     constructor() {
@@ -56,7 +64,8 @@ class ReqTest4 {
     }
 }
 __decorate([
-    valid_1.valid.object(r => r.val.bbb.length > 0, "bbb.bbb 不能为空")
+    valid_1.valid.object(r => r.val.bbb.length > 0, "bbb.bbb 不能为空"),
+    __metadata("design:type", Object)
 ], ReqTest4.prototype, "bbb", void 0);
 class ArrayTest {
     constructor() {
@@ -66,16 +75,22 @@ class ArrayTest {
     }
 }
 __decorate([
-    valid_1.valid.array(r => r.val.eachToInt())
+    valid_1.valid.array(r => r.val.eachToInt()),
+    __metadata("design:type", Object)
 ], ArrayTest.prototype, "bbb", void 0);
 __decorate([
-    valid_1.valid.array(r => r.val.eachToString())
+    valid_1.valid.array(r => r.val.eachToString()),
+    __metadata("design:type", Object)
 ], ArrayTest.prototype, "cccc", void 0);
 __decorate([
-    valid_1.valid.array(r => r.val.eachToObj(ReqTest2))
+    valid_1.valid.array(r => r.val.eachToObj(ReqTest2)),
+    __metadata("design:type", Array)
 ], ArrayTest.prototype, "ddd", void 0);
 describe('valid Test', function () {
     it('valid route array入参验证', function () {
+        let aa = 1;
+        var f = (a = 1, b = dfv_1.dfv.getRandFixNum(aa), c = 3) => { };
+        assert.deepEqual(dfv_1.dfv.getParameterNames(f), ['a', 'b', 'c']);
         let notRes = valid_1.valid.checkObj({
             bbb: [],
             cccc: [],

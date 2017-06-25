@@ -15,12 +15,12 @@ export const singleTag = {
 
 
 function setEleEvent(bindFun: dfvBindDom, event: string, elem: HTMLElement, key: string, bind: BindField[]) {
-    let old = elem[event];
-    elem[event] = (e) => {
+    let old = (elem as any)[event] as Function;
+    (elem as any)[event] = (e: any) => {
         for (let b of bind) {
             if (b.type === BindFieldType.object || b.type === BindFieldType.array)
                 continue;
-            setBind(bindFun, b, elem, elem[key]);
+            setBind(bindFun, b, elem, (elem as any)[key]);
         }
         if (old)
             old.call(elem, e);
@@ -38,7 +38,7 @@ function setOnInputEvent(bindFun: dfvBindDom, elem: HTMLElement, key: string, bi
         for (let b of bind) {
             if (b.type === BindFieldType.object || b.type === BindFieldType.array)
                 continue;
-            setBind(bindFun, b, elem, elem[key]);
+            setBind(bindFun, b, elem, (elem as any)[key]);
         }
     })
     let old = elem["oninput"];
@@ -49,7 +49,7 @@ function setOnInputEvent(bindFun: dfvBindDom, elem: HTMLElement, key: string, bi
         for (let b of bind) {
             if (b.type === BindFieldType.object || b.type === BindFieldType.array)
                 continue;
-            setBind(bindFun, b, elem, elem[key]);
+            setBind(bindFun, b, elem, (elem as any)[key]);
         }
         if (old)
             old.call(elem, e);
@@ -91,7 +91,7 @@ function setBind(bindFun: dfvBindDom, bind: BindField, elem: HTMLElement, val: a
     if (bindFun.onSet) {
         bindFun.isEditOnSet = true;
         let res = getVal(bind, val);
-try {
+        try {
             let ret = bindFun.onSet(res, bindFun, bind);
 
             if (ret instanceof Promise) {
@@ -204,7 +204,7 @@ function bindInnerHtml(elem: HTMLElement, bindFun: dfvBindDom) {
     return ret;
 }
 
-declare var exports;
+declare var exports: any;
 
 if (typeof window === "undefined") {
     exports.createElement = function createElement(ele: string, prot: any) {
@@ -246,7 +246,7 @@ if (typeof window === "undefined") {
             }
         }
 
-        if (!singleTag[ele])
+        if (!(singleTag as any)[ele])
             ret += "</" + ele + ">";
         return ret;
     }
@@ -278,9 +278,9 @@ else {
                 }
 
                 //保存旧事件
-                let old = elem[k];
+                let old = (elem as any)[k];
                 if (typeof old === "function" && typeof val === "function") {
-                    elem[k] = e => {
+                    (elem as any)[k] = (e: any) => {
                         old.call(elem, e);
                         val.call(elem, e);
                     }
@@ -289,7 +289,7 @@ else {
                     if (ele === "select" && ke === "value")
                         value = val;
                     else
-                        elem[k] = val;
+                        (elem as any)[k] = val;
                 }
 
             }
@@ -308,7 +308,7 @@ else {
         }
 
         if (ele === "select" && value != null) {
-            elem["value"] = value;
+            (elem as any)["value"] = value;
         }
         return elem;
     }
@@ -323,7 +323,7 @@ function procStyle(elem: HTMLElement, val: any) {
             let vals = s.split(":");
             if (vals.length != 2)
                 continue;
-            elem.style[dfv.fixNameUpperCase(vals[0], "-", " ")] = vals[1];
+            (elem.style as any)[dfv.fixNameUpperCase(vals[0], "-", " ")] = vals[1];
         }
         return;
     }
@@ -331,14 +331,14 @@ function procStyle(elem: HTMLElement, val: any) {
     if (val instanceof Array) {
         for (let v of val) {
             for (let s in v) {
-                elem.style[s] = procVal(s, v[s]);
+                (elem.style as any)[s] = procVal(s, v[s]);
             }
         }
         return;
     }
 
     for (let s in val) {
-        elem.style[s] = procVal(s, val[s]);
+        (elem.style as any)[s] = procVal(s, val[s]);
     }
 }
 

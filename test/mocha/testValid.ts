@@ -1,5 +1,6 @@
 import assert = require('assert');
 import {valid} from "../../public/valid";
+import {dfv} from "../../public/dfv";
 
 @valid.noAuth
 class ReqTest {
@@ -64,6 +65,13 @@ class ArrayTest {
 describe('valid Test', function () {
 
     it('valid route array入参验证', function () {
+
+
+        let aa=1;
+        var f = ( a = 1 , b= dfv.getRandFixNum(aa), c = 3) => {};
+
+        assert.deepEqual(dfv.getParameterNames(f),['a', 'b', 'c'])
+
         let notRes = valid.checkObj({
             bbb: [],
             cccc: [],

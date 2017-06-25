@@ -9,7 +9,7 @@ import bodyParser = require("koa-bodyparser");
 import compress = require('koa-compress')
 const helmet = require('koa-helmet')
 import logger = require('koa-logger')
-import {dfvRouter} from "../src/dfvRouter";
+import {dfvRouter} from "../src/control/dfvRouter";
 import {dfv} from "../public/dfv";
 import {dfvContext} from "../src/dfvContext";
 import {dfvForm} from "../src/dfvForm";
@@ -21,7 +21,7 @@ import {dfvLog} from "../src/dfvLog";
  */
 const app = new Koa();
 
-app.use((ctx: Koa.Context, next: Function) => next().catch(err => {
+app.use((ctx: Koa.Context, next: Function) => next().catch((err:Error) => {
     ctx.params
     ctx.request.query
     ctx.request.body
@@ -62,39 +62,39 @@ app.use(compress({
 
 
 //加载路由
-dfvRouter.load(app, [
-    {
-        menu: dfv.root + "/router",
-        onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
-            try {
-                if (!modReq)
-                    return await next({});
-
-                //入参验证
-                let paras = await dfvForm.check(modReq, ctx);
-                if (!paras.ok) {
-                    //验证失败
-                    dfvLog.write(url + " : " + JSON.stringify(paras));
-                    ctx.status = 500;
-                    return paras.msg;
-                }
-
-
-                return await next(paras.val)
-            } catch (e) {
-                dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
-                ctx.status = 500;
-                return "网络异常";
-            }
-        }
-    },
-    {
-        menu: dfv.root + "/router2",
-        onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
-            return next(ctx._dat)
-        }
-    },
-]);
+// dfvRouter.load(app, [
+//     {
+//         menu: dfv.root + "/router",
+//         onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
+//             try {
+//                 if (!modReq)
+//                     return await next({});
+//
+//                 //入参验证
+//                 let paras = await dfvForm.check(modReq, ctx);
+//                 if (!paras.ok) {
+//                     //验证失败
+//                     dfvLog.write(url + " : " + JSON.stringify(paras));
+//                     ctx.status = 500;
+//                     return paras.msg;
+//                 }
+//
+//
+//                 return await next(paras.val)
+//             } catch (e) {
+//                 dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
+//                 ctx.status = 500;
+//                 return "网络异常";
+//             }
+//         }
+//     },
+//     {
+//         menu: dfv.root + "/router2",
+//         onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
+//             return next(ctx._dat)
+//         }
+//     },
+// ]);
 
 
 http.createServer(app.callback()).listen(3001, () => {

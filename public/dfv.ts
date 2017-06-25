@@ -34,7 +34,7 @@ export function arrayString(val?: string[]): string[] {
     return val;
 }
 
-export function array<T>(type: { new(...para): T }, val?: T[]): T[] {
+export function array<T>(type: any, val?: T[]): T[] {
     if (!val) {
         val = []
     }
@@ -49,11 +49,20 @@ export interface ShowAbleErr extends Error {
     showMsg: boolean;
 }
 
+const COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+const DEFAULT_PARAMS = /=[^,]+/mg;
+const FAT_ARROWS = /=>.*$/mg;
 
 export class dfv {
 
     static root = "";
 
+
+    static meta = {
+        type: "design:type",
+        paraType: "design:paramtypes",
+        returnType: "design:returntype",
+    }
 
     static sleep(time: number) {
         return new Promise((reso, reject) => {
@@ -183,7 +192,7 @@ export class dfv {
     static joinObj<T1, T2, T3>(v1: T1, v2: T2, v3: T3): T1 & T2 & T3
     static joinObj<T1, T2>(v1: T1, v2: T2): T1 & T2
     static joinObj(...values: any[]) {
-        let clas = function () {
+        let clas: any = function () {
 
         }
         let newObj = new clas();
@@ -321,8 +330,8 @@ export class dfv {
             return left as Array<TL & TR>;
 
         for (let i = 0; i < left.length; i++) {
-            let lObj = left[i];
-            let rObj = right[funcL(lObj)];
+            let lObj: any = left[i];
+            let rObj: any = right[funcL(lObj)];
             if (rObj) {
                 if (overrideLeft) {
                     for (let na in rObj) {
@@ -552,6 +561,29 @@ export class dfv {
         let now = new Date();
         return dfv.tempMenu + now.getDate() + "/";
     }
+
+
+    /**
+     * 获取函数参数名别表
+     * @param fn
+     * @returns {Array|RegExpMatchArray}
+     */
+    static getParameterNames(fn: Function): Array<string> {
+        var code = fn.toString()
+            .replace(COMMENTS, '')
+            .replace(FAT_ARROWS, '')
+            .replace(DEFAULT_PARAMS, '');
+
+        var result = code.slice(code.indexOf('(') + 1, code.indexOf(')'))
+            .match(/([^\s,]+)/g);
+
+        return result === null
+            ? []
+            : result;
+    }
+
+
+
 }
 
 

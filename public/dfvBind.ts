@@ -271,9 +271,9 @@ export class BindField {
             }
 
             if (retVal == null)
-                elem[key] = "";
+                (elem as any)[key] = "";
             else
-                elem[key] = retVal;
+                (elem as any)[key] = retVal;
         })
 
     }

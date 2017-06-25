@@ -1,55 +1,9 @@
 import * as formidable from "formidable";
-import {FileMultiple, IFieldRes, valid} from "../public/valid";
+import {FileMultiple, IFieldRes, IncomingFormParse, valid} from "../public/valid";
 import {dfv, MapString} from "../public/dfv";
 import * as fs from "fs";
 import {dfvContext} from "./dfvContext";
 import {dfvLog} from "./dfvLog";
-
-
-export interface IncomingFormParse {
-    encoding: string;
-    uploadDir: string;
-    keepExtensions: boolean;
-    /**
-     * 最大字段长度
-     */
-    maxFieldsSize: number;
-    maxFields: number;
-    hash: string | boolean;
-    multiples: boolean;
-    type: string;
-    bytesReceived: number;
-    bytesExpected: number;
-
-    /**
-     * 最大文件字节长度
-     */
-    maxFileSize?: number;
-
-    /**
-     * 文件开始下载前检测
-     * @param name 字段名
-     * @param file 文件信息
-     */
-    checkFile?: (name: string, file: FileMultiple) => boolean;
-
-    /**
-     * 是否关闭文件上传严格模式，默认false(未在入参验证对象里指定的exp.file()的都不允许上传)
-     */
-    disableStrict?: boolean;
-
-    /**
-     * 所有已上传文件
-     */
-    fileList?: FileMultiple[];
-
-    fieldsMap: MapString<string | FileMultiple | any[]>;
-
-    /**
-     * 入参验证class实例
-     */
-    modReqInst: any;
-}
 
 
 export class dfvForm {
@@ -61,28 +15,28 @@ export class dfvForm {
      * @param req
      * @returns {IFieldRes<any>}
      */
-    static check(modClass: { new(): any; }, req: dfvContext): Promise<IFieldRes<any>> | IFieldRes<any> {
-        let modInst = new modClass();
-
-        let multipart = valid.getMultipart(modClass);
-        if (!multipart) {
-            req._dat = dfvContext.joinParams(req);
-            return valid.checkObj(req._dat, modInst);
-        }
-
-        //解析文件
-        let form = dfvForm.newForm(modInst);
-        multipart(form);
-
-        return dfvForm.parseModPromise(form, req).then(ret => {
-            req._dat = ret;
-            let check_data = valid.checkObj(ret, modInst);
-            if (!check_data.ok)
-                dfvForm.removeFileList(form);
-
-            return check_data;
-        });
-    }
+    // static check(modClass: { new(): any; }, req: dfvContext): Promise<IFieldRes<any>> | IFieldRes<any> {
+    //     let modInst = new modClass();
+    //
+    //     let multipart = valid.getMultipart(modClass);
+    //     if (!multipart) {
+    //         req._dat = dfvContext.joinParams(req);
+    //         return valid.checkObj(req._dat, modInst);
+    //     }
+    //
+    //     //解析文件
+    //     let form = dfvForm.newForm(modInst);
+    //     multipart(form);
+    //
+    //     return dfvForm.parseModPromise(form, req).then(ret => {
+    //         req._dat = ret;
+    //         let check_data = valid.checkObj(ret, modInst);
+    //         if (!check_data.ok)
+    //             dfvForm.removeFileList(form);
+    //
+    //         return check_data;
+    //     });
+    // }
 
 
     /**
@@ -90,10 +44,9 @@ export class dfvForm {
      */
     static maxArrayIndex = 100 * 1000;
 
-    static newForm(modReqInst?: any) {
+    static newForm() {
         let f = new formidable.IncomingForm() as formidable.IncomingForm & IncomingFormParse;
-        if (modReqInst)
-            f.modReqInst = modReqInst;
+        f.multipart = {fields: {}, files: {}}
         return f;
     }
 
@@ -109,7 +62,7 @@ export class dfvForm {
     static parseModPromise(form: formidable.IncomingForm & IncomingFormParse, ctx: dfvContext) {
         let req = dfvContext.getIncomingMessage(ctx);
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             let type = req.headers["content-type"] as string;
             if (!type || type.toLowerCase().indexOf("multipart/form-data") < 0) {
@@ -125,12 +78,9 @@ export class dfvForm {
                     return;
                 }
 
-                ctx.multipart = {
-                    fields: fields, files: files,
-                }
+                ctx.multipart = form.multipart;
 
-
-                resolve(form.fieldsMap);
+                resolve();
             });
         });
     }
@@ -182,9 +132,9 @@ export class dfvForm {
     }
 
 
+
     private static processFile(form: formidable.IncomingForm & IncomingFormParse) {
         form.fileList = [];
-        form.fieldsMap = {};
         let sizeCount = 0;
         let isFile = false;
 
@@ -212,14 +162,10 @@ export class dfvForm {
                 let pos = name.indexOf("[");
                 if (pos > 0) {
                     var fName = name.substr(0, pos);
-                    if (!(form.modReqInst && valid.isFile(form.modReqInst[fName]))) {//排除文件
-                        form.fieldsMap[fName] = dfvForm.getFieldVal(pos + 1, name, form.fieldsMap[fName], value);
-                    }
+                    form.multipart.fields[fName] = dfvForm.getFieldVal(pos + 1, name, form.multipart.fields[fName], value);
                 }
                 else {
-                    if (!(form.modReqInst && valid.isFile(form.modReqInst[name]))) {//排除文件
-                        form.fieldsMap[name] = value;
-                    }
+                    form.multipart.fields[name] = value;
                 }
             } catch (e) {
                 dfvLog.write("field name error:" + name, e);
@@ -232,10 +178,10 @@ export class dfvForm {
                 let pos = name.indexOf("[");
                 if (pos > 0) {
                     var fName = name.substr(0, pos);
-                    form.fieldsMap[fName] = dfvForm.getFieldVal(pos + 1, name, form.fieldsMap[fName], file);
+                    form.multipart.files[fName] = dfvForm.getFieldVal(pos + 1, name, form.multipart.files[fName], file);
                 }
                 else {
-                    form.fieldsMap[name] = file;
+                    form.multipart.files[name] = file;
                 }
             } catch (e) {
                 dfvLog.write("file name error:" + name, e);
@@ -247,21 +193,6 @@ export class dfvForm {
             isFile = true;
             if (form.fileList)
                 form.fileList.push(file)
-
-            if (!form.disableStrict && form.modReqInst) {
-
-                let fieldName = name;
-                let pos = name.indexOf("[");
-                if (pos >= 0) {
-                    fieldName = name.substr(0, pos);
-                }
-
-                if (!valid.isFile(form.modReqInst[fieldName])) {
-                    throw new Error("错误的文件name:" + fieldName);
-                    // form.emit("error", new Error("错误的文件name:" + name))
-                    // return;
-                }
-            }
 
             if (form.checkFile) {
                 if (!form.checkFile(name, file)) {

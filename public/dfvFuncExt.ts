@@ -19,7 +19,7 @@ declare global {
         /**
          * 循环number次
          */
-        loop(func: (index: number) => void);
+        loop(func: (index: number) => void): void;
         /**
          * 循环number次,并将func返回值map成Array
          */
@@ -123,7 +123,7 @@ String.prototype.htmlEncode = function (): string {
 
 
 if (!Array.prototype.map) {
-    Array.prototype.map = function (callbackfn: (value: any, index: number, array: any[]) => any) {
+    Array.prototype.map = function (this: Array<any>, callbackfn: (value: any, index: number, array: any[]) => any) {
         var arr = Array<any>();
         for (var i = 0; i < this.length; i++) {
             arr.push(callbackfn(this[i], i, arr));
@@ -156,7 +156,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "add", {
-        value: function (index: number, item: any): string {
+        value: function (this: Array<any>, index: number, item: any) {
             this.splice(index, 0, item);
             return this;
         },
@@ -165,7 +165,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "mapString", {
-        value: function (func: (itm: any, index: number) => any): string {
+        value: function (this: Array<any>, func: (itm: any, index: number) => any) {
             var str = ""
             for (var i = 0; i < this.length; i++) {
                 var ret = func(this[i], i);
@@ -179,7 +179,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "binarySearch", {
-        value: function (func: (itm: any) => number): number {
+        value: function (this: Array<any>, func: (itm: any) => number): number {
             var startIndex = 0;
             var stopIndex = this.length - 1;
 
@@ -206,7 +206,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "eachToInt", {
-        value: function (func?: (val: number) => boolean) {
+        value: function (this: Array<any>, func?: (val: number) => boolean) {
             for (var i = 0; i < this.length; i++) {
                 this[i] = parseInt(this[i]);
                 if (isNaN(this[i])) {
@@ -226,7 +226,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "each", {
-        value: function (func: (val: any) => boolean): boolean {
+        value: function (this: Array<any>, func: (val: any) => boolean): boolean {
             for (var i = 0; i < this.length; i++) {
                 if (!func(this[i]))
                     return false;
@@ -238,7 +238,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "eachToFloat", {
-        value: function (func?: (val: number) => boolean) {
+        value: function (this: Array<any>, func?: (val: number) => boolean) {
             for (var i = 0; i < this.length; i++) {
                 this[i] = parseFloat(this[i]);
                 if (isNaN(this[i])) {
@@ -258,7 +258,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "eachToString", {
-        value: function (func?: (val: string) => boolean) {
+        value: function (this: Array<any>, func?: (val: string) => boolean) {
             for (var i = 0; i < this.length; i++) {
                 this[i] = this[i] + "";
                 if (func) {
@@ -272,7 +272,7 @@ else if (!Array.prototype.eachToInt) {
         writable: true,
     });
     Object.defineProperty(Array.prototype, "eachToObj", {
-        value: function (className: { new(): any; }, msg?: IFieldRes<any>): boolean {
+        value: function (this: Array<any>, className: { new(): any; }, msg?: IFieldRes<any>): boolean {
             if (msg == null)
                 msg = new IFieldRes();
 
@@ -289,7 +289,7 @@ else if (!Array.prototype.eachToInt) {
     });
 
     Object.defineProperty(Array.prototype, "mapPromise", {
-        value: async function (callbackfn: (value: any, index: number, array: any[]) => Promise<any>) {
+        value: async function (this: Array<any>, callbackfn: (value: any, index: number, array: any[]) => Promise<any>) {
             var arr = new Array<any>();
             for (var i = 0; i < this.length; i++) {
                 arr.push(await callbackfn(this[i], i, arr));
@@ -301,7 +301,7 @@ else if (!Array.prototype.eachToInt) {
 
 
     Object.defineProperty(Array.prototype, "mapStringPromise", {
-        value: async function (callbackfn: (value: any, index: number) => Promise<any>) {
+        value: async function (this: Array<any>, callbackfn: (value: any, index: number) => Promise<any>) {
             var str = ""
             for (var i = 0; i < this.length; i++) {
                 var ret = await callbackfn(this[i], i);

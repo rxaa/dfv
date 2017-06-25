@@ -48,10 +48,10 @@ describe('router Test', function () {
         assert.equal(res.content, `val必须大于2`);
     });
     it('koa route', function () {
-        return testFunc(3001);
+        // return testFunc(3001)
     });
     it('express route', function () {
-        return testFunc(3002);
+        // return testFunc(3002)
     });
 });
 //# sourceMappingURL=testRouter.js.map

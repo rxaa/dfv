@@ -354,7 +354,7 @@ export class dfvFront {
      * @param obj
      * @returns {string}
      */
-    static objToForm(obj: Object) {
+    static objToForm(obj: any) {
         let ret = "";
         for (let k in obj) {
             ret += k + "=" + encodeURIComponent(obj[k]) + "&";

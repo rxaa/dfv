@@ -1,6 +1,7 @@
 import * as http from "http";
 import * as formidable from "formidable";
 import {dfv} from "../public/dfv";
+import {ReqRes} from "./control/dfvRouter";
 
 
 export class dfvContext {
@@ -15,11 +16,6 @@ export class dfvContext {
     body: any;
 
     /**
-     *url paras，query,body三者合并结果
-     */
-    _dat: any;
-
-    /**
      * 用于判断该context来自koa还是express
      */
     isKoa = true;
@@ -27,7 +23,7 @@ export class dfvContext {
     /**
      * 解析multipart/form-data时产生的属性
      */
-    multipart: { fields: formidable.Fields, files: formidable.Files }
+    multipart?: { fields: formidable.Fields, files: formidable.Files }
 
 
     static getIncomingMessage(cont: dfvContext): http.IncomingMessage {
@@ -39,8 +35,8 @@ export class dfvContext {
      * 合并url paras，query,body
      * @param ctx
      */
-    static joinParams(ctx: dfvContext) {
-        let req = (ctx as any).request;
+    static joinParams(ctx: dfvContext & ReqRes) {
+        let req = ctx.request;
         if (req.method == "POST") {
             dfv.joinObjFast(req.body, req.query, req.params)
             return req.body;

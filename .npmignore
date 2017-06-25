@@ -4,3 +4,4 @@
 /typings
 /src/*.ts
 /src/db/*.ts
+/src/control/*.ts

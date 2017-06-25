@@ -1,5 +1,5 @@
 import {dfv} from "./public/dfv";
-import {dfvRouter} from "./src/dfvRouter";
+import {dfvRouter} from "./src/control/dfvRouter";
 import {dfvContext} from "./src/dfvContext";
 import {dfvLib} from "./src/dfvLib";
 import {dfvLog} from "./src/dfvLog";

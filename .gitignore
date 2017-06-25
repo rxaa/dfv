@@ -4,6 +4,7 @@
 *.d.ts
 /src/*.js
 /src/db/*.js
+/src/control/*.js
 /test/*.js
 /public/*.js
 /index.js
@@ -11,3 +12,6 @@
 /test/runtime
 /test/public/all.js
 /test/front/Front.js
+/test/controllers/*.js
+/test/mocha/*.js
+/test/models/*.js

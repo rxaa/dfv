@@ -34,9 +34,14 @@ export class IFieldRes<T> {
 
 export interface IncomingFormParse {
     encoding: string;
+    /**
+     * 上传目录
+     */
     uploadDir: string;
     keepExtensions: boolean;
-    //最大字段长度
+    /**
+     * 最大字段长度
+     */
     maxFieldsSize: number;
     maxFields: number;
     hash: string | boolean;
@@ -45,23 +50,25 @@ export interface IncomingFormParse {
     bytesReceived: number;
     bytesExpected: number;
 
-    //最大文件字节长度
+    /**
+     * 最大文件字节长度
+     */
     maxFileSize?: number;
 
-    //文件开始下载前检测
+    /**
+     * 文件开始下载前检测
+     * @param name 字段名
+     * @param file 文件信息
+     */
     checkFile?: (name: string, file: FileMultiple) => boolean;
-
-    //是否关闭文件上传严格模式(未在modReq对象里指定的exp.file()的都不允许上传)
-    disableStrict?: boolean;
 
     /**
      * 所有已上传文件
      */
     fileList?: FileMultiple[];
-
-    fieldsMap: MapString<string | FileMultiple | any[]>;
-
-    modReqInst: any;
+    multipart: {
+        fields: any, files: any,
+    };
 }
 
 export interface FileMultiple {
@@ -115,18 +122,6 @@ export class valid {
         return dfv.getData(target, "exp.noValid", "") as boolean;
     }
 
-    /**
-     * multipart/form-data文件上传
-     */
-    static multipart(func: (mutl: IncomingFormParse) => void) {
-        return (target: { new(): any; }) => {
-            dfv.setData(target, "exp.multipart", "", func);
-        }
-    }
-
-    static getMultipart(target: { new(): any; }) {
-        return dfv.getData(target, "exp.multipart", "") as (mutl: IncomingFormParse) => void;
-    }
 
     /**
      * @装饰int类型数据验证
@@ -135,7 +130,9 @@ export class valid {
      * @returns {function(Object, string): undefined}
      */
     static int(func?: (num: IFieldRes<number>) => boolean, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null) {
@@ -168,7 +165,9 @@ export class valid {
      * @returns {function(Object, string): undefined}
      */
     static intNotZero(func?: ((num: IFieldRes<number>) => boolean) | null, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null) {
@@ -186,7 +185,7 @@ export class valid {
                 if (msg)
                     obj.msg = msg;
                 else
-                    obj.msg = propertyKey + " 必须要大于0"
+                    obj.msg = propertyKey + " 必须要大于0";
 
                 if (func) {
                     ret = func(obj);
@@ -204,7 +203,9 @@ export class valid {
      * @returns {(target:Object, propertyKey:string)=>undefined}
      */
     static intNullAble(func?: ((num: IFieldRes<number | null>) => boolean) | null, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = true;
                 if (obj.val == null) {
@@ -235,7 +236,9 @@ export class valid {
      * @returns {(target:Object, propertyKey:string)=>undefined}
      */
     static float(func?: (num: IFieldRes<number>) => boolean, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null) {
@@ -268,7 +271,9 @@ export class valid {
      * @returns {(target:Object, propertyKey:string)=>undefined}
      */
     static array<T>(func?: (num: IFieldRes<T[]>) => boolean, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any[]>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null) {
@@ -341,7 +346,9 @@ export class valid {
 
 
     static object<T>(func: (num: IFieldRes<T>) => boolean, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null || typeof obj.val != "object") {
@@ -372,7 +379,9 @@ export class valid {
      * @returns {function(Object, string): undefined}
      */
     static stringNotEmpty(func?: RegExp | ((num: IFieldRes<string>) => boolean) | null, msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<string>(target.constructor, propertyKey, obj => {
                 let ret = false;
 
@@ -401,7 +410,9 @@ export class valid {
     }
 
     static string(func?: RegExp | ((num: IFieldRes<string>) => boolean), msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<string>(target.constructor, propertyKey, obj => {
                 let ret = false;
 
@@ -434,7 +445,9 @@ export class valid {
      * @returns {(target:Object, propertyKey:string)=>undefined}
      */
     static stringNullAble(func?: RegExp | ((num: IFieldRes<string | null>) => boolean), msg?: string) {
-        return (target: Object, propertyKey: string) => {
+        return (target: Object, propertyKey: string, index?: number) => {
+            if (index !== void 0)
+                propertyKey += index;
             valid.setFieldCheckMetaData<string | null>(target.constructor, propertyKey, obj => {
                 let ret = true;
 
@@ -464,16 +477,15 @@ export class valid {
      * @param className 对象类名或对象
      * @returns {any}
      */
-    static bindAble<T>(className: {new(): T}|T): T {
+    static bindAble<T>(className: { new(): T } | T): T {
         if (typeof className === "function") {
-            let ret = new (className as {new(): T})();
+            let ret = new (className as { new(): T })();
             BindField.init(ret)
             return ret;
         }
         BindField.init(className)
         return className as T;
     }
-
 
 
     /**
@@ -492,9 +504,11 @@ export class valid {
      * @param from 待验证数据
      * @param toObj 经类型转换后的验证结果
      * @param objRes IFieldRes
+     * @param from2 待验证数据2(from中未找到，则在2中查找)
+     * @param valids 当属性为valid的验证数据源
      * @returns {IFieldRes<T>}
      */
-    static checkObj<T>(from: any, toObj: T, objRes?: IFieldRes<T>): IFieldRes<T> {
+    static checkObj<T extends any>(from: any, toObj: T, objRes?: IFieldRes<T>, from2?: any, valids?: any): IFieldRes<T> {
         if (objRes == null) {
             objRes = new IFieldRes<T>();
         }
@@ -508,14 +522,14 @@ export class valid {
             if (type === "function")
                 continue;
 
-            objRes.val = from[key];
-            objRes.msg = key + " " + valid.errMsg_;
 
-            if (objRes.defaul instanceof valid) {
+            //来自valids的验证
+            if (valids && objRes.defaul instanceof valid) {
+                objRes.val = valids[key];
+                objRes.msg = key + " " + valid.errMsg_;
                 objRes.ok = (objRes.defaul as any as valid).func(objRes);
 
-                if (toObj !== from)
-                    toObj[key as any] = objRes.val;
+                toObj[key as any] = objRes.val;
                 //验证失败
                 if (!objRes.ok) {
                     break;
@@ -523,13 +537,20 @@ export class valid {
                 continue;
             }
 
+            objRes.val = from[key];
+            objRes.msg = key + " " + valid.errMsg_;
+
+            if (from2 && objRes.val === void 0) {
+                objRes.val = from2[key];
+            }
+
+
             //回调函数验证
             var func = valid.getFieldCheckMetaData(toObj.constructor, key);
             if (func) {
                 objRes.ok = func(objRes);
 
-                if (toObj !== from)
-                    toObj[key as any] = objRes.val;
+                toObj[key as any] = objRes.val;
 
                 //验证失败
                 if (!objRes.ok) {
@@ -564,8 +585,7 @@ export class valid {
                 }
             }
 
-            if (toObj !== from)
-                toObj[key as any] = objRes.val;
+            toObj[key as any] = objRes.val;
         }
 
         objRes.val = toObj;

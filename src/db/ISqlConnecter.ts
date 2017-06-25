@@ -48,7 +48,7 @@ export interface ISqlConnecter {
      * @param sqlStr
      * @param res
      */
-    query(sqlStr: string, res: (err: Error, rows: any[] | null) => void);
+    query(sqlStr: string, res: (err: Error, rows: any[] | null) => void): void;
     queryPromise(sqlStr: string): Promise<any[]>;
 
     /**
@@ -58,7 +58,7 @@ export interface ISqlConnecter {
      */
     queryEach(sqlStr: string, eachFunc: (row: any) => void | Promise<void>): Promise<void>;
 
-    update(sqlStr: string, res: (err: Error | null, resault: IUpdateRes) => void);
+    update(sqlStr: string, res: (err: Error | null, resault: IUpdateRes) => void): void;
     updatePromise(sqlStr: string): Promise<IUpdateRes>;
     /**
      * 获取链接名

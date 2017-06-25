@@ -107,7 +107,7 @@ export class HttpCookie {
 
     getCookisStr(host: string, path?: string) {
 
-        let cook = {};
+        let cook:any = {};
         for (let c in this.cookies) {
             if (host.indexOf(c) >= 0) {
                 let vals = this.cookies[c];
@@ -406,7 +406,7 @@ export class dfvHttpClient {
         let newFile = toFile + ".temp";
         let write = fs.createWriteStream(newFile);
         this.setGet();
-        let error = null;
+        let error:any = null;
         let resContent = "";
         return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
             this.respContent(null, (dat, resp) => {
@@ -420,7 +420,7 @@ export class dfvHttpClient {
                         resContent += dat;
                     }
                     else {
-                        write.write(dat, (err) => {
+                        write.write(dat, (err:Error) => {
                             if (!err)
                                 return;
                             error = err
@@ -525,7 +525,7 @@ export class dfvHttpClient {
      * @param obj
      * @returns {string}
      */
-    static objToForm(obj: Object) {
+    static objToForm(obj: any) {
         let ret = "";
         for (let k in obj) {
             ret += k + "=" + encodeURIComponent(obj[k]) + "&";
@@ -579,23 +579,23 @@ export class dfvHttpClient {
                 var gzip = zlib.createGunzip();
                 let pip = res.pipe(gzip);
 
-                pip.on("data", chunk => {
+                pip.on("data", (chunk:Buffer) => {
                     func(chunk, res);
                 });
 
-                pip.on("end", chunk => {
+                pip.on("end", () => {
                     if (this.cookie && res) {
                         this.cookie.setCookies(this.getHostName(), res.headers)
                     }
                     func(null, res);
                 });
 
-                pip.on("error", err => {
+                pip.on("error", (err: Error) => {
                     if (onErr)
                         onErr(err);
                 })
 
-                res.on("close", err => {
+                res.on("close", (err: Error) => {
                     console.error(err)
                     if (onErr)
                         onErr(err);
@@ -616,13 +616,13 @@ export class dfvHttpClient {
                 func(null, res);
             });
 
-            res.on("close", err => {
+            res.on("close", (err: Error) => {
                 console.error(err)
                 if (onErr)
                     onErr(err);
             })
 
-            res.on("error", err => {
+            res.on("error", (err: Error) => {
                 if (onErr)
                     onErr(err);
             })
