@@ -3,8 +3,34 @@ import * as fs from "fs";
 import * as path from "path";
 import {dfvLog} from "../dfvLog";
 import {IMenthodInfo, route} from "./route";
-import {dfvContext} from "../dfvContext";
+import * as http from "http";
+import * as formidable from "formidable";
 
+
+export interface dfvContext {
+    /**
+     * response 状态码
+     */
+    status:number;
+
+    /**
+     * response content内容
+     */
+    body: any;
+
+    /**
+     * 用于判断该context来自koa还是express
+     */
+    isKoa :boolean;
+
+    /**
+     * 解析multipart/form-data时产生的属性
+     */
+    multipart?: { fields: formidable.Fields, files: formidable.Files }
+
+
+
+}
 
 export interface RouterPara {
     /**
@@ -50,6 +76,10 @@ export class dfvRouter {
         else {
             this.addMethod = this.addExpressMethod;
         }
+    }
+
+    static getIncomingMessage(cont: dfvContext): http.IncomingMessage {
+        return cont.isKoa ? (cont as any).req : (cont as any).request;
     }
 
     /**

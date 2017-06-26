@@ -1,4 +1,3 @@
-import {dfvContext} from "../../src/dfvContext";
 import {valid} from "../../src/public/valid";
 import {TestReq2} from "../models/TestReq1";
 import {route} from "../../src/control/route";

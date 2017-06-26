@@ -9,10 +9,7 @@ import bodyParser = require("koa-bodyparser");
 import compress = require('koa-compress')
 const helmet = require('koa-helmet')
 import logger = require('koa-logger')
-import {dfvRouter} from "../src/control/dfvRouter";
 import {dfv} from "../src/public/dfv";
-import {dfvContext} from "../src/dfvContext";
-import {dfvForm} from "../src/dfvForm";
 import {dfvLog} from "../src/dfvLog";
 import {route} from "../src/control/route";
 import * as path from "path";
