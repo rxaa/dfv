@@ -2,7 +2,6 @@ import assert = require('assert');
 import {valid} from "../../public/valid";
 import {dfv} from "../../public/dfv";
 
-@valid.noAuth
 class ReqTest {
     id = 1;
     val = "2";
@@ -29,6 +28,10 @@ class ReqTest2 {
 
     @valid.string()
     bbb = "b";
+}
+
+class ReqSub extends ReqTest2 {
+    abcs = "";
 }
 
 class ReqTest3 {
@@ -67,10 +70,11 @@ describe('valid Test', function () {
     it('valid route array入参验证', function () {
 
 
-        let aa=1;
-        var f = ( a = 1 , b= dfv.getRandFixNum(aa), c = 3) => {};
+        let aa = 1;
+        var f = (a = 1, b = dfv.getRandFixNum(aa), c = 3) => {
+        };
 
-        assert.deepEqual(dfv.getParameterNames(f),['a', 'b', 'c'])
+        assert.deepEqual(dfv.getParameterNames(f), ['a', 'b', 'c'])
 
         let notRes = valid.checkObj({
             bbb: [],
@@ -101,7 +105,7 @@ describe('valid Test', function () {
             ddd: [new ReqTest2()],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd 参数无效");
+        assert.equal(notRes.msg, "ddd invalid");
 
         notRes = valid.checkObj({
             bbb: ["22", "11.1", 33],
@@ -109,7 +113,7 @@ describe('valid Test', function () {
             ddd: [1],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd 参数无效");
+        assert.equal(notRes.msg, "ddd invalid");
 
         let req = new ReqTest2();
         req.aaa = 2;
@@ -155,7 +159,7 @@ describe('valid Test', function () {
             aaa: 1,
         }, new ReqTest2());
         assert.equal(res.ok, false);
-        assert.equal(res.msg, "bbb " + valid.errMsg_);
+        assert.equal(res.msg, "bbb" + valid.errMsg_);
 
         let re2 = valid.checkObj({
             bbb: {
@@ -198,5 +202,17 @@ describe('valid Test', function () {
         }, new ReqTest4());
         assert.equal(re2.ok, true);
 
+
+        res = valid.checkObj({
+            aaa: 1,
+        }, new ReqSub());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "bbb" + valid.errMsg_);
+
+        res = valid.checkObj({
+            aaa: 1,
+            bbb: "",
+        }, new ReqSub());
+        assert.equal(res.ok, true);
     });
 });

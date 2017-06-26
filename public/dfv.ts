@@ -158,6 +158,7 @@ export class dfv {
         }
     }
 
+
     /**
      * 将所有obj合并到v1里
      * @returns {any}
@@ -456,11 +457,24 @@ export class dfv {
      * @param field class成员名
      * @returns {any} 未找到返回null
      */
-    static getData(clas: ClassMetaData, metaKey: string, field: string) {
-        if (!clas || !clas._fieldMetaDataMap_)
-            return null;
+    static getData(clas: ClassMetaData, metaKey: string, field: string): any {
+        if (!clas)
+            return void 0;
 
-        return clas._fieldMetaDataMap_[dfv.getKey(metaKey, field)];
+        var ret: any;
+        if (clas._fieldMetaDataMap_)
+            ret = clas._fieldMetaDataMap_[dfv.getKey(metaKey, field)];
+
+        if (ret === void 0) {
+            var parent = (clas as any).__proto__;
+            // var parent = Object.getPrototypeOf(clas);
+            if (parent && parent instanceof Function)
+                return dfv.getData(parent, metaKey, field);
+            else
+                return void 0;
+        }
+
+        return ret;
     }
 
     /**
@@ -583,6 +597,33 @@ export class dfv {
     }
 
 
+    /**
+     * 设置指定类的方法的参数名元信息
+     * @param clas
+     * @param method
+     * @param paras
+     */
+    private static setParasNameMeta(clas: Function, method: string, paras: Array<string>) {
+        dfv.setData(clas, "paras_name", method, paras);
+    }
+
+    /**
+     * 获取指定类的方法的参数名元信息
+     * @returns {Array<string>}
+     * @param target class实例
+     * @param propertyKey
+     */
+    static getParasNameMeta(target: Object, propertyKey: string) {
+        let ret = dfv.getData(target.constructor, "paras_name", propertyKey) as Array<string> | undefined;
+        if (!ret) {
+            let func = (target as any)[propertyKey];
+            if (!func)
+                throw Error((target.constructor as any).name + " not have " + propertyKey);
+            ret = dfv.getParameterNames(func)
+            dfv.setParasNameMeta(target.constructor, propertyKey, ret);
+        }
+        return ret as Array<string>;
+    }
 
 }
 

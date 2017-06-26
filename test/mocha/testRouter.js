@@ -46,12 +46,36 @@ describe('router Test', function () {
         res = yield ht.header.setForm().post(`val=2`);
         assert.equal(res.code, 500);
         assert.equal(res.content, `val必须大于2`);
-    });
-    it('koa route', function () {
-        // return testFunc(3001)
+        ht.setUrl(`http://localhost:${port}/user/test4?id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6&id=3&name=bbb`);
+        assert.equal(res.code, 200);
+        assert.equal(res.content, `2{"id":3,"name":"bbb","val":6}`);
+        ht.setUrl(`http://localhost:${port}/user/test5?val=4&id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6&id=3&name=bbb`);
+        assert.equal(res.code, 200);
+        assert.equal(res.content, `3{"id":2,"name":"ttt","val":4}`);
+        ht.setUrl(`http://localhost:${port}/user/test5?val=4&id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6&id=0&name=bbb`);
+        assert.equal(res.code, 500);
+        assert.equal(res.content, `id must be greater than 0`);
+        ht.setUrl(`http://localhost:${port}/user/test6?val=4&id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6&name=bbb`);
+        assert.equal(res.code, 500);
+        assert.equal(res.content, `id can not be empty`);
+        ht.setUrl(`http://localhost:${port}/user/test6?val=4&id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6id=&name=bbb`);
+        assert.equal(res.code, 500);
+        assert.equal(res.content, `id can not be empty`);
+        ht.setUrl(`http://localhost:${port}/user/test6?val=4&id=2&name=ttt`);
+        res = yield ht.header.setForm().post(`val=6&id=sac&name=bbb`);
+        assert.equal(res.code, 200);
+        assert.equal(res.content, `sac{"id":2,"name":"ttt","val":4}`);
     });
     it('express route', function () {
-        // return testFunc(3002)
+        return testFunc(3002);
+    });
+    it('koa route', function () {
+        return testFunc(3001);
     });
 });
 //# sourceMappingURL=testRouter.js.map

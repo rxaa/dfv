@@ -13,5 +13,8 @@ export class TestReq1 {
 export class TestReq2 {
     id = 1;
 
+    /**
+     * 名字
+     */
     name = "";
 }

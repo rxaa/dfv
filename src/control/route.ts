@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import {dfvRouter, RouterPara} from "./dfvRouter";
-import {dfv, MapString} from '../../public/dfv';
+import {dfv, MapString} from "../../public/dfv";
 import {IncomingFormParse} from "../../public/valid";
 
 export interface IMenthodInfo {
@@ -39,7 +39,7 @@ export class route {
     }
 
     private static addMethodInfo(method: string, name: string | undefined) {
-        return (target: any, propertyKey: string) => {
+        return (target: Object, propertyKey: string) => {
             let paraType = Reflect.getMetadata(dfv.meta.paraType, target, propertyKey) as Array<any>;
 
             let met = route.getMethodInfo(target.constructor);
@@ -47,9 +47,10 @@ export class route {
                 met = {}
                 dfv.setData(target.constructor, "route", "method", met);
             }
-            let paraNames = dfv.getParameterNames(target[propertyKey]);
+            let paraNames = dfv.getParasNameMeta(target, propertyKey);
             if (paraNames.length != paraType.length)
                 throw Error("Parameter name parser error!");
+
             met[propertyKey] = {
                 method: method,
                 path: name,
@@ -57,6 +58,18 @@ export class route {
                 parasName: paraNames,
             };
         }
+    }
+
+
+
+    static noAuth() {
+        return (target: Object, propertyKey: string) => {
+            dfv.setData(target.constructor, "route.noValid", propertyKey, true);
+        }
+    }
+
+    static getNoAuth(target: { new(): any; }, propertyKey: string) {
+        return dfv.getData(target, "route.noValid", "") as boolean;
     }
 
     /**

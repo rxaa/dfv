@@ -12,14 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
 const valid_1 = require("../../public/valid");
 const dfv_1 = require("../../public/dfv");
-let ReqTest = class ReqTest {
+class ReqTest {
     constructor() {
         this.id = 1;
         this.val = "2";
         this.aaa = 0;
         this.bbb = "b";
     }
-};
+}
 __decorate([
     valid_1.valid.int(r => r.val > 0, "aaa必须大于0"),
     __metadata("design:type", Object)
@@ -28,9 +28,6 @@ __decorate([
     valid_1.valid.string(/^123$/, "bbb错误"),
     __metadata("design:type", Object)
 ], ReqTest.prototype, "bbb", void 0);
-ReqTest = __decorate([
-    valid_1.valid.noAuth
-], ReqTest);
 class NotVaild {
 }
 class ReqTest2 {
@@ -49,6 +46,12 @@ __decorate([
     valid_1.valid.string(),
     __metadata("design:type", Object)
 ], ReqTest2.prototype, "bbb", void 0);
+class ReqSub extends ReqTest2 {
+    constructor() {
+        super(...arguments);
+        this.abcs = "";
+    }
+}
 class ReqTest3 {
     constructor() {
         this.id = 1;
@@ -89,7 +92,8 @@ __decorate([
 describe('valid Test', function () {
     it('valid route array入参验证', function () {
         let aa = 1;
-        var f = (a = 1, b = dfv_1.dfv.getRandFixNum(aa), c = 3) => { };
+        var f = (a = 1, b = dfv_1.dfv.getRandFixNum(aa), c = 3) => {
+        };
         assert.deepEqual(dfv_1.dfv.getParameterNames(f), ['a', 'b', 'c']);
         let notRes = valid_1.valid.checkObj({
             bbb: [],
@@ -117,14 +121,14 @@ describe('valid Test', function () {
             ddd: [new ReqTest2()],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd 参数无效");
+        assert.equal(notRes.msg, "ddd invalid");
         notRes = valid_1.valid.checkObj({
             bbb: ["22", "11.1", 33],
             cccc: [1, 2, "3"],
             ddd: [1],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd 参数无效");
+        assert.equal(notRes.msg, "ddd invalid");
         let req = new ReqTest2();
         req.aaa = 2;
         notRes = valid_1.valid.checkObj({
@@ -161,7 +165,7 @@ describe('valid Test', function () {
             aaa: 1,
         }, new ReqTest2());
         assert.equal(res.ok, false);
-        assert.equal(res.msg, "bbb " + valid_1.valid.errMsg_);
+        assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
         let re2 = valid_1.valid.checkObj({
             bbb: {
                 aaa: 10,
@@ -197,6 +201,16 @@ describe('valid Test', function () {
             }
         }, new ReqTest4());
         assert.equal(re2.ok, true);
+        res = valid_1.valid.checkObj({
+            aaa: 1,
+        }, new ReqSub());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
+        res = valid_1.valid.checkObj({
+            aaa: 1,
+            bbb: "",
+        }, new ReqSub());
+        assert.equal(res.ok, true);
     });
 });
 //# sourceMappingURL=testValid.js.map

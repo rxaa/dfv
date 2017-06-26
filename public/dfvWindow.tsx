@@ -126,7 +126,7 @@ export class dfvWindow {
      * 关闭按钮点击事件回调
      */
     onButtonCancelClick = () => {
-        close();
+        this.close();
     }
 
 

@@ -48,7 +48,7 @@ export interface ISqlConnecter {
      * @param sqlStr
      * @param res
      */
-    query(sqlStr: string, res: (err: Error, rows: any[] | null) => void): void;
+    query(sqlStr: string, res: (err: Error | null, rows: any[] | null) => void): void;
     queryPromise(sqlStr: string): Promise<any[]>;
 
     /**

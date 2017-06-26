@@ -25,6 +25,9 @@ exports.TestReq1 = TestReq1;
 class TestReq2 {
     constructor() {
         this.id = 1;
+        /**
+         * 名字
+         */
         this.name = "";
     }
 }

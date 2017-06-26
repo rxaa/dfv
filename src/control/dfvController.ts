@@ -25,6 +25,8 @@ export interface IOnRouteParas {
     router: dfvController;
 }
 
+const MSG_INVALID = valid.errMsg_;
+
 export class dfvController {
 
     /**
@@ -144,7 +146,7 @@ export class dfvController {
         var controlInst = new this.clas();
         controlInst.ctx = ctx;
         var paras: IOnRouteParas = {
-            valid: {ok: true, msg: ""} as IFieldRes<any>,
+            valid: {ok: true, msg: "", val: null, defaul: null} as IFieldRes<any>,
             router: this,
             ctx: ctx,
             controller: controlInst,
@@ -225,16 +227,18 @@ export class dfvController {
         if (fromBody) {
             if (validFunc) {
                 if (this.multipart) {
-                    func = (ctx, valid) => {
-                        valid.val = ctx.multipart!.fields[name]
-                        valid.defaul = 0;
-                        valid.ok = validFunc(valid);
+                    func = (ctx, val) => {
+                        val.val = ctx.multipart!.fields[name]
+                        val.defaul = 0;
+                        val.msg = name + MSG_INVALID;
+                        val.ok = validFunc(val);
                     }
                 }
                 else {
                     func = (ctx, valid) => {
                         valid.val = ctx.request.body[name];
                         valid.defaul = 0;
+                        valid.msg = name + MSG_INVALID;
                         valid.ok = validFunc(valid);
                     }
                 }
@@ -256,6 +260,7 @@ export class dfvController {
                 func = (ctx, valid) => {
                     valid.val = ctx.request.query[name];
                     valid.defaul = 0;
+                    valid.msg = name + MSG_INVALID;
                     valid.ok = validFunc(valid);
                 }
             }
@@ -269,6 +274,7 @@ export class dfvController {
             if (validFunc) {
                 if (this.multipart) {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.defaul = 0;
                         valid.val = ctx.multipart!.fields[name];
                         if (valid.val == null)
@@ -278,6 +284,7 @@ export class dfvController {
                 }
                 else {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.defaul = 0;
                         valid.val = ctx.request.body[name];
                         if (valid.val == null)
@@ -319,6 +326,7 @@ export class dfvController {
             if (validFunc) {
                 if (this.multipart) {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.val = ctx.multipart!.fields[name]
                         valid.defaul = "";
                         valid.ok = validFunc(valid);
@@ -326,6 +334,7 @@ export class dfvController {
                 }
                 else {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.val = ctx.request.body[name];
                         valid.defaul = "";
                         valid.ok = validFunc(valid);
@@ -355,6 +364,7 @@ export class dfvController {
         else if (fromUrl) {
             if (validFunc) {
                 func = (ctx, valid) => {
+                    valid.msg = name + MSG_INVALID;
                     valid.val = ctx.request.query[name];
                     valid.defaul = "";
                     valid.ok = validFunc(valid);
@@ -374,6 +384,7 @@ export class dfvController {
             if (validFunc) {
                 if (this.multipart) {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.defaul = "";
                         valid.val = ctx.multipart!.fields[name];
                         if (valid.val == null)
@@ -383,6 +394,7 @@ export class dfvController {
                 }
                 else {
                     func = (ctx, valid) => {
+                        valid.msg = name + MSG_INVALID;
                         valid.defaul = "";
                         valid.val = ctx.request.body[name];
                         if (valid.val == null)

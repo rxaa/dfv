@@ -47,40 +47,12 @@ route.load(app, [{
     }
 }]);
 
-//加载路由
-// dfvRouter.load(app, [
-//     {
-//         menu: path.join(dfv.root, 'router'),
-//         onRouter: async (url, modReq, ctx, next) => {
-//             try {
-//                 if (!modReq)
-//                     return await next({});
-//
-//                 //入参验证
-//                 let paras = await dfvForm.check(modReq, ctx);
-//                 if (!paras.ok) {
-//                     //验证失败
-//                     dfvLog.write(url + " : " + JSON.stringify(paras));
-//                     ctx.status = 500;
-//                     return paras.msg;
-//                 }
-//
-//
-//                 return await next(paras.val)
-//             } catch (e) {
-//                 dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
-//                 ctx.status = 500;
-//                 return "网络异常";
-//             }
-//         }
-//     },
-// ]);
+
 
 app.use(function responser(req: express.Request, resp: express.Response, next: () => void) {
     resp.status(404);
     resp.end('404, Page Not Found!');
 });
-app.get
 
 http.createServer(app).listen(3002, () => {
     console.log('express server listening on port 3002');

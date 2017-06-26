@@ -15,3 +15,4 @@
 /test/controllers/*.js
 /test/mocha/*.js
 /test/models/*.js
+/test/front/*.js

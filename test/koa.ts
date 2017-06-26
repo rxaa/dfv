@@ -14,6 +14,8 @@ import {dfv} from "../public/dfv";
 import {dfvContext} from "../src/dfvContext";
 import {dfvForm} from "../src/dfvForm";
 import {dfvLog} from "../src/dfvLog";
+import {route} from "../src/control/route";
+import * as path from "path";
 
 /**
  * 中间件集合：
@@ -21,7 +23,7 @@ import {dfvLog} from "../src/dfvLog";
  */
 const app = new Koa();
 
-app.use((ctx: Koa.Context, next: Function) => next().catch((err:Error) => {
+app.use((ctx: Koa.Context, next: Function) => next().catch((err: Error) => {
     ctx.params
     ctx.request.query
     ctx.request.body
@@ -60,42 +62,28 @@ app.use(compress({
 }));
 
 
+route.load(app, [{
+    menu: path.join(dfv.root, 'controllers'),
+    onRoute: async (dat) => {
+        try {
+            if (!dat.valid.ok) {
+                //验证失败
+                dfvLog.write(dat.router.url + " : " + JSON.stringify(dat.valid));
+                dat.ctx.status = 500;
+                dat.ctx.body = dat.valid.msg;
+                return;
+            }
 
-//加载路由
-// dfvRouter.load(app, [
-//     {
-//         menu: dfv.root + "/router",
-//         onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
-//             try {
-//                 if (!modReq)
-//                     return await next({});
-//
-//                 //入参验证
-//                 let paras = await dfvForm.check(modReq, ctx);
-//                 if (!paras.ok) {
-//                     //验证失败
-//                     dfvLog.write(url + " : " + JSON.stringify(paras));
-//                     ctx.status = 500;
-//                     return paras.msg;
-//                 }
-//
-//
-//                 return await next(paras.val)
-//             } catch (e) {
-//                 dfvLog.write(url + " : " + JSON.stringify(ctx._dat), e)
-//                 ctx.status = 500;
-//                 return "网络异常";
-//             }
-//         }
-//     },
-//     {
-//         menu: dfv.root + "/router2",
-//         onRouter: async (url, modReq, ctx: dfvContext & Koa.Context, next) => {
-//             return next(ctx._dat)
-//         }
-//     },
-// ]);
-
+            let ret = await dat.router.next(dat);
+            if (ret != null)
+                dat.ctx.body = ret;
+        } catch (e) {
+            dfvLog.write(dat.router.url + " : " + JSON.stringify(dat.valid), e)
+            dat.ctx.status = 500;
+            dat.ctx.body = "网络异常";
+        }
+    }
+}]);
 
 http.createServer(app.callback()).listen(3001, () => {
     console.log('koa server listening on port 3001');

@@ -8,9 +8,11 @@ import {dfvForm} from "./src/dfvForm";
 import {dfvHttpClient} from "./src/dfvHttpClient";
 import {dfvTime} from "./src/dfvTime";
 import {valid} from "./public/valid";
+import {route} from "./src/control/route";
+import {dfvController} from "./src/control/dfvController";
 
 
-export {dfvLib, dfvFile, dfvLog, dfvContext, dfvForm, dfvRouter, dfvHttpClient, dfvTime}
+export {dfvLib, dfvFile, dfvLog, dfvContext, dfvForm, dfvRouter, dfvHttpClient, dfvTime, route, dfvController}
 
 
 module.exports.dfv = dfv;

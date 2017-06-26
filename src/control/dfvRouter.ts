@@ -4,7 +4,6 @@ import * as path from "path";
 import {dfvLog} from "../dfvLog";
 import {IMenthodInfo, route} from "./route";
 import {dfvContext} from "../dfvContext";
-import {dfv} from "../../public/dfv";
 
 
 export interface RouterPara {
@@ -137,7 +136,7 @@ export class dfvRouter {
         this.app[info.method](control.url, (req: any, resp: any) => {
             var ctx = {request: req, response: resp, isKoa: false} as any as dfvContext & ReqRes;
             if (!this.router.notJoinParamsAndQuery)
-                dfvRouter.joinObj(ctx.request.query, ctx.params);
+                dfvRouter.joinObj(ctx.request.query, ctx.request.params);
 
             control.onRoute(ctx)
                 .then(() => {

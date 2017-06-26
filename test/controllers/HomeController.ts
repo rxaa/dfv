@@ -8,18 +8,36 @@ import {dfv} from "../../public/dfv";
 @route.path("")
 export class HomeController {
     ctx: ExpressCtx;
-
+    ctx2: KoaCtx;
 
     @route.get("/")
-    async index(@valid.int()aa: number, @route.fromUrl ss: TestReq2) {
+    async index(@valid.int() aa: number, @route.fromUrl ss: TestReq2) {
 
         return aa + " - " + JSON.stringify(ss);
     }
 
 
     @route.get()
-    async test1() {
-        return "test1";
+    async test() {
+        return `
+            <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+                <title>
+                   test
+                </title>
+                <link rel="stylesheet" href="/style.css"/>
+                <link rel="stylesheet" href="/icon.css"/>
+                <script src="/promise.amd.min.js"></script>
+                <script src="/all.js"></script>
+               
+                <script>window.define=void 0</script>
+             </head>
+             <body></body>
+              <script>Front.init()</script>
+             </html>
+        `;
     }
 
     @route.get()

@@ -88,8 +88,7 @@ export class valid {
 
     }
 
-    static errMsg_ = "参数无效";
-    static netErr = "网络异常";
+    static errMsg_ = " invalid";
 
     /**
      * 设置class的验证字段
@@ -105,22 +104,10 @@ export class valid {
         return dfv.getData(obj, "fieldCheckMap", key) as (o: IFieldRes<any>) => boolean;
     }
 
-    static isFile(req: any) {
-        return req instanceof valid;
-    }
+    // static isFile(req: any) {
+    //     return req instanceof valid;
+    // }
 
-
-    /**
-     * 不做权限验证
-     * @param target
-     */
-    static noAuth(target: { new(): any; }) {
-        dfv.setData(target, "exp.noValid", "", true);
-    }
-
-    static getNoAuth(target: { new(): any; }) {
-        return dfv.getData(target, "exp.noValid", "") as boolean;
-    }
 
 
     /**
@@ -166,8 +153,13 @@ export class valid {
      */
     static intNotZero(func?: ((num: IFieldRes<number>) => boolean) | null, msg?: string) {
         return (target: Object, propertyKey: string, index?: number) => {
+
+            if (index !== void 0)
+                var parasName = dfv.getParasNameMeta(target, propertyKey);
+
             if (index !== void 0)
                 propertyKey += index;
+
             valid.setFieldCheckMetaData<any>(target.constructor, propertyKey, obj => {
                 let ret = false;
                 if (obj.val == null) {
@@ -184,8 +176,13 @@ export class valid {
                 }
                 if (msg)
                     obj.msg = msg;
-                else
-                    obj.msg = propertyKey + " 必须要大于0";
+                else {
+                    if (index !== void 0 && parasName)
+                        obj.msg = parasName[index]
+                    else
+                        obj.msg = propertyKey;
+                    obj.msg += " must be greater than 0";
+                }
 
                 if (func) {
                     ret = func(obj);
@@ -381,6 +378,9 @@ export class valid {
     static stringNotEmpty(func?: RegExp | ((num: IFieldRes<string>) => boolean) | null, msg?: string) {
         return (target: Object, propertyKey: string, index?: number) => {
             if (index !== void 0)
+                var parasName = dfv.getParasNameMeta(target, propertyKey);
+
+            if (index !== void 0)
                 propertyKey += index;
             valid.setFieldCheckMetaData<string>(target.constructor, propertyKey, obj => {
                 let ret = false;
@@ -394,8 +394,13 @@ export class valid {
                 }
                 if (msg)
                     obj.msg = msg;
-                else
-                    obj.msg = propertyKey + " 不能为空"
+                else {
+                    if (index !== void 0 && parasName)
+                        obj.msg = parasName[index]
+                    else
+                        obj.msg = propertyKey;
+                    obj.msg += " can not be empty"
+                }
 
                 if (func instanceof RegExp) {
                     ret = func.test(obj.val!);
@@ -538,7 +543,7 @@ export class valid {
             }
 
             objRes.val = from[key];
-            objRes.msg = key + " " + valid.errMsg_;
+            objRes.msg = key + valid.errMsg_;
 
             if (from2 && objRes.val === void 0) {
                 objRes.val = from2[key];
