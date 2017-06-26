@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import {dfvRouter, RouterPara} from "./dfvRouter";
-import {dfv, MapString} from "../../public/dfv";
-import {IncomingFormParse} from "../../public/valid";
+import {dfv, MapString} from "../public/dfv";
+import {IncomingFormParse} from "../public/valid";
 
 export interface IMenthodInfo {
     /**

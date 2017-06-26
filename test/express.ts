@@ -6,7 +6,7 @@ import * as http from 'http';
 import * as net from "net";
 import * as express from 'express';
 import {dfvRouter} from "../src/control/dfvRouter";
-import {dfv} from "../public/dfv";
+import {dfv} from "../src/public/dfv";
 import {dfvForm} from "../src/dfvForm";
 import {dfvLog} from "../src/dfvLog";
 import * as bodyParser from 'body-parser';

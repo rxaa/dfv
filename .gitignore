@@ -5,8 +5,8 @@
 /src/*.js
 /src/db/*.js
 /src/control/*.js
+/src/public/*.js
 /test/*.js
-/public/*.js
 /index.js
 /typings
 /test/runtime

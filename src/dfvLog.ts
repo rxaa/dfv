@@ -1,4 +1,4 @@
-import {dfv} from "../public/dfv";
+import {dfv} from "./public/dfv";
 import * as fs from "fs";
 import * as path from "path";
 import {dfvFile} from "./dfvFile";

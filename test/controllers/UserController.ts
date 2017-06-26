@@ -1,6 +1,6 @@
 import {route} from "../../src/control/route";
 import {TestReq1} from "../models/TestReq1";
-import {valid} from "../../public/valid";
+import {valid} from "../../src/public/valid";
 
 export class UserController {
 

@@ -1,7 +1,7 @@
 import {SqlBuilder} from "./SqlBuilder";
 import {SqlTableInfo} from "./SqlTableInfo";
-import {sql} from "../../public/sql";
-import {dfv} from "../../public/dfv";
+import {sql} from "../public/sql";
+import {dfv} from "../public/dfv";
 
 export class SqlTableField {
 

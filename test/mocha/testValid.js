@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
-const valid_1 = require("../../public/valid");
-const dfv_1 = require("../../public/dfv");
+const valid_1 = require("../../src/public/valid");
+const dfv_1 = require("../../src/public/dfv");
 class ReqTest {
     constructor() {
         this.id = 1;

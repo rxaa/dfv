@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import {dfv} from "../public/dfv";
+import {dfv} from "./public/dfv";
 
 export class PreciseTime {
     constructor(private time: [number, number]) {
@@ -42,7 +42,7 @@ export class dfvLib {
     static init(root: string) {
         dfv.root = root;
         require('source-map-support').install();
-        require("../public/dfvFuncExt");
+        require("./public/dfvFuncExt");
     }
 
     /**

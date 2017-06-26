@@ -7,7 +7,7 @@ import {IncomingMessage} from "http";
 import * as zlib from "zlib"
 import {ClientRequest} from "http";
 import {Url} from "url";
-import {MapString} from "../public/dfv";
+import {MapString} from "./public/dfv";
 
 const agentkeepalive = require('agentkeepalive')
 

@@ -1,4 +1,4 @@
-/// <reference path="../src/reactExp.d.ts" />
+/// <reference path="../reactExp.d.ts" />
 
 import {BindField, BindFieldType, dfvBindDom} from "./dfvBind";
 import {dfvFront} from "./dfvFront";

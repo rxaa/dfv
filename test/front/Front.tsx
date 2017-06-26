@@ -1,8 +1,8 @@
-import * as React from '../../public/dfvReact'
-import {dfvFront} from "../../public/dfvFront";
-import {dfvBind} from "../../public/dfvBind";
-import {valid} from "../../public/valid";
-import {dfv} from "../../public/dfv";
+import * as React from '../../src/public/dfvReact'
+import {dfvFront} from "../../src/public/dfvFront";
+import {dfvBind} from "../../src/public/dfvBind";
+import {valid} from "../../src/public/valid";
+import {dfv} from "../../src/public/dfv";
 
 
 export class Front {

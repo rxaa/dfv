@@ -1,9 +1,9 @@
 import {dfvContext} from "../../src/dfvContext";
-import {valid} from "../../public/valid";
+import {valid} from "../../src/public/valid";
 import {TestReq2} from "../models/TestReq1";
 import {route} from "../../src/control/route";
 import {ExpressCtx, KoaCtx} from "../ICtx";
-import {dfv} from "../../public/dfv";
+import {dfv} from "../../src/public/dfv";
 
 @route.path("")
 export class HomeController {

@@ -3,5 +3,10 @@
 /test
 /typings
 /src/*.ts
+!/src/*.d.ts
 /src/db/*.ts
+!/src/db/*.d.ts
 /src/control/*.ts
+!/src/control/*.d.ts
+/index.ts
+/.vscode

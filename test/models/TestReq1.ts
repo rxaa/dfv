@@ -1,4 +1,4 @@
-import {valid} from "../../public/valid";
+import {valid} from "../../src/public/valid";
 import {route} from "../../src/control/route";
 
 export class TestReq1 {

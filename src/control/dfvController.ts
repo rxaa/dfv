@@ -1,5 +1,5 @@
 import {IMenthodInfo, route} from "./route";
-import {IFieldRes, IncomingFormParse, valid} from "../../public/valid";
+import {IFieldRes, IncomingFormParse, valid} from "../public/valid";
 import {dfvContext} from "../dfvContext";
 import {ReqRes, RouterPara} from "./dfvRouter";
 import {dfvForm} from "../dfvForm";

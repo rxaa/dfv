@@ -1,4 +1,4 @@
-import {dfv} from "./public/dfv";
+import {dfv} from "./src/public/dfv";
 import {dfvRouter} from "./src/control/dfvRouter";
 import {dfvContext} from "./src/dfvContext";
 import {dfvLib} from "./src/dfvLib";
@@ -7,7 +7,7 @@ import {dfvFile} from "./src/dfvFile";
 import {dfvForm} from "./src/dfvForm";
 import {dfvHttpClient} from "./src/dfvHttpClient";
 import {dfvTime} from "./src/dfvTime";
-import {valid} from "./public/valid";
+import {valid} from "./src/public/valid";
 import {route} from "./src/control/route";
 import {dfvController} from "./src/control/dfvController";
 

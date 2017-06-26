@@ -1,4 +1,4 @@
-import {dfv, MapString} from "../public/dfv";
+import {dfv, MapString} from "./public/dfv";
 import {dfvLog} from "./dfvLog";
 export class dfvTime {
 

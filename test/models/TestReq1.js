@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const valid_1 = require("../../public/valid");
+const valid_1 = require("../../src/public/valid");
 class TestReq1 {
     constructor() {
         this.id = 1;

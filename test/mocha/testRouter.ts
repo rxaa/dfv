@@ -1,5 +1,5 @@
 import assert = require('assert');
-import {valid} from "../../public/valid";
+import {valid} from "../../src/public/valid";
 import {dfvHttpClient} from "../../src/dfvHttpClient";
 
 

@@ -3,7 +3,7 @@ dfvLib.init(__dirname)
 
 import assert = require('assert');
 import {ISqlConnecter, IUpdateRes} from "../../src/db/ISqlConnecter";
-import {sql} from "../../public/sql";
+import {sql} from "../../src/public/sql";
 import {SqlBuilder} from "../../src/db/SqlBuilder";
 
 

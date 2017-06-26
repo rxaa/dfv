@@ -1,6 +1,6 @@
 import * as formidable from "formidable";
-import {FileMultiple, IFieldRes, IncomingFormParse, valid} from "../public/valid";
-import {dfv, MapString} from "../public/dfv";
+import {FileMultiple, IFieldRes, IncomingFormParse, valid} from "./public/valid";
+import {dfv, MapString} from "./public/dfv";
 import * as fs from "fs";
 import {dfvContext} from "./dfvContext";
 import {dfvLog} from "./dfvLog";

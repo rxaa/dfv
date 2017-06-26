@@ -1,8 +1,8 @@
 import assert = require('assert');
 import {dfvHttpClient, HttpCookie} from "../../src/dfvHttpClient";
-import {dfv} from "../../public/dfv";
+import {dfv} from "../../src/public/dfv";
 import {FuncParse} from "../../src/FuncParse";
-require("../../public/dfvFuncExt")
+require("../../src/public/dfvFuncExt")
 class testP {
     a = 2;
 }

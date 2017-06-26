@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as formidable from "formidable";
-import {dfv} from "../public/dfv";
+import {dfv} from "./public/dfv";
 import {ReqRes} from "./control/dfvRouter";
 
 

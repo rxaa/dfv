@@ -2,7 +2,7 @@ import {SqlTableField} from "./SqlTableField";
 import {SqlTableInfo} from "./SqlTableInfo";
 import {ISqlOrderField, ISqlSelectField} from "./ISqlField";
 import {ISqlConnecter} from "./ISqlConnecter";
-import {ArrayCache, sql} from "../../public/sql";
+import {ArrayCache, sql} from "../public/sql";
 
 
 export type SelectFieldType<T> = {

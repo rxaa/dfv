@@ -1,6 +1,6 @@
 import assert = require('assert');
-import {valid} from "../../public/valid";
-import {dfv} from "../../public/dfv";
+import {valid} from "../../src/public/valid";
+import {dfv} from "../../src/public/dfv";
 
 class ReqTest {
     id = 1;
