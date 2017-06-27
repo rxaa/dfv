@@ -450,12 +450,15 @@ class dfv {
         }
         return "";
     }
+    static tempMenu() {
+        return dfv.root + "/runtime/temp/";
+    }
     /**
      * 获取当前缓存目录
      */
     static getTemp() {
         let now = new Date();
-        return dfv.tempMenu + now.getDate() + "/";
+        return dfv.tempMenu() + now.getDate() + "/";
     }
     /**
      * 获取函数参数名别表
@@ -509,6 +512,5 @@ dfv.meta = {
 dfv.funcReg = /function\s*(\w*)/i;
 dfv.autoInc = 0;
 dfv.hexString = "0123456789abcdefghijklmnopqrstuvwxyz";
-dfv.tempMenu = dfv.root + "/runtime/temp/";
 exports.dfv = dfv;
 //# sourceMappingURL=dfv.js.map

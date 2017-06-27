@@ -3,6 +3,7 @@ import {TestReq2} from "../models/TestReq1";
 import {route} from "../../src/control/route";
 import {ExpressCtx, KoaCtx} from "../ICtx";
 import {dfv} from "../../src/public/dfv";
+import {TestFile, TestFile2} from "../models/TestFile";
 
 @route.path("")
 export class HomeController {
@@ -50,8 +51,39 @@ export class HomeController {
         form.uploadDir = dfv.getTemp();
         form.maxFileSize = 10 * 1024 * 1024;//10mb
     })
-    async test3(id: string) {
+    async upload(dat: TestFile) {
+        return dat;
+    }
 
-        return "test2:" + id;
+    @route.post()
+    @route.multipart(form => {
+        form.uploadDir = dfv.getTemp();
+        form.maxFileSize = 10 * 1024 * 1024;//10mb
+    })
+    async upload2(dat: TestFile2) {
+        return dat;
+    }
+
+    @route.get()
+    async testFile(id: string) {
+
+        return '<form action="/upload" enctype="multipart/form-data" method="post">' +
+            '<input type="text" name="title"><br>' +
+            '<input type="file" name="upload" multiple="multiple"><br>' +
+            '<input type="file" name="file2" multiple="multiple"><br>' +
+            '<input type="submit" value="Upload">' +
+            '</form>'
+    }
+
+    @route.get()
+    async testFile2(id: string) {
+
+        return '<form action="/upload2" enctype="multipart/form-data" method="post">' +
+            '<input type="text" name="title[0][asss]"><br>' +
+            '<input type="text" name="title[1][ssss]"><br>' +
+            '<input type="file" name="upload[]" multiple="multiple"><br>' +
+            '<input type="file" name="upload[]" multiple="multiple"><br>' +
+            '<input type="submit" value="Upload">' +
+            '</form>'
     }
 }

@@ -71,15 +71,13 @@ export interface IncomingFormParse {
     };
 }
 
-export interface FileMultiple {
+export class FileMultiple {
     size: number;
     path: string;
     name: string;
     type: string;
     lastModifiedDate?: Date;
     hash?: string;
-
-    toJSON(): Object;
 }
 
 export class valid {
@@ -88,7 +86,7 @@ export class valid {
 
     }
 
-    static errMsg_ = " invalid";
+    static errMsg_ = " : invalid!";
 
     /**
      * 设置class的验证字段

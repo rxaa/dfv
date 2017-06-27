@@ -10,3 +10,5 @@
 !/src/control/*.d.ts
 /index.ts
 /.vscode
+typings.json
+tsconfig.json

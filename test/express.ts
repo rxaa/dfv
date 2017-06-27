@@ -42,17 +42,24 @@ route.load(app, [{
         } catch (e) {
             dfvLog.write(dat.router.url + " : " + JSON.stringify(dat.valid), e)
             dat.ctx.status = 500;
-            dat.ctx.body = "网络异常";
+            dat.ctx.body = "网络异常1";
         }
     }
 }]);
-
 
 
 app.use(function responser(req: express.Request, resp: express.Response, next: () => void) {
     resp.status(404);
     resp.end('404, Page Not Found!');
 });
+
+//错误处理
+function errorHandler(err: Error, req: express.Request, res: express.Response, next: Function): any {
+    dfvLog.write(req.url + " " + req.ip + " errorHandler", err);
+    res.status(500);
+    res.end("server error2");
+}
+app.use(errorHandler);
 
 http.createServer(app).listen(3002, () => {
     console.log('express server listening on port 3002');

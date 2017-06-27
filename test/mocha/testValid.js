@@ -121,14 +121,14 @@ describe('valid Test', function () {
             ddd: [new ReqTest2()],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd invalid");
+        assert.equal(notRes.msg, "ddd" + valid_1.valid.errMsg_);
         notRes = valid_1.valid.checkObj({
             bbb: ["22", "11.1", 33],
             cccc: [1, 2, "3"],
             ddd: [1],
         }, new ArrayTest());
         assert.equal(notRes.ok, false);
-        assert.equal(notRes.msg, "ddd invalid");
+        assert.equal(notRes.msg, "ddd" + valid_1.valid.errMsg_);
         let req = new ReqTest2();
         req.aaa = 2;
         notRes = valid_1.valid.checkObj({

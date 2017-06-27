@@ -102,10 +102,10 @@ export class dfvFile {
      * 创建缓存目录
      */
     static async createTemp() {
-        if (!await dfvFile.exists(dfv.tempMenu)) {
-            await dfvFile.mkdirs(dfv.tempMenu)
+        if (!await dfvFile.exists(dfv.tempMenu())) {
+            await dfvFile.mkdirs(dfv.tempMenu())
             for (let i = 1; i <= 31; i++) {
-                await dfvFile.mkdir(dfv.tempMenu + i + "/");
+                await dfvFile.mkdir(dfv.tempMenu() + i + "/");
             }
         }
     }
@@ -116,7 +116,7 @@ export class dfvFile {
     static clearTemp() {
         let now = new Date();
         now.setDate(now.getDate() - 2)
-        return dfvFile.deleteFolderRecursive(dfv.tempMenu + now.getDate() + "/");
+        return dfvFile.deleteFolderRecursive(dfv.tempMenu() + now.getDate() + "/");
     }
 
 }

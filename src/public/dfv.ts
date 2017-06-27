@@ -566,14 +566,16 @@ export class dfv {
         return "";
     }
 
-    static tempMenu = dfv.root + "/runtime/temp/";
+    static tempMenu(){
+        return dfv.root + "/runtime/temp/";
+    }
 
     /**
      * 获取当前缓存目录
      */
     static getTemp() {
         let now = new Date();
-        return dfv.tempMenu + now.getDate() + "/";
+        return dfv.tempMenu() + now.getDate() + "/";
     }
 
 

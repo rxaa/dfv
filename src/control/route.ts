@@ -61,7 +61,6 @@ export class route {
     }
 
 
-
     static noAuth() {
         return (target: Object, propertyKey: string) => {
             dfv.setData(target.constructor, "route.noValid", propertyKey, true);
@@ -118,7 +117,7 @@ export class route {
     }
 
     static getMultipart(target: { new(): any; }, propertyKey: string) {
-        return dfv.getData(target, "route.multipart", "") as (mutl: IncomingFormParse) => void;
+        return dfv.getData(target, "route.multipart", propertyKey) as (mutl: IncomingFormParse) => void;
     }
 
 

@@ -4,33 +4,7 @@ import * as path from "path";
 import {dfvLog} from "../dfvLog";
 import {IMenthodInfo, route} from "./route";
 import * as http from "http";
-import * as formidable from "formidable";
-
-
-export interface dfvContext {
-    /**
-     * response 状态码
-     */
-    status:number;
-
-    /**
-     * response content内容
-     */
-    body: any;
-
-    /**
-     * 用于判断该context来自koa还是express
-     */
-    isKoa :boolean;
-
-    /**
-     * 解析multipart/form-data时产生的属性
-     */
-    multipart?: { fields: formidable.Fields, files: formidable.Files }
-
-
-
-}
+import {dfvContext} from "../dfvContext";
 
 export interface RouterPara {
     /**
@@ -163,7 +137,7 @@ export class dfvRouter {
         dfvRouter.onRouterLoad(control);
         control.buildParasGetFunc();
 
-        this.app[info.method](control.url, (req: any, resp: any) => {
+        this.app[info.method](control.url, (req: any, resp: any, next: Function) => {
             var ctx = {request: req, response: resp, isKoa: false} as any as dfvContext & ReqRes;
             if (!this.router.notJoinParamsAndQuery)
                 dfvRouter.joinObj(ctx.request.query, ctx.request.params);
@@ -180,8 +154,9 @@ export class dfvRouter {
                         resp.send(ctx.body)
                 })
                 .catch(err => {
-                    dfvLog.err(err);
-                    resp.status(500).send("server error!")
+                    next(err, req, resp);
+                    // dfvLog.err(err);
+                    // resp.status(500).send("server error!")
                 });
         })
     }

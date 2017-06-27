@@ -1,42 +1,14 @@
 import * as formidable from "formidable";
-import {FileMultiple, IFieldRes, IncomingFormParse, valid} from "./public/valid";
-import {dfv, MapString} from "./public/dfv";
+import {FileMultiple, IFieldRes, IncomingFormParse} from "./public/valid";
+import {dfv} from "./public/dfv";
 import * as fs from "fs";
 import {dfvLog} from "./dfvLog";
-import {dfvContext, dfvRouter} from "./control/dfvRouter";
+import {dfvRouter} from "./control/dfvRouter";
+import {dfvContext} from "./dfvContext";
+import {dfvFile} from "./dfvFile";
 
 
 export class dfvForm {
-
-
-    /**
-     * 解析并验证req请求参数
-     * @param modClass
-     * @param req
-     * @returns {IFieldRes<any>}
-     */
-    // static check(modClass: { new(): any; }, req: dfvContext): Promise<IFieldRes<any>> | IFieldRes<any> {
-    //     let modInst = new modClass();
-    //
-    //     let multipart = valid.getMultipart(modClass);
-    //     if (!multipart) {
-    //         req._dat = dfvContext.joinParams(req);
-    //         return valid.checkObj(req._dat, modInst);
-    //     }
-    //
-    //     //解析文件
-    //     let form = dfvForm.newForm(modInst);
-    //     multipart(form);
-    //
-    //     return dfvForm.parseModPromise(form, req).then(ret => {
-    //         req._dat = ret;
-    //         let check_data = valid.checkObj(ret, modInst);
-    //         if (!check_data.ok)
-    //             dfvForm.removeFileList(form);
-    //
-    //         return check_data;
-    //     });
-    // }
 
 
     /**
@@ -66,22 +38,45 @@ export class dfvForm {
 
             let type = req.headers["content-type"] as string;
             if (!type || type.toLowerCase().indexOf("multipart/form-data") < 0) {
-                reject(new Error("Content-Type必须为multipart/form-data"));
+                reject(dfv.err("Content-Type must be : multipart/form-data"));
                 return;
             }
 
-            dfvForm.processFile(form)
-            form.parse(req, (err, fields, files) => {
-                if (err) {
-                    dfvForm.removeFileList(form);
-                    reject(err);
-                    return;
-                }
+            let parseFunc = () => {
+                dfvForm.processFile(form)
+                form.parse(req, (err, fields, files) => {
+                    if (err) {
+                        dfvForm.removeFileList(form);
+                        reject(err);
+                        return;
+                    }
 
-                ctx.multipart = form.multipart;
+                    ctx.multipart = form.multipart;
 
-                resolve();
-            });
+                    resolve();
+                });
+            }
+
+            if (form.uploadDir) {
+                dfvFile.exists(form.uploadDir)
+                    .then(exists => {
+                        if (!exists)
+                            return dfvFile.mkdirs(form.uploadDir);
+
+                        return void 0;
+                    })
+                    .then(() => {
+                        parseFunc();
+                    })
+                    .catch(err => {
+                        reject(err);
+                    })
+            }
+            else {
+                parseFunc();
+            }
+
+
         });
     }
 
@@ -103,7 +98,7 @@ export class dfvForm {
                     if (dfv.isInt(subField)) {
                         subField = parseInt(subField) as any;
                         if ((subField as any) < 0 || (subField as any) > dfvForm.maxArrayIndex) {
-                            throw Error(name + "索引超范围:" + subField)
+                            dfv.err(name + "index out of range : " + subField)
                         }
                         if (val == null)
                             val = [];
@@ -132,20 +127,18 @@ export class dfvForm {
     }
 
 
-
     private static processFile(form: formidable.IncomingForm & IncomingFormParse) {
         form.fileList = [];
         let sizeCount = 0;
         let isFile = false;
-
         form.onPart = function (part) {
 
             part.on('data', (buf: Buffer) => {
                 if (isFile) {
                     sizeCount += buf.length;
+                    console.log("data:" + buf.length);
                     if (form.maxFileSize && sizeCount > form.maxFileSize) {
-                        // throw new Error("文件不能大于:" + form.maxFileSize);
-                        form.emit("error", new Error("文件不能大于:" + form.maxFileSize))
+                        form.emit("error", dfv.err("file size can not greater than : " + form.maxFileSize))
                     }
                 }
             });
@@ -173,6 +166,9 @@ export class dfvForm {
         });
 
         form.on('file', function (name: string, file: FileMultiple) {
+            if (form.maxFileSize && file.size > form.maxFileSize) {
+                form.emit("error", dfv.err("file size can not greater than : " + form.maxFileSize))
+            }
             isFile = false;
             try {
                 let pos = name.indexOf("[");
@@ -196,7 +192,7 @@ export class dfvForm {
 
             if (form.checkFile) {
                 if (!form.checkFile(name, file)) {
-                    throw new Error("无效文件!");
+                    throw dfv.err("invalid file:" + name);
                 }
             }
 

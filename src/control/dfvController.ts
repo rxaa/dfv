@@ -1,7 +1,9 @@
 import {IMenthodInfo, route} from "./route";
 import {IFieldRes, IncomingFormParse, valid} from "../public/valid";
-import {dfvContext, ReqRes, RouterPara} from "./dfvRouter";
+import {ReqRes, RouterPara} from "./dfvRouter";
 import {dfvForm} from "../dfvForm";
+import {dfvContext} from "../dfvContext";
+import {dfvFile} from "../dfvFile";
 
 export interface IOnRouteParas {
     /**
@@ -128,6 +130,7 @@ export class dfvController {
         //解析文件
         let form = dfvForm.newForm();
         this.multipart(form);
+
 
         return dfvForm.parseModPromise(form, ctx).then(() => {
             // let check_data = valid.checkObj(ret, modInst);

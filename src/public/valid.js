@@ -31,6 +31,9 @@ class IFieldRes {
     }
 }
 exports.IFieldRes = IFieldRes;
+class FileMultiple {
+}
+exports.FileMultiple = FileMultiple;
 class valid {
     constructor(func, type) {
         this.func = func;
@@ -558,6 +561,6 @@ class valid {
         });
     }
 }
-valid.errMsg_ = " invalid";
+valid.errMsg_ = " : invalid!";
 exports.valid = valid;
 //# sourceMappingURL=valid.js.map

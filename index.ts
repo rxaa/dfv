@@ -1,5 +1,5 @@
 import {dfv} from "./src/public/dfv";
-import {dfvContext, dfvRouter} from "./src/control/dfvRouter";
+import {dfvRouter} from "./src/control/dfvRouter";
 import {dfvLib} from "./src/dfvLib";
 import {dfvLog} from "./src/dfvLog";
 import {dfvFile} from "./src/dfvFile";
@@ -9,6 +9,7 @@ import {dfvTime} from "./src/dfvTime";
 import {valid} from "./src/public/valid";
 import {route} from "./src/control/route";
 import {dfvController} from "./src/control/dfvController";
+import {dfvContext} from "./src/dfvContext";
 
 export {dfvLib, dfvFile, dfvLog, dfvContext, dfvForm, dfvRouter, dfvHttpClient, dfvTime, route, dfvController}
 
