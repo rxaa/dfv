@@ -22,6 +22,12 @@ export interface IMenthodInfo {
     parasName: Array<string>;
 }
 
+export interface IRouteComment {
+    title: string;
+    content: string;
+    retData: any;
+}
+
 export class route {
 
     /**
@@ -63,12 +69,12 @@ export class route {
 
     static noAuth() {
         return (target: Object, propertyKey: string) => {
-            dfv.setData(target.constructor, "route.noValid", propertyKey, true);
+            dfv.setData(target.constructor, "route.noAuth", propertyKey, true);
         }
     }
 
     static getNoAuth(target: { new(): any; }, propertyKey: string) {
-        return dfv.getData(target, "route.noValid", "") as boolean;
+        return dfv.getData(target, "route.noAuth", propertyKey) as boolean;
     }
 
     /**
@@ -118,6 +124,20 @@ export class route {
 
     static getMultipart(target: { new(): any; }, propertyKey: string) {
         return dfv.getData(target, "route.multipart", propertyKey) as (mutl: IncomingFormParse) => void;
+    }
+
+    /**
+     * 设置接口文档信息
+     */
+    static comment(title: string, content: string, retData: any) {
+        return (target: Object, propertyKey: string) => {
+            dfv.setData(target.constructor, "route.comment", propertyKey
+                , {title, content, retData} as IRouteComment);
+        }
+    }
+
+    static getComment(target: { new(): any; }, propertyKey: string) {
+        return dfv.getData(target, "route.comment", propertyKey) as IRouteComment | undefined;
     }
 
 
