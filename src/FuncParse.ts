@@ -1,6 +1,7 @@
 /**
  * 词法解析类型
  */
+import {dfv} from "./public/dfv";
 export enum opType{
     //操作符
     operator,
@@ -37,6 +38,75 @@ export class FuncParse {
         return str.substring(str.indexOf(".") + 1);
 
     }
+
+    /**
+     * 将/替换为_
+     * @param url
+     * @returns {string}
+     */
+    static fixUrl(url: string) {
+        let ret = "";
+        for (let i = 0; i < url.length; i++) {
+            if (url[i] == '/') {
+                if (i == 0)
+                    continue;
+
+                ret += "_";
+                continue;
+            }
+
+            ret += url[i];
+        }
+        return ret;
+    }
+
+    /**
+     * 读取代码注释
+     * @param code
+     * @param name
+     * @param back
+     * @returns {string}
+     */
+    static readComment(clas: string | Function, name: string, back: number): string {
+        if (clas == null)
+            return ""
+
+        if (name.length < 1) {
+            return "";
+        }
+
+
+        let code = "" + clas;
+        if (clas instanceof Function) {
+            let par = dfv.getParent(clas);
+            for (let m of par) {
+                code += "\r\n" + m
+            }
+        }
+
+
+        let i = code.indexOf(name);
+        if (i < 2)
+            return "";
+
+        i -= 2;
+        let comment = "";
+        FuncParse.parseLexical(code, i, (op, type) => {
+            back--;
+            // console.error("op " + op + "   " + back);
+            if (back < 0) {
+                if (type == opType.comment) {
+                    comment = op;
+                }
+                return false;
+            }
+
+            return true;
+        }, true);
+
+        return comment.replace(/(?:\r\n|\r|\n| +)/g, ' ');
+    }
+
 
     constructor(func: Function) {
         this.body = func.toString();
