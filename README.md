@@ -24,21 +24,21 @@ import {valid} from "dfv/src/public/valid";
 
 export class HomeController {
 
-  	/**
+    /**
      * url为：/home/index
      * get请求，并接收一个id参数（会自动转换为number类型）
      */
-  	@route.get()
+    @route.get()
     async index(id: number) {
-      	//返回值作为response body
+        //返回值作为response body
         return "index:" + id;
     }
-	 
+
     /**
      * /home/api
      * post请求，并且name参数不能为空
      */
-	@route.post()
+    @route.post()
     async api(@valid.stringNotEmpty() name: string) {
         return "api:" + name;
     }
@@ -56,7 +56,7 @@ import * as express from 'express';
 import * as path from "path";
 
 //express实例
-const app = express();
+var app = express();
 
 
 /**
@@ -64,10 +64,10 @@ const app = express();
  */
 route.load(app, [{
   	
-  	//controllers目录
+    //controllers目录
     menu: path.join(__dirname, 'controllers'),
   
-  	//拦截Controller中的每一次URL请求
+    //拦截Controller中的每一次URL请求
     onRoute: async (dat) => {
         try {
     		if (!dat.valid.ok) {
@@ -81,6 +81,7 @@ route.load(app, [{
             if (ret != null)
                 dat.ctx.body = ret;
         } catch (e) {
+            console.error(e)
             dat.ctx.status = 500;
             dat.ctx.body = "server error";
         }

@@ -102,11 +102,6 @@ export class valid {
         return dfv.getData(obj, "fieldCheckMap", key) as (o: IFieldRes<any>) => boolean;
     }
 
-    // static isFile(req: any) {
-    //     return req instanceof valid;
-    // }
-
-
 
     /**
      * @装饰int类型数据验证

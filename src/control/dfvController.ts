@@ -1,9 +1,8 @@
-import {IMenthodInfo, route} from "./route";
+import {IMenthodInfo, IRouteComment, route} from "./route";
 import {IFieldRes, IncomingFormParse, valid} from "../public/valid";
 import {ReqRes, RouterPara} from "./dfvRouter";
 import {dfvForm} from "../dfvForm";
 import {dfvContext} from "../dfvContext";
-import {dfvFile} from "../dfvFile";
 
 export interface IOnRouteParas {
     /**
@@ -48,6 +47,11 @@ export class dfvController {
         this.url = this.getUrl();
     }
 
+
+    getComment(): IRouteComment | undefined {
+        return route.getComment(this.clas, this.methodName)
+    }
+
     /**
      * 参数验证函数列表
      * @type {any[]}
@@ -72,6 +76,9 @@ export class dfvController {
 
     private multipart: (mutl: IncomingFormParse) => void;
 
+    /**
+     * 构造验证函数
+     */
     buildParasGetFunc() {
         this.multipart = route.getMultipart(this.clas, this.methodName);
         if (this.multipart) {

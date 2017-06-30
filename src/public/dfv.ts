@@ -34,7 +34,7 @@ export function arrayString(val?: string[]): string[] {
     return val;
 }
 
-export function array<T>(type: any, val?: T[]): T[] {
+export function array<T>(type: { new (...paras: any[]): T }, val?: T[]): T[] {
     if (!val) {
         val = []
     }
@@ -566,7 +566,7 @@ export class dfv {
         return "";
     }
 
-    static tempMenu(){
+    static tempMenu() {
         return dfv.root + "/runtime/temp/";
     }
 

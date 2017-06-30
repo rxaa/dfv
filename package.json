@@ -1,13 +1,21 @@
 {
   "name": "dfv",
-  "version": "0.2.0",
-  "description": "mvc framework",
+  "version": "0.2.1",
+  "description": "web mvc framework",
   "main": "index.js",
   "types": "index.d.ts",
   "author": {
     "name": "rxaa",
     "email": "zyxdde@gmail.com"
   },
+  "keywords": [
+    "web",
+    "mvc",
+    "dfv",
+    "express",
+    "koa",
+    "typescript"
+  ],
   "dependencies": {
     "agentkeepalive": "2.2.0",
     "formidable": "1.1.1",
@@ -15,8 +23,6 @@
     "mongodb": "2.2.28",
     "mysql": "2.13.0",
     "reflect-metadata": "0.1.10",
-    "socket.io": "1.7.4",
-    "socket.io-client": "1.7.4",
     "source-map-support": "0.4.15"
   },
   "devDependencies": {

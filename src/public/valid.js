@@ -51,9 +51,6 @@ class valid {
     static getFieldCheckMetaData(obj, key) {
         return dfv_1.dfv.getData(obj, "fieldCheckMap", key);
     }
-    // static isFile(req: any) {
-    //     return req instanceof valid;
-    // }
     /**
      * @装饰int类型数据验证
      * @param func 验证回调函数
