@@ -5,6 +5,26 @@ import {dfv} from "./public/dfv";
 export class dfvFile {
 
 
+    static copyFile(from: string, to: string) {
+        return new Promise<void>((resolve, reject) => {
+            // 创建读取流
+            let readable = fs.createReadStream(from);
+            // 创建写入流
+            let writable = fs.createWriteStream(to);
+            // 通过管道来传输流
+            readable
+                .on("end", () => {
+                    writable.end();
+                    resolve();
+                })
+                .on("error", (err: Error) => {
+                    reject(err);
+                });
+            readable.pipe(writable);
+
+        })
+    }
+
     /**
      * 递归创建目录
      * @param dirname
@@ -25,7 +45,7 @@ export class dfvFile {
     /**
      * 递归删除目录
      * @param path
-     * @param delMenu
+     * @param delMenu 是否删除path目录
      */
     static async deleteFolderRecursive(path: string, delMenu?: boolean) {
         if (await dfvFile.exists(path)) {
@@ -45,6 +65,31 @@ export class dfvFile {
                 await dfvFile.rmdir(path);
         }
     };
+
+
+    static writeFile(filename: string, data: any, options: { encoding?: string; mode?: string; flag?: string; } = {}) {
+        return new Promise<void>((reso, reject) =>
+            fs.writeFile(filename, data, options, (err) => err ? reject(err) : reso()));
+    }
+
+    static appendFile(filename: string, data: any, options: { encoding?: string; mode?: string; flag?: string; } = {}) {
+        return new Promise<void>((reso, reject) =>
+            fs.appendFile(filename, data, options, (err) => err ? reject(err) : reso()));
+    }
+
+    /**
+     *
+     * @param filename
+     * @param options An object with optional {encoding} and {flag} properties.  If {encoding} is specified, readFile returns a string; otherwise it returns a Buffer.
+     * @returns {Promise<string[]>}
+     */
+    static readFile(filename: string): Promise<string>
+    static readFile(filename: string, options: { flag?: string; }): Promise<string>
+    static readFile(filename: string, options: { encoding: string; flag?: string; }): Promise<Buffer>
+    static readFile(filename: string, options: { encoding?: string; flag?: string; } = {}): Promise<Buffer | string> {
+        return new Promise<any>((reso, reject) =>
+            fs.readFile(filename, options, (err, res) => err ? reject(err) : reso(res)));
+    }
 
     static readdir(path: string | Buffer) {
         return new Promise<string[]>((reso, reject) =>
@@ -66,11 +111,21 @@ export class dfvFile {
             fs.rename(oldPath, newPath, err => err ? reject(err) : reso()));
     }
 
+    /**
+     * 删除文件，未找到文件则抛异常
+     * @param path
+     * @returns {Promise<void>}
+     */
     static unlink(path: string | Buffer) {
         return new Promise<void>((reso, reject) =>
             fs.unlink(path, err => err ? reject(err) : reso()));
     }
 
+    /**
+     * 删除文件夹
+     * @param path
+     * @returns {Promise<void>}
+     */
     static rmdir(path: string | Buffer) {
         return new Promise<void>((reso, reject) =>
             fs.rmdir(path, err => err ? reject(err) : reso()));
@@ -89,7 +144,7 @@ export class dfvFile {
      */
     static mkdir(path: string | Buffer, mode?: string | number) {
         return new Promise<void>((reso, reject) => {
-            let cb = (err:Error) => err ? reject(err) : reso();
+            let cb = (err: Error) => err ? reject(err) : reso();
             if (mode)
                 fs.mkdir(path, mode as string, cb);
             else

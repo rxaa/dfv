@@ -2,6 +2,8 @@ import assert = require('assert');
 import {dfvHttpClient, HttpCookie} from "../../src/dfvHttpClient";
 import {dfv} from "../../src/public/dfv";
 import {FuncParse} from "../../src/FuncParse";
+import * as fs from "fs";
+import {dfvFile} from "../../src/dfvFile";
 require("../../src/public/dfvFuncExt")
 class testP {
     a = 2;
@@ -32,7 +34,16 @@ function testParse(a: any, b: any = (aaaa: any, vvv: any) => {
 
 
 describe('sdf Test', function () {
-
+    it("dfvFile", async () => {
+        let f1 = __dirname + "/../runtime/t1.txt";
+        let f2 = f1 + ".txt";
+        await dfvFile.writeFile(f1, "abcd");
+        if (await dfvFile.exists(f2))
+            await dfvFile.unlink(f2);
+        await dfvFile.copyFile(f1, f2);
+        let res = await dfvFile.readFile(f2);
+        assert.equal("abcd", res);
+    });
 
     it("http cookie", () => {
 

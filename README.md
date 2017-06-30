@@ -70,7 +70,7 @@ route.load(app, [{
     //拦截Controller中的每一次URL请求
     onRoute: async (dat) => {
         try {
-    		if (!dat.valid.ok) {
+            if (!dat.valid.ok) {
                 //参数校验失败后的行为
                 dat.ctx.status = 500;
                 dat.ctx.body = dat.valid.msg;
