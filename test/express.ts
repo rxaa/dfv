@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 route.load(app, [{
@@ -47,6 +47,12 @@ route.load(app, [{
     }
 }]);
 
+app.get("/user/test", (req, resp) => {
+    resp.send("ok");
+});
+
+
+// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function responser(req: express.Request, resp: express.Response, next: () => void) {
     resp.status(404);

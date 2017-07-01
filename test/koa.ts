@@ -13,6 +13,7 @@ import {dfv} from "../src/public/dfv";
 import {dfvLog} from "../src/dfvLog";
 import {route} from "../src/control/route";
 import * as path from "path";
+import * as Router from "koa-router";
 
 /**
  * 中间件集合：
@@ -41,7 +42,7 @@ app.use((ctx: Koa.Context, next: Function) => next().catch((err: Error) => {
 //     }
 // });
 
-app.use(logger())
+// app.use(logger())
 
 //provides important security headers to make your app more secure
 // app.use(helmet())
@@ -50,13 +51,13 @@ app.use(logger())
 app.use(bodyParser())
 
 //压缩
-app.use(compress({
-    // filter: function (content_type) {
-    //     return /text/i.test(content_type)
-    // },
-    threshold: 1024,
-    flush: require('zlib').Z_SYNC_FLUSH
-}));
+// app.use(compress({
+//     // filter: function (content_type) {
+//     //     return /text/i.test(content_type)
+//     // },
+//     threshold: 1024,
+//     flush: require('zlib').Z_SYNC_FLUSH
+// }));
 
 
 route.load(app, [{
@@ -82,6 +83,14 @@ route.load(app, [{
     }
 }]);
 
+
+let router = new Router();
+
+router.get("/user/test", async (ctx) => {
+    ctx.body = "ok";
+
+});
+app.use(router.routes());
 http.createServer(app.callback()).listen(3001, () => {
     console.log('koa server listening on port 3001');
 }).on('connection', function (socket: net.Socket) {

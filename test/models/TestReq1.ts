@@ -8,6 +8,7 @@ export class TestReq1 {
 
     @valid.int(r => r.val > 2, "val必须大于2")
     val = 0;
+
 }
 
 export class TestReq2 {
@@ -17,4 +18,7 @@ export class TestReq2 {
      * 名字
      */
     name = "";
+
+
+
 }

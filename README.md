@@ -95,6 +95,18 @@ route.load(app, [{
 
 而使用Express只需要**node v6.9.0**以上版本。
 
+## 性能测试：
+
+单进程下，node v8.1.0版本与原生Express的TPS(每秒响应数)对比：
+
+![](/doc/performance.png)
+
+编译到es2017版比es2016高了近1000TPS，node v8.1.0对async与await的优化还是不错的。
+
+**koa2版本TPS对比：**
+
+![](/doc/performance_koa.png)
+
 ------
 
 **配置好Express与TypeScript以及各目录结构的demo:**

@@ -39,4 +39,6 @@ export class UserController {
           @route.fromUrl dat: TestReq1) {
         return "" + id + JSON.stringify(dat);
     }
+
+
 }
