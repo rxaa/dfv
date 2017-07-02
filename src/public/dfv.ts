@@ -633,6 +633,6 @@ export class dfv {
 /**
  * 通过@装饰器设置的class的元数据
  */
-export interface ClassMetaData {
+export interface ClassMetaData extends Function {
     _fieldMetaDataMap_?: MapString<Object>;
 }

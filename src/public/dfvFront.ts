@@ -62,7 +62,7 @@ export class dfvFront {
      * @param err
      */
     static onCatchError = (err: Error) => {
-        dfvFront.msgErr(err + "", 10 * 1000);
+        dfvFront.msgErr(err + "", {closeTime: 5 * 1000});
         console.error(err);
     }
 
@@ -311,7 +311,7 @@ export class dfvFront {
      * @param eleme
      * @param callback
      */
-    static eachElement(eleme: HTMLElement|string|number|null, callback: (res: HTMLElement) => void|boolean) {
+    static eachElement(eleme: HTMLElement | string | number | null, callback: (res: HTMLElement) => void | boolean) {
         var elem = eleme as HTMLElement;
 
         if (typeof eleme === "string") {

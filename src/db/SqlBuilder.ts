@@ -313,7 +313,7 @@ export class SqlBuilder<TC> {
     innerJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " inner join ");
-        return this;
+        return this as any;
     }
 
     /**
@@ -325,7 +325,7 @@ export class SqlBuilder<TC> {
     leftJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " left join ");
-        return this;
+        return this as any;
     }
 
     /**
@@ -337,7 +337,7 @@ export class SqlBuilder<TC> {
     rightJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " right join ");
-        return this;
+        return this as any;
     }
 
 

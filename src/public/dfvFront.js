@@ -313,7 +313,7 @@ class dfvFront {
  * @param err
  */
 dfvFront.onCatchError = (err) => {
-    dfvFront.msgErr(err + "", 10 * 1000);
+    dfvFront.msgErr(err + "", { closeTime: 5 * 1000 });
     console.error(err);
 };
 exports.dfvFront = dfvFront;
