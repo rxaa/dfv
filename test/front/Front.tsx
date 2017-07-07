@@ -1,9 +1,16 @@
 import * as React from '../../src/public/dfvReact'
 import {dfvFront} from "../../src/public/dfvFront";
-import {dfvBind} from "../../src/public/dfvBind";
+import {dfvBind, dfvBindDom} from "../../src/public/dfvBind";
 import {valid} from "../../src/public/valid";
 import {dfv} from "../../src/public/dfv";
 
+
+function bindNotEmpty(func: (e: HTMLElement) => any) {
+    return dfvBind(func, {
+        onSet: Front.notEmpty,
+        onError: dfvBindDom.showErrorToNextSpan,
+    });
+}
 
 export class Front {
     static init() {
@@ -24,12 +31,12 @@ export class Front {
     static view = () =>
         <div>
             <p>
-                <input type="text" value={dfvBind(e => Front.dat.b, Front.notEmpty)}/>
+                <input type="text" value={bindNotEmpty(e => Front.dat.b)}/>
                 <span class="red"></span>
             </p>
 
             <p>
-                <input type="text" value={dfvBind(e => Front.dat.a, Front.notEmpty)}/>
+                <input type="text" value={bindNotEmpty(e => Front.dat.a)}/>
                 <span class="red"></span>
             </p>
             <p>

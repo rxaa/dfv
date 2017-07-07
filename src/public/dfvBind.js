@@ -25,12 +25,12 @@ var BindFieldType;
 /**
  * 绑定一个表达式
  * @param func 表达式
- * @param onSet 验证函数（可为async）,验证成功返回val,否则抛异常
  * @param ext 额外参数
  * @returns {dfvBindDom}
  */
-function dfvBind(func, onSet, ext) {
-    let bind = new dfvBindDom(func, (val, bind, field) => __awaiter(this, void 0, void 0, function* () {
+function dfvBind(func, ext = {}) {
+    let bind = new dfvBindDom(func);
+    bind.onSet = (val, bind, field) => __awaiter(this, void 0, void 0, function* () {
         try {
             bind.onError(null, val, bind, field);
             if (field.fieldName && field.parent) {
@@ -45,8 +45,8 @@ function dfvBind(func, onSet, ext) {
                     val = objRes.val;
                 }
             }
-            if (onSet)
-                return yield onSet(val, bind, field);
+            if (ext.onSet)
+                return yield ext.onSet(val, bind, field);
             else
                 return val;
         }
@@ -54,12 +54,11 @@ function dfvBind(func, onSet, ext) {
             bind.onError(e, val, bind, field);
             throw e;
         }
-    }));
-    if (ext) {
+    });
+    if (ext.cancelDoubleBind)
         bind.cancelDoubleBind = ext.cancelDoubleBind;
-        if (ext.onError)
-            bind.onError = ext.onError;
-    }
+    if (ext.onError)
+        bind.onError = ext.onError;
     return bind;
 }
 exports.dfvBind = dfvBind;
@@ -69,13 +68,8 @@ exports.dfvBind = dfvBind;
 class dfvBindDom {
     constructor(/**
                      * 绑定的函数
-                     */ bindFunc, 
-        /**
-         * 验证函数
-         */
-        onSet) {
+                     */ bindFunc) {
         this.bindFunc = bindFunc;
-        this.onSet = onSet;
         /**
          * 是否可编辑,用于valid.check时判断
          */
@@ -88,17 +82,10 @@ class dfvBindDom {
          * 是否由编辑html元素触发的onset事件
          */
         this.isEditOnSet = false;
+        /**
+         * 错误显示函数
+         */
         this.onError = (err, val, bind, field) => {
-            let span = dfvBindDom.findNextSpan(bind.html);
-            if (span) {
-                if (err) {
-                    span.innerHTML = err.message;
-                    if (bind.html && bind.html.select)
-                        bind.html.select();
-                }
-                else
-                    span.innerHTML = "";
-            }
         };
     }
     /**
@@ -115,6 +102,25 @@ class dfvBindDom {
             }
         }
         return span;
+    }
+    /**
+     * 将错误信息显示到旁边的span里
+     * @param err
+     * @param val
+     * @param bind
+     * @param field
+     */
+    static showErrorToNextSpan(err, val, bind, field) {
+        let span = dfvBindDom.findNextSpan(bind.html);
+        if (span) {
+            if (err) {
+                span.innerHTML = err.message;
+                if (bind.html && bind.html.select)
+                    bind.html.select();
+            }
+            else
+                span.innerHTML = "";
+        }
     }
 }
 exports.dfvBindDom = dfvBindDom;

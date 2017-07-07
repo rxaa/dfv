@@ -52,7 +52,7 @@ app.get("/user/test", (req, resp) => {
 });
 
 
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function responser(req: express.Request, resp: express.Response, next: () => void) {
     resp.status(404);

@@ -87,7 +87,7 @@ export class dfvWindow {
                 {
                     this.divContent =
                         <div className="pop_cont">
-                            <div className="vmid h_center pad5">
+                            <div className="vmid pad5">
                                 {title}
                             </div>
                             {content ? <div style="margin-top: 10px">{content}</div> : null}

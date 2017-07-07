@@ -123,7 +123,7 @@ class dfvWindow {
             React.createElement("div", { className: "pop_border anim_in " + c1 },
                 this.divContent =
                     React.createElement("div", { className: "pop_cont" },
-                        React.createElement("div", { className: "vmid h_center pad5" }, title),
+                        React.createElement("div", { className: "vmid pad5" }, title),
                         content ? React.createElement("div", { style: "margin-top: 10px" }, content) : null),
                 React.createElement("div", { className: "absol_close" },
                     React.createElement("tt", { onclick: () => this.onButtonCancelClick(), className: "rotate_hover " + c2 })));

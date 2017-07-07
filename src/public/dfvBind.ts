@@ -5,7 +5,7 @@ import {IFieldRes, valid} from "./valid";
 /**
  * 绑定字段的类型
  */
-export enum BindFieldType{
+export enum BindFieldType {
     string,
     number,
     boolean,
@@ -15,9 +15,9 @@ export enum BindFieldType{
 
 export interface BindParas {
     /**
-     * 是否取消双向绑定
+     * 是否取消双向绑定(默认否)
      */
-    cancelDoubleBind: boolean,
+    cancelDoubleBind?: boolean,
 
     /**
      * 验证失败回调（默认为显示给旁边的span）
@@ -26,21 +26,24 @@ export interface BindParas {
      * @param bind 绑定的dom信息
      * @param field 绑定的字段信息
      */
-    onError: (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => void;
+    onError?: (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => void;
+
+    /**
+     * 验证函数（可为async）,验证成功返回val,否则抛异常
+     */
+    onSet?: (val: any, bind: dfvBindDom, field: BindField) => any
 }
 
 
 /**
  * 绑定一个表达式
  * @param func 表达式
- * @param onSet 验证函数（可为async）,验证成功返回val,否则抛异常
  * @param ext 额外参数
  * @returns {dfvBindDom}
  */
-export function dfvBind(func: (e: HTMLElement) => any,
-                        onSet?: (val: any, bind: dfvBindDom, field: BindField) => any,
-                        ext?: BindParas) {
-    let bind = new dfvBindDom(func, async (val: any, bind: dfvBindDom, field: BindField) => {
+export function dfvBind(func: (e: HTMLElement) => any, ext: BindParas = {}) {
+    let bind = new dfvBindDom(func);
+    bind.onSet = async (val: any, bind: dfvBindDom, field: BindField) => {
         try {
             bind.onError(null, val, bind, field);
             if (field.fieldName && field.parent) {
@@ -59,20 +62,19 @@ export function dfvBind(func: (e: HTMLElement) => any,
                 }
             }
 
-            if (onSet)
-                return await onSet(val, bind, field);
+            if (ext.onSet)
+                return await ext.onSet(val, bind, field);
             else
                 return val;
         } catch (e) {
             bind.onError(e, val, bind, field);
             throw e;
         }
-    });
-    if (ext) {
-        bind.cancelDoubleBind = ext.cancelDoubleBind;
-        if (ext.onError)
-            bind.onError = ext.onError
     }
+    if (ext.cancelDoubleBind)
+        bind.cancelDoubleBind = ext.cancelDoubleBind;
+    if (ext.onError)
+        bind.onError = ext.onError
     return bind;
 }
 
@@ -105,15 +107,15 @@ export class dfvBindDom {
      */
     public cancelDoubleBind: boolean;
 
+    /**
+     * 验证函数
+     */
+    public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any;
+
     constructor(/**
                  * 绑定的函数
                  */
-                public bindFunc: (e: HTMLElement) => any,
-                /**
-                 * 验证函数
-                 */
-                public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any) {
-
+                public bindFunc: (e: HTMLElement) => any) {
     }
 
     /**
@@ -132,8 +134,14 @@ export class dfvBindDom {
         return span
     }
 
-    onError = (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => {
-
+    /**
+     * 将错误信息显示到旁边的span里
+     * @param err
+     * @param val
+     * @param bind
+     * @param field
+     */
+    static showErrorToNextSpan(err: Error | null, val: any, bind: dfvBindDom, field: BindField) {
         let span = dfvBindDom.findNextSpan(bind.html);
         if (span) {
             if (err) {
@@ -144,6 +152,12 @@ export class dfvBindDom {
             else
                 span.innerHTML = ""
         }
+    }
+
+    /**
+     * 错误显示函数
+     */
+    onError = (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => {
     }
 }
 
@@ -314,7 +328,7 @@ export class BindField {
                 BindField.init(val);
                 let ret = oldPush.call(obj, val);
                 if ((obj as any).__BindField__)
-                    ( (obj as any).__BindField__ as BindField).execWatcherList();
+                    ((obj as any).__BindField__ as BindField).execWatcherList();
                 return ret;
             }
 
@@ -323,7 +337,7 @@ export class BindField {
             obj.splice = function () {
                 let ret = oldSplice.apply(obj, arguments);
                 if ((obj as any).__BindField__)
-                    ( (obj as any).__BindField__ as BindField).execWatcherList();
+                    ((obj as any).__BindField__ as BindField).execWatcherList();
                 return ret;
             }
 
@@ -331,7 +345,7 @@ export class BindField {
             obj.sort = function (val: any) {
                 let ret = sortOld.call(obj, val);
                 if ((obj as any).__BindField__)
-                    ( (obj as any).__BindField__ as BindField).execWatcherList();
+                    ((obj as any).__BindField__ as BindField).execWatcherList();
                 return ret;
             }
 
@@ -340,7 +354,7 @@ export class BindField {
             obj.pop = function () {
                 let ret = popOld.call(obj);
                 if ((obj as any).__BindField__)
-                    ( (obj as any).__BindField__ as BindField).execWatcherList();
+                    ((obj as any).__BindField__ as BindField).execWatcherList();
                 return ret;
             }
 
