@@ -1,6 +1,6 @@
 {
   "name": "dfv",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "web mvc framework",
   "main": "index.js",
   "types": "index.d.ts",
@@ -23,6 +23,10 @@
     "mongodb": "2.2.28",
     "mysql": "2.13.0",
     "reflect-metadata": "0.1.10",
+    "@types/node": "*",
+    "@types/mongodb": "*",
+    "@types/mysql": "*",
+    "@types/formidable": "*",
     "source-map-support": "0.4.15"
   },
   "devDependencies": {
@@ -32,6 +36,13 @@
     "koa-bodyparser": "4.2.0",
     "koa-compress": "2.0.0",
     "koa-helmet": "3.2.0",
+    "@types/koa": "*",
+    "@types/koa-bodyparser": "*",
+    "@types/koa-compress": "*",
+    "@types/koa-router": "*",
+    "@types/mocha": "*",
+    "@types/express": "*",
+    "@types/body-parser": "*",
     "koa-logger": "3.0.0"
   },
   "engines": {

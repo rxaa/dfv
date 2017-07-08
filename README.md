@@ -112,3 +112,16 @@ route.load(app, [{
 **配置好Express与TypeScript以及各目录结构的demo:**
 
 https://github.com/rxaa/dfv-demo
+
+# 详细教程
+
+------
+
+[1. 入口与目录结构](doc/1.start.md)
+
+[2. 控制器](doc/2.controller.md)
+
+[3.  数据库ORM](doc/3.orm.md)
+
+[4. tsx模板](doc/4.tsx.md)
+

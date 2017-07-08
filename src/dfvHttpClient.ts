@@ -3,7 +3,7 @@ import  * as http from 'http';
 import  * as url from 'url';
 import  * as fs from 'fs';
 import {RequestOptions} from "https";
-import {IncomingMessage} from "http";
+import {IncomingMessage, IncomingMessageHeaders} from "http";
 import * as zlib from "zlib"
 import {ClientRequest} from "http";
 import {Url} from "url";
@@ -27,7 +27,7 @@ export interface RespContent {
     /**
      * 响应头
      */
-    headers: MapString<string>;
+    headers: IncomingMessageHeaders;
 }
 
 export class HttpAgent {
@@ -107,7 +107,7 @@ export class HttpCookie {
 
     getCookisStr(host: string, path?: string) {
 
-        let cook:any = {};
+        let cook: any = {};
         for (let c in this.cookies) {
             if (host.indexOf(c) >= 0) {
                 let vals = this.cookies[c];
@@ -248,7 +248,7 @@ export class dfvHttpClient {
      * 每次请求的结果
      * @type {any}
      */
-    resp: RespContent | null = null;
+    resp: RespContent | null | undefined = null;
 
 
     agent = dfvHttpClient.agent;
@@ -268,35 +268,35 @@ export class dfvHttpClient {
      * 请求头相关
      */
     header = {
-        set: (key: string, val: string) => {
+        set: (key: string, val: string): dfvHttpClient => {
             this.options.headers![key] = val;
             return this;
         },
 
-        get: (key: string) => this.options.headers![key] as string,
+        get: (key: string): string => this.options.headers![key] as string,
 
         /**
          * 设置multipart头
          */
-        setMultipart: () => this.setHeader("Content-Type", 'multipart/form-data; boundary=' + dfvHttpClient.boundary),
+        setMultipart: (): dfvHttpClient => this.setHeader("Content-Type", 'multipart/form-data; boundary=' + dfvHttpClient.boundary),
 
-        setCookie: (val: string) => this.setHeader("Cookie", val),
+        setCookie: (val: string): dfvHttpClient => this.setHeader("Cookie", val),
 
 
-        setOrigin: (val: string) => this.setHeader("Origin", val),
+        setOrigin: (val: string): dfvHttpClient => this.setHeader("Origin", val),
 
-        setReferer: (val: string) => this.setHeader("Referer", val),
+        setReferer: (val: string): dfvHttpClient => this.setHeader("Referer", val),
 
-        setCharset: (val: string) => this.setHeader("Charset", val),
+        setCharset: (val: string): dfvHttpClient => this.setHeader("Charset", val),
 
-        setForm: () => this.setHeader("Content-Type", 'application/x-www-form-urlencoded'),
-        setContentLength: (len: number) => this.setHeader("Content-Length", len),
+        setForm: (): dfvHttpClient => this.setHeader("Content-Type", 'application/x-www-form-urlencoded'),
+        setContentLength: (len: number): dfvHttpClient => this.setHeader("Content-Length", len),
 
-        setJson: (charset = "; charset=UTF-8") => this.setHeader("Content-Type", 'application/json' + (charset ? charset : "")),
+        setJson: (charset = "; charset=UTF-8"): dfvHttpClient => this.setHeader("Content-Type", 'application/json' + (charset ? charset : "")),
 
-        setContentType: (val: string) => this.setHeader("Content-Type", val),
+        setContentType: (val: string): dfvHttpClient => this.setHeader("Content-Type", val),
 
-        remove: (key: string) => {
+        remove: (key: string): dfvHttpClient => {
             delete this.options.headers![key]
             return this;
         },
@@ -406,7 +406,7 @@ export class dfvHttpClient {
         let newFile = toFile + ".temp";
         let write = fs.createWriteStream(newFile);
         this.setGet();
-        let error:any = null;
+        let error: any = null;
         let resContent = "";
         return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
             this.respContent(null, (dat, resp) => {
@@ -420,7 +420,7 @@ export class dfvHttpClient {
                         resContent += dat;
                     }
                     else {
-                        write.write(dat, (err:Error) => {
+                        write.write(dat, (err: Error) => {
                             if (!err)
                                 return;
                             error = err
@@ -579,7 +579,7 @@ export class dfvHttpClient {
                 var gzip = zlib.createGunzip();
                 let pip = res.pipe(gzip);
 
-                pip.on("data", (chunk:Buffer) => {
+                pip.on("data", (chunk: Buffer) => {
                     func(chunk, res);
                 });
 

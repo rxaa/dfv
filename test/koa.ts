@@ -8,7 +8,7 @@ import * as net from "net";
 import bodyParser = require("koa-bodyparser");
 import compress = require('koa-compress')
 const helmet = require('koa-helmet')
-import logger = require('koa-logger')
+// import logger = require('koa-logger')
 import {dfv} from "../src/public/dfv";
 import {dfvLog} from "../src/dfvLog";
 import {route} from "../src/control/route";
