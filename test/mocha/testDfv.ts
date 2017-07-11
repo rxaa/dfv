@@ -1,6 +1,6 @@
 import assert = require('assert');
 import {dfvHttpClient, HttpCookie} from "../../src/dfvHttpClient";
-import {dfv} from "../../src/public/dfv";
+import {array, ARRAY_TYPE, arrayNumber, arrayString, dfv} from "../../src/public/dfv";
 import {FuncParse} from "../../src/FuncParse";
 import * as fs from "fs";
 import {dfvFile} from "../../src/dfvFile";
@@ -34,6 +34,25 @@ function testParse(a: any, b: any = (aaaa: any, vvv: any) => {
 
 
 describe('sdf Test', function () {
+    it("array type", async () => {
+        let a = arrayString();
+        let count = 0;
+        for (let k in a) {
+            count++;
+        }
+        assert.equal(count, 0);
+        let type = a[ARRAY_TYPE];
+        assert.equal(type, String);
+
+        let an = arrayNumber();
+        assert.equal(an[ARRAY_TYPE], Number);
+
+        let ao = array(testSub);
+        assert.equal(ao[ARRAY_TYPE], testSub);
+
+    });
+
+
     it("dfvFile", async () => {
         let f1 = __dirname + "/../runtime/t1.txt";
         let f2 = f1 + ".txt";

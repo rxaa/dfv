@@ -10,11 +10,17 @@ export interface MapNumber<T> {
     [index: number]: T;
 }
 
+
+export let ARRAY_TYPE: any = "_ARR_TYPE";
+if (typeof Symbol === "function") {
+    ARRAY_TYPE = (Symbol as any).for("_ARR_TYPE")
+}
+
 export function arrayNumber(val?: number[]): number[] {
     if (!val) {
         val = []
     }
-    (<any>val).__type__ = Number;
+    (<any>val)[ARRAY_TYPE] = Number;
     // Object.defineProperty(val, "__type__", {
     //     value: Number,
     //     enumerable: false,
@@ -26,7 +32,7 @@ export function arrayString(val?: string[]): string[] {
     if (!val) {
         val = []
     }
-    (<any>val).__type__ = String;
+    (<any>val)[ARRAY_TYPE] = String;
     // Object.defineProperty(val, "__type__", {
     //     value: String,
     //     enumerable: false,
@@ -38,7 +44,7 @@ export function array<T>(type: { new (...paras: any[]): T }, val?: T[]): T[] {
     if (!val) {
         val = []
     }
-    (<any>val).__type__ = type;
+    (<any>val)[ARRAY_TYPE] = type;
     // Object.defineProperty(val, "__type__", {
     //     value: type,
     //     enumerable: false,

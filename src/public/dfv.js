@@ -2,11 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const dfvFuncExt_1 = require("./dfvFuncExt");
 dfvFuncExt_1.dfvFuncExtInit();
+exports.ARRAY_TYPE = "_ARR_TYPE";
+if (typeof Symbol === "function") {
+    exports.ARRAY_TYPE = Symbol.for("_ARR_TYPE");
+}
 function arrayNumber(val) {
     if (!val) {
         val = [];
     }
-    val.__type__ = Number;
+    val[exports.ARRAY_TYPE] = Number;
     // Object.defineProperty(val, "__type__", {
     //     value: Number,
     //     enumerable: false,
@@ -18,7 +22,7 @@ function arrayString(val) {
     if (!val) {
         val = [];
     }
-    val.__type__ = String;
+    val[exports.ARRAY_TYPE] = String;
     // Object.defineProperty(val, "__type__", {
     //     value: String,
     //     enumerable: false,
@@ -30,7 +34,7 @@ function array(type, val) {
     if (!val) {
         val = [];
     }
-    val.__type__ = type;
+    val[exports.ARRAY_TYPE] = type;
     // Object.defineProperty(val, "__type__", {
     //     value: type,
     //     enumerable: false,
