@@ -109,7 +109,7 @@ class dfv {
         return Math.floor(Date.now() / 1000);
     }
     static getArrayType(val) {
-        return val.__type__;
+        return val[exports.ARRAY_TYPE];
     }
     static setPrototypeOf(target, proto) {
         if (Object.setPrototypeOf)

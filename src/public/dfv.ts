@@ -147,7 +147,7 @@ export class dfv {
     }
 
     static getArrayType(val: any) {
-        return val.__type__;
+        return val[ARRAY_TYPE];
     }
 
     static setPrototypeOf(target: any, proto: any) {

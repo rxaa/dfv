@@ -43,12 +43,15 @@ describe('sdf Test', function () {
         assert.equal(count, 0);
         let type = a[ARRAY_TYPE];
         assert.equal(type, String);
+        assert.equal(dfv.getArrayType(a), String);
 
         let an = arrayNumber();
         assert.equal(an[ARRAY_TYPE], Number);
+        assert.equal(dfv.getArrayType(an), Number);
 
         let ao = array(testSub);
         assert.equal(ao[ARRAY_TYPE], testSub);
+        assert.equal(dfv.getArrayType(ao), testSub);
 
     });
 
