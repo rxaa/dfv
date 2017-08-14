@@ -141,6 +141,10 @@ function bindProt(elem: HTMLElement, key: string, bindFun: dfvBindDom) {
             bindFun.editAble = true;
             setOnInputEvent(bindFun, elem, "value", bindFields);
         }
+        else if (elem.localName === "textarea" && key === "value") {
+            bindFun.editAble = true;
+            setOnInputEvent(bindFun, elem, "value", bindFields);
+        }
         else if (elem.localName === "input" && (elem as HTMLInputElement).type === "radio" && key === "bind") {
             bindFun.editAble = true;
             bindFun.protoName = "value";

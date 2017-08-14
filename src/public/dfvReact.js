@@ -128,6 +128,10 @@ function bindProt(elem, key, bindFun) {
             bindFun.editAble = true;
             setOnInputEvent(bindFun, elem, "value", bindFields);
         }
+        else if (elem.localName === "textarea" && key === "value") {
+            bindFun.editAble = true;
+            setOnInputEvent(bindFun, elem, "value", bindFields);
+        }
         else if (elem.localName === "input" && elem.type === "radio" && key === "bind") {
             bindFun.editAble = true;
             bindFun.protoName = "value";
