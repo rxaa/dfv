@@ -547,9 +547,13 @@ export class SqlBuilder<TC> {
      */
     order(func: (f: SelectOrderType<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
-        this.orderStr = this.builderList(" order by ", ",");
+        if (this.orderStr)
+            this.orderStr += this.builderList(",", ",");
+        else
+            this.orderStr = this.builderList(" order by ", ",");
         return this;
     }
+
 
     /**
      * 添加groupBy条件
@@ -557,9 +561,14 @@ export class SqlBuilder<TC> {
      */
     groupBy(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
-        this.groupByStr = this.builderList(" group by ", ",");
+        if (this.groupByStr)
+            this.groupByStr += this.builderList(",", ",");
+        else
+            this.groupByStr = this.builderList(" group by ", ",");
         return this;
     }
+
+
 
     /**
      * limit
@@ -878,8 +887,10 @@ export interface SqlJoin3<T1, T2> extends ISqlJoin {
 
     innerJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
+
     leftJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
+
     rightJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 }
@@ -888,8 +899,10 @@ export interface SqlJoin4<T1, T2, T3> extends ISqlJoin {
 
     innerJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
+
     leftJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
+
     rightJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
         & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
 }

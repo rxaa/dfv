@@ -1,4 +1,5 @@
 import {dfvLib} from "../../src/dfvLib";
+
 dfvLib.init(__dirname)
 
 import assert = require('assert');
@@ -219,6 +220,14 @@ describe('sqlBuilder Test', function () {
         assert.equal(t1.toString(),
             "update T1 set  SqlTableTest.f2='2' , SqlTableTest.ccc='3' , aaaa='4'  where  SqlTableTest.ccc='1' ");
 
+
+        t1 = T1.sql().order(f => f.id.asc()).order(f => f.f2.desc());
+        await t1.toArray();
+        assert.equal(t1.toString(), "select id,aaaa as filed,SqlTableTest.f2,SqlTableTest.ccc as f3 from T1 order by  id asc , SqlTableTest.f2 desc ");
+
+        t1 = T1.sql().groupBy(f => f.id + f.filed).groupBy(f => f.f2);
+        await t1.toArray();
+        assert.equal(t1.toString(), "select id,aaaa as filed,SqlTableTest.f2,SqlTableTest.ccc as f3 from T1 group by id,aaaa,SqlTableTest.f2");
 
     });
 
