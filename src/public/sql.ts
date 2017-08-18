@@ -1,4 +1,5 @@
 import {dfv} from "./dfv";
+
 export interface ArrayCache {
     __ReadCount?: number;
 }
@@ -41,22 +42,22 @@ export class sql {
         if (val == null)
             return "NULL";
 
-            if (typeof val === "number")
-                return val + '';
+        if (typeof val === "number")
+            return val + '';
 
-            var ret = "'";
-            var str = val.toString();
-            for (var i = 0; i < str.length; i++) {
-                var s = str.charAt(i);
-                if (s == "\\") {
-                    ret += "\\\\"
-                }
-                else if (s == "'") {
-                    ret += "\\'"
-                }
-                else {
-                    ret += s;
-                }
+        var ret = "'";
+        var str = val.toString();
+        for (var i = 0; i < str.length; i++) {
+            var s = str.charAt(i);
+            if (s == "\\") {
+                ret += "\\\\"
+            }
+            else if (s == "'") {
+                ret += "\\'"
+            }
+            else {
+                ret += s;
+            }
         }
         return ret + "'";
     }
@@ -99,12 +100,42 @@ export class sql {
     }
 
     /**
-     * now函数
+     * 当前日期和时间->2014-12-17 15:59:02
      * @returns {any}
      */
     static now(): Date {
         return <any>new sql(() => {
             return "now()";
+        });
+    }
+
+    /**
+     * 当前日期->2014-12-17
+     * @returns {any}
+     */
+    static curDate(): Date {
+        return <any>new sql(() => {
+            return "CURDATE()";
+        });
+    }
+
+    /**
+     * 当前时间->15:59:02
+     * @returns {any}
+     */
+    static curTime(): Date {
+        return <any>new sql(() => {
+            return "CURTIME()";
+        });
+    }
+
+    /**
+     * 以UNIX时间戳的形式返回当前时间->1418803177
+     * @returns {any}
+     */
+    static unixTimeStamp(): Date {
+        return <any>new sql(() => {
+            return "UNIX_TIMESTAMP()";
         });
     }
 

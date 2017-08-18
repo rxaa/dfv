@@ -1,6 +1,6 @@
 {
   "name": "dfv",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "web mvc framework",
   "main": "index.js",
   "types": "index.d.ts",

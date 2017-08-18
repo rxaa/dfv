@@ -1,16 +1,25 @@
 import {SqlTableField} from "./SqlTableField";
 import {SqlTableInfo} from "./SqlTableInfo";
-import {ISqlOrderField, ISqlSelectField} from "./ISqlField";
 import {ISqlConnecter} from "./ISqlConnecter";
 import {ArrayCache, sql} from "../public/sql";
+import {ISqlSelectField, SelectOrderType} from "./ISqlField";
 
+export interface ISqlSelectFieldBuilder <T> extends  ISqlSelectField<T>{
+    /**
+     * in 条件
+     * @param val 可以是单个值,或number数组,或SqlBuilder子查询
+     */
+    in(val: ISqlSelectFieldBuilder<any> | T | T[] | SqlBuilder<any>): any;
 
-export type SelectFieldType<T> = {
-    [P in keyof T]: ISqlSelectField<T[P]> & number
-    };
+    /**
+     * not in 条件
+     * @param val 可以是单个值,或number数组,或SqlBuilder子查询
+     */
+    notIn(val: ISqlSelectFieldBuilder<any> | T | T[] | SqlBuilder<any>): any;
+}
 
-export type SelectOrderType<T> = {
-    [P in keyof T]: ISqlOrderField
+export type SelectFieldTypeBuilder<T> = {
+    [P in keyof T]: ISqlSelectFieldBuilder<T[P]> & number
     };
 
 export class SqlBuilder<TC> {
@@ -280,7 +289,7 @@ export class SqlBuilder<TC> {
     private joinObjs: Array<SqlTableInfo>
 
     private makeJoin<T1>(right: { new (): T1; },
-                         func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1> & T1) => any,
+                         func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1> & T1) => any,
                          where: string) {
 
         if (!this.joinObjs)
@@ -310,7 +319,7 @@ export class SqlBuilder<TC> {
      * @param func on 条件表达式
      * @returns {SqlBuilder}
      */
-    innerJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
+    innerJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " inner join ");
         return this as any;
@@ -322,7 +331,7 @@ export class SqlBuilder<TC> {
      * @param func
      * @returns {SqlBuilder}
      */
-    leftJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
+    leftJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " left join ");
         return this as any;
@@ -334,7 +343,7 @@ export class SqlBuilder<TC> {
      * @param func on 条件表达式
      * @returns {SqlBuilder} 用于SqlBuilder构造函数的tableName
      */
-    rightJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldType<TC> & TC, r: SelectFieldType<T1>
+    rightJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " right join ");
         return this as any;
@@ -443,7 +452,7 @@ export class SqlBuilder<TC> {
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    where(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    where(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         this.whereStr = SqlTableField.makeWhere(func, this.valList);
         return this;
@@ -454,7 +463,7 @@ export class SqlBuilder<TC> {
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    and(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    and(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         if (this.whereStr.length > 0)
             this.whereStr += " and ";
@@ -467,7 +476,7 @@ export class SqlBuilder<TC> {
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    or(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    or(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         if (this.whereStr.length > 0)
             this.whereStr += " or ";
@@ -486,7 +495,7 @@ export class SqlBuilder<TC> {
      * 指定select字段
      * @param func 字段表达式
      */
-    select(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    select(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         this.selectStr = this.builderList(" ", ",")
         return this;
@@ -510,7 +519,7 @@ export class SqlBuilder<TC> {
      * select指定as别名
      * @param func
      */
-    selectAs<T>(func: (f: SelectFieldType<TC>) => T): SqlBuilder<T> {
+    selectAs<T>(func: (f: SelectFieldTypeBuilder<TC>) => T): SqlBuilder<T> {
         let ret = func(this.metaTableInfo().classObj);
         let str = "";
         for (let k in ret) {
@@ -527,7 +536,7 @@ export class SqlBuilder<TC> {
      * @param func
      * @returns {SqlBuilder}
      */
-    unselect(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    unselect(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         var fMap: any = {};
         this.valList.forEach(it => fMap[it] = true);
@@ -559,7 +568,7 @@ export class SqlBuilder<TC> {
      * 添加groupBy条件
      * @param func 字段表达式
      */
-    groupBy(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    groupBy(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         this.makeFunc(func);
         if (this.groupByStr)
             this.groupByStr += this.builderList(",", ",");
@@ -590,7 +599,7 @@ export class SqlBuilder<TC> {
      * @param func 条件表达式
      * @returns {SqlBuilder}
      */
-    set(func: (f: SelectFieldType<TC> & TC) => any): SqlBuilder<TC> {
+    set(func: (f: SelectFieldTypeBuilder<TC> & TC) => any): SqlBuilder<TC> {
         if (this.setStr)
             this.setStr += ",";
         else
@@ -605,7 +614,7 @@ export class SqlBuilder<TC> {
      * @param func set表达式
      * @returns {Promise<T>}  影响行数,失败抛reject异常
      */
-    update(func?: (f: SelectFieldType<TC> & TC) => any): Promise<number> {
+    update(func?: (f: SelectFieldTypeBuilder<TC> & TC) => any): Promise<number> {
         return new Promise((resolve, reject) => {
             this.getUpdate(func)
             this.sqlCon.update(this.sqlStr, (err, res) => {
@@ -617,7 +626,7 @@ export class SqlBuilder<TC> {
         });
     }
 
-    private getUpdate(func?: (f: SelectFieldType<TC> & TC) => any) {
+    private getUpdate(func?: (f: SelectFieldTypeBuilder<TC> & TC) => any) {
         this.sqlStr = "update " + this.tableName + " set "
         if (this.setStr)
             this.sqlStr += this.setStr;
@@ -885,24 +894,24 @@ export interface ISqlJoin {
 
 export interface SqlJoin3<T1, T2> extends ISqlJoin {
 
-    innerJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
+    innerJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    leftJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
+    leftJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    rightJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
+    rightJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 }
 
 export interface SqlJoin4<T1, T2, T3> extends ISqlJoin {
 
-    innerJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
-        & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
+    innerJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+        & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    leftJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
-        & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
+    leftJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+        & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    rightJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldType<T1> & T1, p2: SelectFieldType<T2> & T2, p3: SelectFieldType<T3>
-        & T3, p4: SelectFieldType<T4>) => any): ISqlJoin;
+    rightJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+        & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 }

@@ -199,7 +199,7 @@ describe('sqlBuilder Test', function () {
 
 
         let t1 = T1.sql();
-        await t1.where(f => f.f2.eq("1") & f.f3.eq("2") & f.filed.eq("3"))
+        await t1.where(f => f.f2.eq("1") & f.f3.eq("2") & f.filed.eq("3") )
             .order(f => f.filed.asc() & f.f2.desc() & f.f3.asc()).toArray();
         assert.equal(t1.toString()
             , "select id,aaaa as filed,SqlTableTest.f2,SqlTableTest.ccc as f3 from T1 where  SqlTableTest.f2='1'  and  SqlTableTest.ccc='2'  and  aaaa='3'  order by  aaaa asc , SqlTableTest.f2 desc , SqlTableTest.ccc asc ")
