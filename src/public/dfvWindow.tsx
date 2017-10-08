@@ -83,7 +83,7 @@ export class dfvWindow {
         let c1 = this.isError ? "ba_tra_red" : "ba_tra_blue"
         let c2 = this.isError ? "icon_err" : "icon_close"
         this.dialog =
-            <div className={"pop_border anim_in " + c1 }>
+            <div className={"pop_border anim_in " + c1}>
                 {
                     this.divContent =
                         <div className="pop_cont">
@@ -194,11 +194,15 @@ export class dfvWindow {
             return;
 
         if (this.dialog.offsetWidth < document.documentElement.clientWidth) {
-            this.dialog.style.marginLeft = (Math.floor((document.documentElement.clientWidth - this.dialog.offsetWidth) / 2) | 3) + "px";
+            let w = document.documentElement.clientWidth - this.dialog.offsetWidth;
+            w = w & (~2);
+            this.dialog.style.marginLeft = (w >> 1) + "px";
         }
         this.divContent.style.maxWidth = document.documentElement.clientWidth - 40 + "px";
         if (this.dialog.offsetHeight < document.documentElement.clientHeight) {
-            this.dialog.style.marginTop = (Math.floor((document.documentElement.clientHeight - this.dialog.offsetHeight) / 3) | 3) + "px";
+            let h = (Math.floor((document.documentElement.clientHeight - this.dialog.offsetHeight) / 3));
+            h = h & (~2);
+            this.dialog.style.marginTop = h + "px";
         }
         this.divContent.style.maxHeight = document.documentElement.clientHeight - 45 + "px";
     }
