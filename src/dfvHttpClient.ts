@@ -1,12 +1,11 @@
-import  * as https from 'https';
-import  * as http from 'http';
-import  * as url from 'url';
-import  * as fs from 'fs';
-import {RequestOptions} from "https";
-import {IncomingMessage, IncomingMessageHeaders} from "http";
+import * as https from 'https';
+import {RequestOptions} from 'https';
+import * as http from 'http';
+import {ClientRequest, IncomingMessage, IncomingMessageHeaders} from 'http';
+import * as url from 'url';
+import {Url} from 'url';
+import * as fs from 'fs';
 import * as zlib from "zlib"
-import {ClientRequest} from "http";
-import {Url} from "url";
 import {MapString} from "./public/dfv";
 
 const agentkeepalive = require('agentkeepalive')
@@ -476,7 +475,7 @@ export class dfvHttpClient {
         else
             this.setGet();
         return new Promise<string>((resolve: (dat: string) => void, reject) => {
-            let content = "";
+            var chunks = Array();
             this.respContent(req => {
                 if (post) {
                     // this.header.setContentLength(post.length)
@@ -484,9 +483,10 @@ export class dfvHttpClient {
                 }
             }, (dat, resp) => {
                 if (dat) {
-                    content += dat;
+                    chunks.push(dat);
                 }
                 else {
+                    let content = Buffer.concat(chunks).toString(this.charset);
                     this.setResp(content, resp);
                     if (resp.statusCode != 200)
                         reject(resp.statusCode + ":" + content);
@@ -506,13 +506,13 @@ export class dfvHttpClient {
     get(): Promise<RespContent> {
         this.setGet();
         return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
-            let content = "";
+            var chunks = Array();
             this.respContent(null, (dat, resp) => {
                 if (dat) {
-                    content += dat;
+                    chunks.push(dat);
                 }
                 else {
-                    resolve(this.setResp(content, resp));
+                    resolve(this.setResp(Buffer.concat(chunks).toString(this.charset), resp));
                 }
             }, err => {
                 reject(err);
@@ -544,15 +544,15 @@ export class dfvHttpClient {
     post(dat: string): Promise<RespContent> {
         this.setPost();
         return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
-            let content = "";
+            var chunks = Array();
             this.respContent(req => {
                 req.end(dat);
             }, (dat, resp) => {
                 if (dat) {
-                    content += dat;
+                    chunks.push(dat);
                 }
                 else {
-                    resolve(this.setResp(content, resp));
+                    resolve(this.setResp(Buffer.concat(chunks).toString(this.charset), resp));
                 }
             }, err => {
                 reject(err);
@@ -579,6 +579,7 @@ export class dfvHttpClient {
                 var gzip = zlib.createGunzip();
                 let pip = res.pipe(gzip);
 
+
                 pip.on("data", (chunk: Buffer) => {
                     func(chunk, res);
                 });
@@ -602,7 +603,6 @@ export class dfvHttpClient {
                 })
                 return;
             }
-
             res.on('data', chunk => {
 
                 func(chunk, res);
