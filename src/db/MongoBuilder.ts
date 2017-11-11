@@ -1,13 +1,6 @@
 import {MongoConnect} from "./MongoConnect";
 import {MongoTable} from "./MongoTable";
-import {
-    Collection,
-    DeleteWriteOpResultObject,
-    InsertOneWriteOpResult,
-    ObjectID,
-    ReplaceOneOptions,
-    UpdateWriteOpResult
-} from "mongodb";
+import {Collection, DeleteWriteOpResultObject, ObjectID, ReplaceOneOptions, UpdateWriteOpResult} from "mongodb";
 import {MongoField} from "./MongoField";
 import {SqlBuilder} from "./SqlBuilder";
 import {IMongoOrderField, IMongoSelectField} from "./IMongoField";
@@ -538,7 +531,7 @@ export class MongoBuilder<TC extends any> {
                     reject(err);
                     return;
                 }
-                var insertRes = (err: Error, res?: InsertOneWriteOpResult) => {
+                var insertRes = (err: Error, res?: { insertedCount: number }) => {
                     if (err) {
                         this.logErr(stack, err, "insert: " + JSON.stringify(field));
                         reject(err);

@@ -1,9 +1,8 @@
-import {ClassMetaData, dfv, MapString} from "./dfv";
+import {ClassMetaData, dfv} from "./dfv";
 import {BindField} from "./dfvBind";
-import {dfvFront} from "./dfvFront";
 
 
-export enum validType{
+export enum validType {
     int,
     number,
     string,
@@ -569,6 +568,9 @@ export class valid {
             }
             else if (type === "string") {
                 objRes.val = (objRes.val + "") as any;
+            }
+            else if (objRes.defaul instanceof Array) {
+                objRes.val = objRes.val instanceof Array ? objRes.val : objRes.defaul;
             }
             else if (objRes.defaul && type === "object") {
                 //验证子对象

@@ -460,6 +460,9 @@ class valid {
             else if (type === "string") {
                 objRes.val = (objRes.val + "");
             }
+            else if (objRes.defaul instanceof Array) {
+                objRes.val = objRes.val instanceof Array ? objRes.val : objRes.defaul;
+            }
             else if (objRes.defaul && type === "object") {
                 //验证子对象
                 if (typeof objRes.val != "object") {

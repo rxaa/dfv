@@ -1,7 +1,7 @@
 import * as https from 'https';
 import {RequestOptions} from 'https';
 import * as http from 'http';
-import {ClientRequest, IncomingMessage, IncomingMessageHeaders} from 'http';
+import {ClientRequest, IncomingMessage} from 'http';
 import * as url from 'url';
 import {Url} from 'url';
 import * as fs from 'fs';
@@ -9,6 +9,11 @@ import * as zlib from "zlib"
 import {MapString} from "./public/dfv";
 
 const agentkeepalive = require('agentkeepalive')
+
+
+export interface IHttpHeaders {
+    [header: string]: string | string[];
+}
 
 export interface RespContent {
     /**
@@ -26,7 +31,7 @@ export interface RespContent {
     /**
      * 响应头
      */
-    headers: IncomingMessageHeaders;
+    headers: IHttpHeaders;
 }
 
 export class HttpAgent {

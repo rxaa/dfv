@@ -17,6 +17,22 @@ class NotVaild {
 
 }
 
+class ReqTest5 {
+    id = 1;
+    val = "2";
+
+    @valid.int(r => r.val > 0, "aaa必须大于0")
+    aaa = 0;
+
+
+    @valid.string()
+    bbb = "b";
+
+    ccc = {
+        a: 1,
+        b: 2,
+    }
+}
 
 class ReqTest2 {
     id = 1;
@@ -50,6 +66,10 @@ class ReqTest4 {
 
     @valid.object<ReqTest2>(r => r.val.bbb.length > 0, "bbb.bbb 不能为空")
     bbb = new ReqTest2();
+}
+
+class ReqTest6 {
+    id = [1, 2];
 }
 
 class ArrayTest {
@@ -214,5 +234,17 @@ describe('valid Test', function () {
             bbb: "",
         }, new ReqSub());
         assert.equal(res.ok, true);
+
+        let rrr = valid.checkObj({
+            id: [1, 2, 3]
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), "{\"id\":[1,2,3]}");
+
+        rrr = valid.checkObj({
+            id: 123
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), `{"id":[1,2]}`);
     });
 });

@@ -30,6 +30,26 @@ __decorate([
 ], ReqTest.prototype, "bbb", void 0);
 class NotVaild {
 }
+class ReqTest5 {
+    constructor() {
+        this.id = 1;
+        this.val = "2";
+        this.aaa = 0;
+        this.bbb = "b";
+        this.ccc = {
+            a: 1,
+            b: 2,
+        };
+    }
+}
+__decorate([
+    valid_1.valid.int(r => r.val > 0, "aaa必须大于0"),
+    __metadata("design:type", Object)
+], ReqTest5.prototype, "aaa", void 0);
+__decorate([
+    valid_1.valid.string(),
+    __metadata("design:type", Object)
+], ReqTest5.prototype, "bbb", void 0);
 class ReqTest2 {
     constructor() {
         this.id = 1;
@@ -70,6 +90,11 @@ __decorate([
     valid_1.valid.object(r => r.val.bbb.length > 0, "bbb.bbb 不能为空"),
     __metadata("design:type", Object)
 ], ReqTest4.prototype, "bbb", void 0);
+class ReqTest6 {
+    constructor() {
+        this.id = [1, 2];
+    }
+}
 class ArrayTest {
     constructor() {
         this.bbb = [];
@@ -211,6 +236,16 @@ describe('valid Test', function () {
             bbb: "",
         }, new ReqSub());
         assert.equal(res.ok, true);
+        let rrr = valid_1.valid.checkObj({
+            id: [1, 2, 3]
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), "{\"id\":[1,2,3]}");
+        rrr = valid_1.valid.checkObj({
+            id: 123
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), `{"id":[1,2]}`);
     });
 });
 //# sourceMappingURL=testValid.js.map

@@ -1,19 +1,17 @@
 import {dfvLib} from "../src/dfvLib";
-dfvLib.init(__dirname);
-
-import * as https from 'https';
 import * as http from 'http';
 import * as Koa from "koa";
 import * as net from "net";
-import bodyParser = require("koa-bodyparser");
-import compress = require('koa-compress')
-const helmet = require('koa-helmet')
 // import logger = require('koa-logger')
 import {dfv} from "../src/public/dfv";
 import {dfvLog} from "../src/dfvLog";
 import {route} from "../src/control/route";
 import * as path from "path";
 import * as Router from "koa-router";
+
+dfvLib.init(__dirname);
+
+import bodyParser = require("koa-bodyparser");
 
 /**
  * 中间件集合：

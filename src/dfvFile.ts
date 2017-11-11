@@ -5,6 +5,12 @@ import {dfv} from "./public/dfv";
 export class dfvFile {
 
 
+    /**
+     * 复制文件
+     * @param {string} from 源路径
+     * @param {string} to 目标路径
+     * @return {Promise<void>}
+     */
     static copyFile(from: string, to: string) {
         return new Promise<void>((resolve, reject) => {
             // 创建读取流
