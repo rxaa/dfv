@@ -32,6 +32,15 @@ export interface BindParas {
      * 验证函数（可为async）,验证成功返回val,否则抛异常
      */
     onSet?: (val: any, bind: dfvBindDom, field: BindField) => any
+
+    /**
+     * 当验证完成后触发
+     * @param val
+     * @param {dfvBindDom} bind
+     * @param {BindField} field
+     * @return {any}
+     */
+    onChange?: (val: any, bind: dfvBindDom, field: BindField) => any
 }
 
 
@@ -41,9 +50,9 @@ export interface BindParas {
  * @param ext 额外参数
  * @returns {dfvBindDom}
  */
-export function dfvBind(func: (e: HTMLElement) => any, ext: BindParas = {}) {
+export function dfvBind(func: (e: HTMLElement) => any, ext: BindParas = {}): dfvBindDom {
     let bind = new dfvBindDom(func);
-    bind.onSet = async (val: any, bind: dfvBindDom, field: BindField) => {
+    bind.onSet = (val: any, bind: dfvBindDom, field: BindField) => {
         try {
             bind.onError(null, val, bind, field);
             if (field.fieldName && field.parent) {
@@ -62,10 +71,23 @@ export function dfvBind(func: (e: HTMLElement) => any, ext: BindParas = {}) {
                 }
             }
 
-            if (ext.onSet)
-                return await ext.onSet(val, bind, field);
-            else
+            if (!ext.onSet)
                 return val;
+
+            let ret = ext.onSet(val, bind, field);
+            if (ret instanceof Promise) {
+                return new Promise((reso, rej) => {
+                    ret.then((res: any) => {
+                        reso(res);
+                    }).catch((err: Error) => {
+                        bind.onError(err, val, bind, field);
+                        rej(err);
+                    })
+                });
+            } else {
+                return ret;
+            }
+
         } catch (e) {
             bind.onError(e, val, bind, field);
             throw e;
@@ -75,6 +97,7 @@ export function dfvBind(func: (e: HTMLElement) => any, ext: BindParas = {}) {
         bind.cancelDoubleBind = ext.cancelDoubleBind;
     if (ext.onError)
         bind.onError = ext.onError
+    bind.onChange = ext.onChange;
     return bind;
 }
 
@@ -111,6 +134,16 @@ export class dfvBindDom {
      * 验证函数
      */
     public onSet?: (val: any, bind: dfvBindDom, field: BindField) => any;
+
+
+    /**
+     * 当验证完成后触发
+     * @param val
+     * @param {dfvBindDom} bind
+     * @param {BindField} field
+     * @return {any}
+     */
+    onChange?: (val: any, bind: dfvBindDom, field: BindField) => any
 
     constructor(/**
                  * 绑定的函数
@@ -235,6 +268,7 @@ export class BindField {
      * 收集以删除的元素监听
      * @type {Array}
      */
+
     // private removeList:number[] = [];
 
     /**
@@ -301,6 +335,10 @@ export class BindField {
      */
     static init(obj: any, parent?: any, field?: string): void {
         let type = typeof obj;
+
+        if (!parent && !field && !(type === "object" || obj instanceof Array))
+            return;
+
         let f_a = new BindField(obj, BindFieldType.string, field, parent);
         if (obj == null || type === "string" || obj instanceof Date) {
             f_a.type = BindFieldType.string;
@@ -384,6 +422,7 @@ export class BindField {
                     return f_a.getVal();
                 },
                 set: function (s) {
+
                     BindField.init(s);
                     f_a.setVal(s);
                 },

@@ -70,12 +70,20 @@ function getVal(bind, val) {
     else
         return val + "";
 }
-function setVal(bind, val, elem) {
+function setVal(bind, val, elem, bindFun) {
     try {
         bind.setVal(val, elem);
     }
     catch (e) {
         dfvFront_1.dfvFront.onCatchError(e);
+    }
+    if (bindFun.onChange) {
+        try {
+            bindFun.onChange(val, bindFun, bind);
+        }
+        catch (e) {
+            dfvFront_1.dfvFront.onCatchError(e);
+        }
     }
 }
 function setBind(bindFun, bind, elem, val) {
@@ -88,18 +96,18 @@ function setBind(bindFun, bind, elem, val) {
                 /**
                  * 异步验证不应该被频繁触发，待修订
                  */
-                ret.then(r => setVal(bind, r, elem))
-                    .catch(e => setVal(bind, res, elem));
+                ret.then(r => setVal(bind, r, elem, bindFun))
+                    .catch(e => setVal(bind, res, elem, bindFun));
                 return;
             }
             res = ret;
         }
         catch (e) {
         }
-        setVal(bind, res, elem);
+        setVal(bind, res, elem, bindFun);
     }
     else {
-        bind.setVal(getVal(bind, val), elem);
+        setVal(bind, getVal(bind, val), elem, bindFun);
     }
 }
 /**

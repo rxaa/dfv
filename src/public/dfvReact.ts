@@ -41,6 +41,7 @@ function setOnInputEvent(bindFun: dfvBindDom, elem: HTMLElement, key: string, bi
             setBind(bindFun, b, elem, (elem as any)[key]);
         }
     })
+
     let old = elem["oninput"];
     elem["oninput"] = (e) => {
         if (cpLock)
@@ -79,11 +80,18 @@ function getVal(bind: BindField, val: any): any {
         return val + "";
 }
 
-function setVal(bind: BindField, val: any, elem: HTMLElement) {
+function setVal(bind: BindField, val: any, elem: HTMLElement, bindFun: dfvBindDom) {
     try {
         bind.setVal(val, elem);
     } catch (e) {
         dfvFront.onCatchError(e)
+    }
+    if (bindFun.onChange) {
+        try {
+            bindFun.onChange(val, bindFun, bind);
+        } catch (e) {
+            dfvFront.onCatchError(e)
+        }
     }
 }
 
@@ -98,18 +106,18 @@ function setBind(bindFun: dfvBindDom, bind: BindField, elem: HTMLElement, val: a
                 /**
                  * 异步验证不应该被频繁触发，待修订
                  */
-                ret.then(r => setVal(bind, r, elem))
-                    .catch(e => setVal(bind, res, elem))
+                ret.then(r => setVal(bind, r, elem, bindFun))
+                    .catch(e => setVal(bind, res, elem, bindFun))
                 return;
             }
 
             res = ret;
         } catch (e) {
         }
-        setVal(bind, res, elem);
+        setVal(bind, res, elem, bindFun);
     }
     else {
-        bind.setVal(getVal(bind, val), elem);
+        setVal(bind, getVal(bind, val), elem, bindFun);
     }
 }
 

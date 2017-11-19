@@ -234,7 +234,7 @@ export class dfvHttpClient {
     }
 
     getHeaders() {
-        return this.options.headers!
+        return this.options.headers! as IHttpHeaders;
     }
 
     private url: Url = {};

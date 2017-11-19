@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dfv_1 = require("./dfv");
 const dfvFront_1 = require("./dfvFront");
@@ -30,7 +22,7 @@ var BindFieldType;
  */
 function dfvBind(func, ext = {}) {
     let bind = new dfvBindDom(func);
-    bind.onSet = (val, bind, field) => __awaiter(this, void 0, void 0, function* () {
+    bind.onSet = (val, bind, field) => {
         try {
             bind.onError(null, val, bind, field);
             if (field.fieldName && field.parent) {
@@ -45,20 +37,33 @@ function dfvBind(func, ext = {}) {
                     val = objRes.val;
                 }
             }
-            if (ext.onSet)
-                return yield ext.onSet(val, bind, field);
-            else
+            if (!ext.onSet)
                 return val;
+            let ret = ext.onSet(val, bind, field);
+            if (ret instanceof Promise) {
+                return new Promise((reso, rej) => {
+                    ret.then((res) => {
+                        reso(res);
+                    }).catch((err) => {
+                        bind.onError(err, val, bind, field);
+                        rej(err);
+                    });
+                });
+            }
+            else {
+                return ret;
+            }
         }
         catch (e) {
             bind.onError(e, val, bind, field);
             throw e;
         }
-    });
+    };
     if (ext.cancelDoubleBind)
         bind.cancelDoubleBind = ext.cancelDoubleBind;
     if (ext.onError)
         bind.onError = ext.onError;
+    bind.onChange = ext.onChange;
     return bind;
 }
 exports.dfvBind = dfvBind;
@@ -243,6 +248,8 @@ class BindField {
      */
     static init(obj, parent, field) {
         let type = typeof obj;
+        if (!parent && !field && !(type === "object" || obj instanceof Array))
+            return;
         let f_a = new BindField(obj, BindFieldType.string, field, parent);
         if (obj == null || type === "string" || obj instanceof Date) {
             f_a.type = BindFieldType.string;

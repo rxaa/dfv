@@ -1,6 +1,7 @@
 import assert = require('assert');
 import {valid} from "../../src/public/valid";
 import {dfv} from "../../src/public/dfv";
+import {dfvBind} from "../../src/public/dfvBind";
 
 class ReqTest {
     id = 1;
@@ -146,7 +147,7 @@ describe('valid Test', function () {
         assert.equal(JSON.stringify(notRes.val), `{"bbb":[22,11,33],"cccc":["1","2","3"],"ddd":[{"id":1,"val":"2","aaa":2,"bbb":"b"},{"id":1,"val":"2","aaa":2,"bbb":"b"}]}`);
     });
 
-    it('valid route 入参验证', function () {
+    it('valid route 入参验证', async function () {
 
         let notRes = valid.checkObj({}, new NotVaild());
         assert.equal(notRes.ok, true);
@@ -246,5 +247,11 @@ describe('valid Test', function () {
         }, new ReqTest6);
         assert.equal(res.ok, true);
         assert.equal(JSON.stringify(rrr.val), `{"id":[1,2]}`);
+
+        let bi = dfvBind(e => true, {onSet: val => val});
+        assert.equal(await bi.onSet!(1, bi, {} as any), 1);
+        bi = dfvBind(e => true, {onSet: async (val) => val});
+        assert.equal(await bi.onSet!(2, bi, {} as any), 2);
+
     });
 });
