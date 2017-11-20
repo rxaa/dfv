@@ -29,7 +29,7 @@ export interface BindParas {
     onError?: (err: Error | null, val: any, bind: dfvBindDom, field: BindField) => void;
 
     /**
-     * 验证函数（可为async）,验证成功返回val,否则抛异常
+     * 验证函数（可为async）,验证成功返回val,否则抛异常,(该函数为input控件触发，手动对变量赋值不会触发)
      */
     onSet?: (val: any, bind: dfvBindDom, field: BindField) => any
 

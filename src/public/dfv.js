@@ -94,11 +94,11 @@ class dfv {
         return "";
     }
     static dateToY_M_D(p, symb = "-") {
-        let d = typeof p === "number" ? new Date(p) : p;
+        let d = p instanceof Date ? p : new Date(p);
         return d.getFullYear() + symb + (d.getMonth() + 1) + symb + d.getDate();
     }
     static dateToY_M_D_H_M_S(p, showSecond = true) {
-        let d = typeof p === "number" ? new Date(p) : p;
+        let d = p instanceof Date ? p : new Date(p);
         return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " "
             + d.getHours() + ":" + d.getMinutes() + (showSecond ? (":" + d.getSeconds()) : "");
     }

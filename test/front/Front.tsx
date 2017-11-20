@@ -12,6 +12,16 @@ function bindNotEmpty(func: (e: HTMLElement) => any) {
     });
 }
 
+function bindNotEmpty2(func: (e: HTMLElement) => any) {
+    return dfvBind(func, {
+        onSet: val => {
+            console.log("on set " + val);
+            return val;
+        },
+        onError: dfvBindDom.showErrorToNextSpan,
+    });
+}
+
 export class Front {
     static init() {
         dfvFront.setBody(Front.view())
@@ -26,7 +36,7 @@ export class Front {
         return val;
     }
 
-    static dat = valid.bindAble({a: 1, b: "aa"})
+    static dat = valid.bindAble({a: 1, b: "aa", c: ""})
 
     static view = () =>
         <div>
@@ -42,8 +52,17 @@ export class Front {
             <p>
                 <button onclick={e => Front.onCheck()}>确定</button>
             </p>
+
             <p>
                 {dfvBind(e => Front.dat.a + " - " + Front.dat.b)}
+            </p>
+            <p>
+                <input type="text" value={bindNotEmpty2(e => Front.dat.c)}/>
+                <span class="red"></span>
+                <button onclick={e => {
+                    Front.dat.c = "abc"
+                }}>设置
+                </button>
             </p>
         </div>
 

@@ -51,6 +51,7 @@ export function array<T>(type: { new (...paras: any[]): T }, val?: T[]): T[] {
     // });
     return val;
 }
+
 export interface ShowAbleErr extends Error {
     showMsg: boolean;
 }
@@ -126,14 +127,15 @@ export class dfv {
         return "";
     }
 
-    static dateToY_M_D(p: Date | number, symb = "-") {
-        let d = typeof p === "number" ? new Date(p as any) : p as Date
+    static dateToY_M_D(p: Date | number | string, symb = "-") {
+        let d = p instanceof Date ? p as Date : new Date(p as any);
         return d.getFullYear() + symb + (d.getMonth() + 1) + symb + d.getDate();
     }
 
 
-    static dateToY_M_D_H_M_S(p: Date | number, showSecond = true) {
-        let d = typeof p === "number" ? new Date(p as any) : p as Date
+    static dateToY_M_D_H_M_S(p: Date | number | string, showSecond = true) {
+
+        let d = p instanceof Date ? p as Date : new Date(p as any);
         return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " "
             + d.getHours() + ":" + d.getMinutes() + (showSecond ? (":" + d.getSeconds()) : "");
     }

@@ -67,13 +67,13 @@ class dfvWindow {
                 return;
             if (this.dialog.offsetWidth < document.documentElement.clientWidth) {
                 let w = document.documentElement.clientWidth - this.dialog.offsetWidth;
-                w = w & (~2);
+                w = w & (~3);
                 this.dialog.style.marginLeft = (w >> 1) + "px";
             }
             this.divContent.style.maxWidth = document.documentElement.clientWidth - 40 + "px";
             if (this.dialog.offsetHeight < document.documentElement.clientHeight) {
                 let h = (Math.floor((document.documentElement.clientHeight - this.dialog.offsetHeight) / 3));
-                h = h & (~2);
+                h = h & (~3);
                 this.dialog.style.marginTop = h + "px";
             }
             this.divContent.style.maxHeight = document.documentElement.clientHeight - 45 + "px";
