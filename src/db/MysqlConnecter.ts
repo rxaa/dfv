@@ -173,7 +173,7 @@ export class MysqlConnecter implements ISqlConnecter {
      * 执行事务操作
      * @param func 事务内容（通过抛异常来rollback中断事务）
      */
-    transaction(func: () => Promise<void>): Promise<void> {
+    transaction(func: (conTran: ISqlConnecter) => Promise<void>): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.pool.getConnection((err, conn) => {
                 if (err) {
@@ -184,6 +184,7 @@ export class MysqlConnecter implements ISqlConnecter {
                     return;
                 }
 
+
                 conn.beginTransaction(err => {
                     if (err) {
                         if (this.config.sqlErrorLog)
@@ -191,9 +192,11 @@ export class MysqlConnecter implements ISqlConnecter {
                         reject(err);
                         return;
                     }
-                    this.transactionConn = conn;
-                    func().then(() => {
-                        this.transactionConn = null;
+                    let tran = new MysqlConnecter(this.config, this.pool);
+                    tran.transactionConn = conn;
+
+                    func(tran).then(() => {
+                        // this.transactionConn = null;
                         conn.commit(err => {
                             try {
                                 conn.release();
@@ -212,7 +215,7 @@ export class MysqlConnecter implements ISqlConnecter {
                             resolve();
                         });
                     }).catch(err => {
-                        this.transactionConn = null;
+                        // this.transactionConn = null;
                         if (this.config.sqlErrorLog)
                             dfvLog.write("beginTransaction catch error", err);
                         conn.rollback(() => {

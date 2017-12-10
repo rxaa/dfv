@@ -73,5 +73,5 @@ export interface ISqlConnecter {
      * 执行事务操作
      * @param func 事务内容（通过抛异常来rollback中断事务）
      */
-    transaction(func: () => Promise<void>): Promise<void>;
+    transaction(func: (tra:ISqlConnecter) => Promise<void>): Promise<void>;
 }

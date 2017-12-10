@@ -4,7 +4,7 @@ import {ISqlConnecter} from "./ISqlConnecter";
 import {ArrayCache, sql} from "../public/sql";
 import {ISqlSelectField, SelectOrderType} from "./ISqlField";
 
-export interface ISqlSelectFieldBuilder <T> extends  ISqlSelectField<T>{
+export interface ISqlSelectFieldBuilder<T> extends ISqlSelectField<T> {
     /**
      * in 条件
      * @param val 可以是单个值,或number数组,或SqlBuilder子查询
@@ -85,6 +85,15 @@ export class SqlBuilder<TC> {
         return this.tableName;
     }
 
+
+    /**
+     * 事务链接
+     * @param {ISqlConnecter} con
+     */
+    transaction(con: ISqlConnecter): this {
+        this.sqlCon = con;
+        return this;
+    }
 
     /**
      * 表元信息
@@ -576,7 +585,6 @@ export class SqlBuilder<TC> {
             this.groupByStr = this.builderList(" group by ", ",");
         return this;
     }
-
 
 
     /**

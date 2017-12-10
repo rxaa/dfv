@@ -21,7 +21,7 @@ class DBcon implements ISqlConnecter {
         throw new Error("Method not implemented.");
     }
 
-    transaction(func: () => Promise<void>): Promise<void> {
+    transaction(func: (tra:ISqlConnecter) => Promise<void>): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
