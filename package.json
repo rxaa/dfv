@@ -1,6 +1,6 @@
 {
   "name": "dfv",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "web mvc framework",
   "main": "index.js",
   "types": "index.d.ts",
@@ -24,7 +24,7 @@
     "agentkeepalive": "^2.2.0",
     "formidable": "^1.1.1",
     "koa-router": "^7.2.1",
-    "mongodb": "^2.2.33",
+    "mongodb": "^2.2.34",
     "mysql": "^2.15.0",
     "reflect-metadata": "^0.1.10",
     "source-map-support": "^0.5.0"

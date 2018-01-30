@@ -7,6 +7,7 @@ import {Url} from 'url';
 import * as fs from 'fs';
 import * as zlib from "zlib"
 import {MapString} from "./public/dfv";
+import {Readable} from "stream";
 
 const agentkeepalive = require('agentkeepalive')
 
@@ -407,56 +408,74 @@ export class dfvHttpClient {
      * @returns {Promise<RespContent>}
      */
     download(toFile: string, tempFile = true): Promise<RespContent> {
-        let newFile = toFile + ".temp";
-        let write = fs.createWriteStream(newFile);
-        this.setGet();
-        let error: any = null;
-        let resContent = "";
-        return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
-            this.respContent(null, (dat, resp) => {
 
-                if (error) {
+        return new Promise<RespContent>((resolve: (dat: RespContent) => void, reject) => {
+            let newFile = toFile + ".temp";
+            let write = fs.createWriteStream(newFile);
+            this.setGet();
+            let error: any = null;
+            let resContent = "";
+
+            let cb = (res: IncomingMessage) => {
+                if (res.statusCode != 200) {
+                    resolve(this.setResp(toFile, res));
                     return;
                 }
 
-                if (dat) {
-                    if (resp.statusCode != 200) {
-                        resContent += dat;
-                    }
-                    else {
-                        write.write(dat, (err: Error) => {
-                            if (!err)
-                                return;
-                            error = err
-                            resp.destroy(err)
-                            write.close();
-                            reject(err);
-                        })
-                    }
+                let encode = res.headers["content-encoding"];
+
+                let read: Readable = res;
+
+                if (encode && encode.indexOf("gzip") >= 0) {
+                    var gzip = zlib.createGunzip();
+                    read = res.pipe(gzip);
                 }
-                else {
-                    write.close();
-                    if (resp.statusCode == 200) {
+                read
+                    .on("end", () => {
+                        write.end();
+                        if (error)
+                            return;
+
                         fs.rename(newFile, toFile, err => {
                             if (err) {
                                 reject(err);
                                 return;
                             }
-                            resolve(this.setResp(toFile, resp));
+                            resolve(this.setResp(toFile, res));
                         })
+                    })
+                    .on("error", (err: Error) => {
+                        if (!error) {
+                            error = err;
+                            reject(err);
+                        }
+
+                    });
+                write.on("error", (err: Error) => {
+                    if (!error) {
+                        error = err;
+                        reject(err);
                     }
-                    else {
-                        resolve(this.setResp(resContent, resp));
-                    }
+                });
+                read.pipe(write);
+
+            }
+
+            if (this.isHttps()) {
+                var req = https.request(this.options, cb);
+            }
+            else {
+                var req = http.request(this.options, cb);
+            }
+            req.on('error', (err) => {
+                if (!error) {
+                    error = err;
+                    reject(err);
                 }
-            }, err => {
-                write.close();
-                if (error) {
-                    return;
-                }
-                reject(err);
-            })
+            });
+            req.end();
         });
+
     }
 
 
