@@ -416,7 +416,16 @@ export class dfvHttpClient {
             let error: any = null;
             let resContent = "";
 
+            let reque = () => {
+            }
+
             let cb = (res: IncomingMessage) => {
+                if (res.statusCode == 302 && res.headers["location"]) {
+                    this.setUrl(res.headers["location"] as string)
+                    reque();
+                    return;
+                }
+
                 if (res.statusCode != 200) {
                     resolve(this.setResp(toFile, res));
                     return;
@@ -461,19 +470,22 @@ export class dfvHttpClient {
 
             }
 
-            if (this.isHttps()) {
-                var req = https.request(this.options, cb);
-            }
-            else {
-                var req = http.request(this.options, cb);
-            }
-            req.on('error', (err) => {
-                if (!error) {
-                    error = err;
-                    reject(err);
+            reque = () => {
+                if (this.isHttps()) {
+                    var req = https.request(this.options, cb);
                 }
-            });
-            req.end();
+                else {
+                    var req = http.request(this.options, cb);
+                }
+                req.on('error', (err) => {
+                    if (!error) {
+                        error = err;
+                        reject(err);
+                    }
+                });
+                req.end();
+            }
+            reque();
         });
 
     }
