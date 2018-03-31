@@ -1,6 +1,6 @@
-import {dfv, MapNumber} from "./dfv";
-import {dfvFront} from "./dfvFront";
-import {IFieldRes, valid} from "./valid";
+import { dfv, MapNumber } from "./dfv";
+import { dfvFront } from "./dfvFront";
+import { IFieldRes, valid } from "./valid";
 
 /**
  * 绑定字段的类型
@@ -108,7 +108,7 @@ export class dfvBindDom {
     /**
      * 对应的dom
      */
-    public html: HTMLElement;
+    public html!: HTMLElement;
 
     /**
      * 是否可编辑,用于valid.check时判断
@@ -128,7 +128,7 @@ export class dfvBindDom {
     /**
      * 是否取消双向绑定
      */
-    public cancelDoubleBind: boolean;
+    public cancelDoubleBind: boolean = false;
 
     /**
      * 验证函数
@@ -148,7 +148,7 @@ export class dfvBindDom {
     constructor(/**
                  * 绑定的函数
                  */
-                public bindFunc: (e: HTMLElement) => any) {
+        public bindFunc: (e: HTMLElement) => any) {
     }
 
     /**
@@ -238,19 +238,19 @@ export class BindField {
     constructor(/**
                  * 绑定属性的值
                  */
-                public val: any,
-                /**
-                 * 属性类型
-                 */
-                public type: BindFieldType,
-                /**
-                 * 属性名
-                 */
-                public fieldName?: string,
-                /**
-                 * 属性所属对象
-                 */
-                public parent?: any) {
+        public val: any,
+        /**
+         * 属性类型
+         */
+        public type: BindFieldType,
+        /**
+         * 属性名
+         */
+        public fieldName?: string,
+        /**
+         * 属性所属对象
+         */
+        public parent?: any) {
 
     }
 

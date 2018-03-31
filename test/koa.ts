@@ -1,17 +1,16 @@
-import {dfvLib} from "../src/dfvLib";
+import { dfvLib } from "../src/dfvLib";
 import * as http from 'http';
 import * as Koa from "koa";
 import * as net from "net";
 // import logger = require('koa-logger')
-import {dfv} from "../src/public/dfv";
-import {dfvLog} from "../src/dfvLog";
-import {route} from "../src/control/route";
+import { dfv } from "../src/public/dfv";
+import { dfvLog } from "../src/dfvLog";
+import { route } from "../src/control/route";
 import * as path from "path";
 import * as Router from "koa-router";
 
 dfvLib.init(__dirname);
 
-import bodyParser = require("koa-bodyparser");
 
 /**
  * 中间件集合：
@@ -22,7 +21,6 @@ const app = new Koa();
 app.use((ctx: Koa.Context, next: Function) => next().catch((err: Error) => {
     ctx.params
     ctx.request.query
-    ctx.request.body
     console.error(err)
     ctx.status = 500;
     ctx.body = "服务器内部错误";
@@ -46,7 +44,6 @@ app.use((ctx: Koa.Context, next: Function) => next().catch((err: Error) => {
 // app.use(helmet())
 
 
-app.use(bodyParser())
 
 //压缩
 // app.use(compress({

@@ -31,9 +31,6 @@ class IFieldRes {
     }
 }
 exports.IFieldRes = IFieldRes;
-class FileMultiple {
-}
-exports.FileMultiple = FileMultiple;
 class valid {
     constructor(func, type) {
         this.func = func;

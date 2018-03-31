@@ -1,6 +1,6 @@
-import {SqlTableField} from "./SqlTableField";
-import {MapString} from "../public/dfv";
-import {sql} from "../public/sql";
+import { SqlTableField } from "./SqlTableField";
+import { MapString } from "../public/dfv";
+import { sql } from "../public/sql";
 
 
 export class SqlTableInfo {

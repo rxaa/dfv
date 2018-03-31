@@ -184,6 +184,9 @@ class dfvFront {
                 dfvFront.onCatchError(e);
             }
         }
+        // else if (args instanceof Node) {
+        // elem.appendChild(args);
+        // }
         else if (args instanceof Array) {
             for (var a of args) {
                 dfvFront.addEle(elem, a);

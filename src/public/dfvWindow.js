@@ -35,7 +35,7 @@ class dfvWindow {
                 this.divCover = null;
                 this.divContent = null;
                 let dia = this.dialog;
-                this.dialog = null;
+                this.dialog = undefined;
                 if (window.history.pushState) {
                     dia.className += " anim_out";
                     setTimeout(() => {

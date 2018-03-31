@@ -124,7 +124,7 @@ function bindProt(elem, key, bindFun) {
         bindFields = list;
         ret = bindFun.bindFunc(elem);
     });
-    if (bindFields.length < 1)
+    if (bindFields.length < 1) //未找到可绑定对象
         return ret;
     bindFun.protoName = key;
     if (!bindFun.cancelDoubleBind) {

@@ -1,21 +1,21 @@
-import {MongoConnect} from "./MongoConnect";
-import {MongoTable} from "./MongoTable";
-import {Collection, DeleteWriteOpResultObject, ObjectID, ReplaceOneOptions, UpdateWriteOpResult} from "mongodb";
-import {MongoField} from "./MongoField";
-import {SqlBuilder} from "./SqlBuilder";
-import {IMongoOrderField, IMongoSelectField} from "./IMongoField";
-import {ArrayCache, sql} from "../public/sql";
-import {dfvLog} from "../dfvLog";
-import {dfvLib, PreciseTime} from "../dfvLib";
+import { MongoConnect } from "./MongoConnect";
+import { MongoTable } from "./MongoTable";
+import { Collection, DeleteWriteOpResultObject, ObjectID, ReplaceOneOptions, UpdateWriteOpResult } from "mongodb";
+import { MongoField } from "./MongoField";
+import { SqlBuilder } from "./SqlBuilder";
+import { IMongoOrderField, IMongoSelectField } from "./IMongoField";
+import { ArrayCache, sql } from "../public/sql";
+import { dfvLog } from "../dfvLog";
+import { dfvLib, PreciseTime } from "../dfvLib";
 
 
 export type SelectMongoFieldType<T> = {
     [P in keyof T]: IMongoSelectField<T[P]> & number & SelectMongoFieldType<T[P]>
-    };
+};
 
 export type SelectMongoOrderType<T> = {
     [P in keyof T]: IMongoOrderField & number & SelectMongoOrderType<T[P]>
-    };
+};
 
 export class MongoBuilder<TC extends any> {
     //查询或删除条件
@@ -54,7 +54,7 @@ export class MongoBuilder<TC extends any> {
     }
 
 
-    constructor(private className: { new (): TC; }, public connect: MongoConnect, tableName?: string) {
+    constructor(private className: { new(): TC; }, public connect: MongoConnect, tableName?: string) {
         if (this.metaTableInfo() == null) {
             this.setMetaTableInfo(new MongoTable(className))
         }
@@ -183,11 +183,11 @@ export class MongoBuilder<TC extends any> {
      * 生成sql语句值列表
      * @param func
      */
-    private makeFunc(func: (f: TC) => any) {
+    private makeFunc(func: (f: any) => any) {
         MongoField.runFunc(this.metaTableInfo(), func, this.valList);
     }
 
-    private makeUpdate(func: ((f: TC) => any) | null | undefined, obj: any) {
+    private makeUpdate(func: ((f: any) => any) | null | undefined, obj: any) {
         if (!func)
             return;
         let old = this.metaTableInfo().update_;
@@ -243,7 +243,7 @@ export class MongoBuilder<TC extends any> {
             this.filter_ = MongoField.makeWhere(func, this.valList);
         }
         else {
-            this.filter_ = {$and: [this.filter_, MongoField.makeWhere(func, this.valList)]}
+            this.filter_ = { $and: [this.filter_, MongoField.makeWhere(func, this.valList)] }
         }
         return this;
     }
@@ -259,7 +259,7 @@ export class MongoBuilder<TC extends any> {
             this.filter_ = MongoField.makeWhere(func, this.valList);
         }
         else {
-            this.filter_ = {$or: [this.filter_, MongoField.makeWhere(func, this.valList)]}
+            this.filter_ = { $or: [this.filter_, MongoField.makeWhere(func, this.valList)] }
         }
         return this;
     }
@@ -293,10 +293,10 @@ export class MongoBuilder<TC extends any> {
 
 
     private getTableCacheMap() {
-        let map = (this.metaTableInfo()as any)[this.getCacheTable()] as Map<string | number | null | undefined, TC[]>;
+        let map = (this.metaTableInfo() as any)[this.getCacheTable()] as Map<string | number | null | undefined, TC[]>;
         if (!map) {
             map = new Map<string | number, TC[]>();
-            (this.metaTableInfo()as any)[this.getCacheTable()] = map;
+            (this.metaTableInfo() as any)[this.getCacheTable()] = map;
             MongoTable.cacheMap.set(this.getCacheTable(), map);
         }
 
@@ -429,7 +429,7 @@ export class MongoBuilder<TC extends any> {
                 func(err);
                 return;
             }
-            con.collection(this.tableName, {strict: true}, (err, coll) => {
+            con.collection(this.tableName, { strict: true }, (err, coll) => {
                 if (err) {
                     con.createCollection(this.tableName, (err, coll) => {
                         if (coll && this.metaTableInfo().index_.length > 0) {
@@ -498,7 +498,7 @@ export class MongoBuilder<TC extends any> {
                     return;
                 }
 
-                coll!.updateOne(this.filter_, field, {upsert: true}, (err, res) => {
+                coll!.updateOne(this.filter_, field, { upsert: true }, (err, res) => {
                     if (err) {
                         this.logErr(stack, err, "upsert: " + JSON.stringify(field));
                         reject(err);
@@ -842,7 +842,7 @@ export class MongoBuilder<TC extends any> {
                 if (this.connect.cfg.slowLog !== void 0)
                     var lastTime = dfvLib.getPreciseTime();
 
-                con.collection(this.tableName).updateOne({_id: obj["_id"]}, {"$set": obj} as any, (err: Error, res: UpdateWriteOpResult) => {
+                con.collection(this.tableName).updateOne({ _id: obj["_id"] }, { "$set": obj } as any, (err: Error, res: UpdateWriteOpResult) => {
                     if (err) {
                         this.logErr(stack, err, "updateById: " + JSON.stringify(obj));
                         reject(err);

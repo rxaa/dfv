@@ -1,8 +1,8 @@
-import {SqlTableField} from "./SqlTableField";
-import {SqlTableInfo} from "./SqlTableInfo";
-import {ISqlConnecter} from "./ISqlConnecter";
-import {ArrayCache, sql} from "../public/sql";
-import {ISqlSelectField, SelectOrderType} from "./ISqlField";
+import { SqlTableField } from "./SqlTableField";
+import { SqlTableInfo } from "./SqlTableInfo";
+import { ISqlConnecter } from "./ISqlConnecter";
+import { ArrayCache, sql } from "../public/sql";
+import { ISqlSelectField, SelectOrderType } from "./ISqlField";
 
 export interface ISqlSelectFieldBuilder<T> extends ISqlSelectField<T> {
     /**
@@ -20,7 +20,7 @@ export interface ISqlSelectFieldBuilder<T> extends ISqlSelectField<T> {
 
 export type SelectFieldTypeBuilder<T> = {
     [P in keyof T]: ISqlSelectFieldBuilder<T[P]> & number
-    };
+};
 
 export class SqlBuilder<TC> {
 
@@ -35,11 +35,11 @@ export class SqlBuilder<TC> {
      */
     private sqlStr = "";
     private whereStr = "";
-    private limitStr: string | null;
-    private orderStr: string | null;
-    private groupByStr: string | null;
-    private selectStr: string | null;
-    private setStr: string | null;
+    private limitStr: string | undefined;
+    private orderStr: string | undefined;
+    private groupByStr: string | undefined;
+    private selectStr: string | undefined;
+    private setStr: string | undefined;
 
     /**
      * 储存func条件表达式中的值列表
@@ -58,8 +58,8 @@ export class SqlBuilder<TC> {
      * @param sqlCon 数据库链接对象
      * @param tableName 可选,额外指定表名(连表操作等...)
      */
-    constructor(private className: { new (): TC; }, public sqlCon: ISqlConnecter, tableName?: string
-        | { new (): any; }
+    constructor(private className: { new(): TC; }, public sqlCon: ISqlConnecter, tableName?: string
+        | { new(): any; }
         | SqlBuilder<any>
         | ISqlJoin) {
 
@@ -295,11 +295,11 @@ export class SqlBuilder<TC> {
     /**
      * 记录多表链接的对象
      */
-    private joinObjs: Array<SqlTableInfo>
+    private joinObjs: Array<SqlTableInfo> | undefined
 
-    private makeJoin<T1>(right: { new (): T1; },
-                         func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1> & T1) => any,
-                         where: string) {
+    private makeJoin<T1>(right: { new(): T1; },
+        func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1> & T1) => any,
+        where: string) {
 
         if (!this.joinObjs)
             this.joinObjs = [this.metaTableInfo()];
@@ -328,7 +328,7 @@ export class SqlBuilder<TC> {
      * @param func on 条件表达式
      * @returns {SqlBuilder}
      */
-    innerJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
+    innerJoin<T1>(right: { new(): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " inner join ");
         return this as any;
@@ -340,7 +340,7 @@ export class SqlBuilder<TC> {
      * @param func
      * @returns {SqlBuilder}
      */
-    leftJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
+    leftJoin<T1>(right: { new(): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " left join ");
         return this as any;
@@ -352,7 +352,7 @@ export class SqlBuilder<TC> {
      * @param func on 条件表达式
      * @returns {SqlBuilder} 用于SqlBuilder构造函数的tableName
      */
-    rightJoin<T1>(right: { new (): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
+    rightJoin<T1>(right: { new(): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " right join ");
         return this as any;
@@ -367,17 +367,17 @@ export class SqlBuilder<TC> {
 
         if (this.groupByStr) {
             this.sqlStr += this.groupByStr;
-            this.groupByStr = null;
+            this.groupByStr = undefined;
         }
 
         if (this.orderStr) {
             this.sqlStr += this.orderStr;
-            this.orderStr = null;
+            this.orderStr = undefined;
         }
 
         if (this.limitStr) {
             this.sqlStr += this.limitStr;
-            this.limitStr = null;
+            this.limitStr = undefined;
         }
     }
 
@@ -390,7 +390,7 @@ export class SqlBuilder<TC> {
 
         if (this.selectStr) {
             this.sqlStr += this.selectStr;
-            this.selectStr = null;
+            this.selectStr = undefined;
         }
         else {
             this.sqlStr += this.metaTableInfo().fieldsStr
@@ -407,7 +407,7 @@ export class SqlBuilder<TC> {
      * 生成sql语句值列表
      * @param func 单参数lambda
      */
-    protected makeFunc(func: (f: TC) => any) {
+    protected makeFunc(func: (f: any) => any) {
         let meta = this.metaTableInfo();
         var oldList = meta.valList;
         this.valList.length = 0;
@@ -902,24 +902,24 @@ export interface ISqlJoin {
 
 export interface SqlJoin3<T1, T2> extends ISqlJoin {
 
-    innerJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    innerJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    leftJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    leftJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    rightJoin<T3>(right: { new (): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    rightJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 }
 
 export interface SqlJoin4<T1, T2, T3> extends ISqlJoin {
 
-    innerJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    innerJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    leftJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    leftJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    rightJoin<T4>(right: { new (): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    rightJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 }

@@ -1,13 +1,13 @@
 import * as https from 'https';
-import {RequestOptions} from 'https';
+import { RequestOptions } from 'https';
 import * as http from 'http';
-import {ClientRequest, IncomingMessage} from 'http';
+import { ClientRequest, IncomingMessage } from 'http';
 import * as url from 'url';
-import {Url} from 'url';
+import { Url } from 'url';
 import * as fs from 'fs';
 import * as zlib from "zlib"
-import {MapString} from "./public/dfv";
-import {Readable} from "stream";
+import { MapString } from "./public/dfv";
+import { Readable } from "stream";
 
 const agentkeepalive = require('agentkeepalive')
 
@@ -190,7 +190,7 @@ export class dfvHttpClient {
 
     static agent = new HttpAgent();
 
-    cookie: HttpCookie | null;
+    cookie: HttpCookie | undefined;
 
     charset = "UTF-8";
 
@@ -212,7 +212,7 @@ export class dfvHttpClient {
         if (able)
             this.cookie = new HttpCookie();
         else
-            this.cookie = null;
+            this.cookie = undefined;
         return this;
     }
 
@@ -495,7 +495,7 @@ export class dfvHttpClient {
         return this.resp = {
             content: content,
             code: resp.statusCode || 500,
-            headers: resp.headers,
+            headers: resp.headers as IHttpHeaders,
             message: resp.statusMessage || "",
         }
     }
@@ -596,7 +596,7 @@ export class dfvHttpClient {
         });
     }
 
-    private req: http.ClientRequest
+    private req: http.ClientRequest | undefined
 
     /**
      *
@@ -605,8 +605,8 @@ export class dfvHttpClient {
      * @param onErr 错误回调
      */
     private respContent(reqFunc: ((req: ClientRequest) => void) | null,
-                        func: (dat: Buffer | string | null, resp: IncomingMessage) => void,
-                        onErr?: (err: Error) => void) {
+        func: (dat: Buffer | string | null, resp: IncomingMessage) => void,
+        onErr?: (err: Error) => void) {
 
         let cb = (res: IncomingMessage) => {
             // res.setEncoding("binary");

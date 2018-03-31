@@ -1,14 +1,14 @@
-import {valid} from "../../src/public/valid";
-import {TestReq2} from "../models/TestReq1";
-import {route} from "../../src/control/route";
-import {ExpressCtx, KoaCtx} from "../ICtx";
-import {dfv} from "../../src/public/dfv";
-import {TestFile, TestFile2} from "../models/TestFile";
+import { valid } from "../../src/public/valid";
+import { TestReq2 } from "../models/TestReq1";
+import { route } from "../../src/control/route";
+import { ExpressCtx, KoaCtx } from "../ICtx";
+import { dfv } from "../../src/public/dfv";
+import { TestFile, TestFile2 } from "../models/TestFile";
 
 @route.path("")
 export class HomeController {
-    ctx: ExpressCtx;
-    ctx2: KoaCtx;
+    ctx!: ExpressCtx;
+    ctx2!: KoaCtx;
 
     @route.get("/")
     async index(@valid.int() aa: number, @route.fromUrl ss: TestReq2) {

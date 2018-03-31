@@ -1,4 +1,4 @@
-import {dfv} from "./dfv";
+import { dfv } from "./dfv";
 
 export interface ArrayCache {
     __ReadCount?: number;
@@ -225,7 +225,7 @@ export class sql {
     }
 
     static getCacheWhere(table: { new(): any; }) {
-        return dfv.getData(table, "sql.cacheWhere", "") as (id: string | number) => string | Object;
+        return dfv.getData(table, "sql.cacheWhere", "") as (id: string | number | null) => string | Object;
     }
 
     /**

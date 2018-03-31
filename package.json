@@ -1,6 +1,6 @@
 {
   "name": "dfv",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "web mvc framework",
   "main": "index.js",
   "types": "index.d.ts",
@@ -17,32 +17,32 @@
     "typescript"
   ],
   "dependencies": {
-    "@types/formidable": "^1.0.29",
-    "@types/mongodb": "^2.2.15",
+    "@types/formidable": "^1.0.30",
+    "@types/mongodb": "^2.2.20",
     "@types/mysql": "^0.0.34",
-    "@types/node": "^8.0.49",
+    "@types/node": "^8.10.1",
     "agentkeepalive": "^2.2.0",
-    "formidable": "^1.1.1",
-    "koa-router": "^7.2.1",
-    "mongodb": "^2.2.34",
+    "formidable": "^1.2.1",
+    "koa-router": "^7.4.0",
+    "mongodb": "^2.2.35",
     "mysql": "^2.15.0",
-    "reflect-metadata": "^0.1.10",
-    "source-map-support": "^0.5.0"
+    "reflect-metadata": "^0.1.12",
+    "source-map-support": "^0.5.4"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",
-    "@types/express": "^4.0.39",
-    "@types/koa": "^2.0.39",
+    "@types/express": "^4.11.1",
+    "@types/koa": "^2.0.44",
     "@types/koa-bodyparser": "^3.0.26",
     "@types/koa-compress": "^2.0.8",
-    "@types/koa-router": "^7.0.25",
-    "@types/mocha": "^2.2.44",
+    "@types/koa-router": "^7.0.27",
+    "@types/mocha": "^2.2.48",
     "body-parser": "^1.18.2",
-    "express": "^4.16.2",
-    "koa": "^2.4.1",
+    "express": "^4.16.3",
+    "koa": "^2.5.0",
     "koa-bodyparser": "^4.2.0",
     "koa-compress": "^2.0.0",
-    "koa-logger": "^3.1.0"
+    "koa-logger": "^3.2.0"
   },
   "engines": {
     "node": ">= 6.9.0"

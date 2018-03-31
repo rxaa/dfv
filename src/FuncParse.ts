@@ -22,7 +22,7 @@ export class FuncParse {
     paras: string[] = [];
     body: string = "";
     //函数名
-    funcName: string;
+    funcName: string="";
     /**
      * 函数体(去除形参部分)起始位置
      * @type {number}
@@ -300,7 +300,7 @@ export class FuncParse {
         }
     }
 
-    static parseLexicalPositive(funcStr: string, startPos: number, cb: (op: string, type: opType, pos?: number) => boolean | void) {
+    static parseLexicalPositive(funcStr: string, startPos: number, cb: (op: string, type: opType, pos: number) => boolean | void) {
         let symb = "";
         let type = opType.invalid;
         let i = startPos

@@ -72,8 +72,8 @@ exports.dfvBind = dfvBind;
  */
 class dfvBindDom {
     constructor(/**
-                     * 绑定的函数
-                     */ bindFunc) {
+                 * 绑定的函数
+                 */ bindFunc) {
         this.bindFunc = bindFunc;
         /**
          * 是否可编辑,用于valid.check时判断
@@ -87,6 +87,10 @@ class dfvBindDom {
          * 是否由编辑html元素触发的onset事件
          */
         this.isEditOnSet = false;
+        /**
+         * 是否取消双向绑定
+         */
+        this.cancelDoubleBind = false;
         /**
          * 错误显示函数
          */
@@ -134,20 +138,20 @@ exports.dfvBindDom = dfvBindDom;
  */
 class BindField {
     constructor(/**
-                     * 绑定属性的值
-                     */ val, 
-        /**
-         * 属性类型
-         */
-        type, 
-        /**
-         * 属性名
-         */
-        fieldName, 
-        /**
-         * 属性所属对象
-         */
-        parent) {
+                 * 绑定属性的值
+                 */ val, 
+    /**
+     * 属性类型
+     */
+    type, 
+    /**
+     * 属性名
+     */
+    fieldName, 
+    /**
+     * 属性所属对象
+     */
+    parent) {
         this.val = val;
         this.type = type;
         this.fieldName = fieldName;

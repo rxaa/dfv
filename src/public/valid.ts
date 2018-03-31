@@ -1,5 +1,5 @@
-import {ClassMetaData, dfv} from "./dfv";
-import {BindField} from "./dfvBind";
+import { ClassMetaData, dfv } from "./dfv";
+import { BindField } from "./dfvBind";
 
 
 export enum validType {
@@ -14,14 +14,14 @@ export class IFieldRes<T> {
     /**
      * 接收到的值
      */
-    val: T;
+    val!: T;
     /**
      * 错误提示
      */
     msg: string = valid.errMsg_;
 
     //字段缺省值
-    defaul: T;
+    defaul!: T;
 
     /**
      * 验证成功与否
@@ -70,7 +70,7 @@ export interface IncomingFormParse {
     };
 }
 
-export class FileMultiple {
+export interface FileMultiple {
     size: number;
     path: string;
     name: string;

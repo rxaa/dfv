@@ -1,8 +1,8 @@
-import {IMenthodInfo, IRouteComment, route} from "./route";
-import {IFieldRes, IncomingFormParse, valid} from "../public/valid";
-import {ReqRes, RouterPara} from "./dfvRouter";
-import {dfvForm} from "../dfvForm";
-import {dfvContext} from "../dfvContext";
+import { IMenthodInfo, IRouteComment, route } from "./route";
+import { IFieldRes, IncomingFormParse, valid } from "../public/valid";
+import { ReqRes, RouterPara } from "./dfvRouter";
+import { dfvForm } from "../dfvForm";
+import { dfvContext } from "../dfvContext";
 
 export interface IOnRouteParas {
     /**
@@ -37,12 +37,12 @@ export class dfvController {
     constructor(/**
                  * controller类型
                  */
-                public clas: { new(): any; },
-                /**
-                 * controller中成员方法名
-                 */
-                public methodName: string,
-                public info: IMenthodInfo, public router: RouterPara) {
+        public clas: { new(): any; },
+        /**
+         * controller中成员方法名
+         */
+        public methodName: string,
+        public info: IMenthodInfo, public router: RouterPara) {
 
         this.url = this.getUrl();
     }
@@ -74,7 +74,7 @@ export class dfvController {
         return path;
     }
 
-    private multipart: (mutl: IncomingFormParse) => void;
+    private multipart: ((mutl: IncomingFormParse) => void) | undefined;
 
     /**
      * 构造验证函数
@@ -114,7 +114,7 @@ export class dfvController {
             else {
                 throw Error(this.clas.name + "." + this.methodName + `() 参数:${name} 暂不支持该类型！`);
             }
-            this.parasGetFunc.push(func);
+            this.parasGetFunc.push(func as (ctx: dfvContext, valid: IFieldRes<any>) => void);
         }
     }
 
@@ -136,7 +136,7 @@ export class dfvController {
     onRouteAsync(ctx: dfvContext) {
         //解析文件
         let form = dfvForm.newForm();
-        this.multipart(form);
+        this.multipart!(form);
 
 
         return dfvForm.parseModPromise(form, ctx).then(() => {
@@ -155,7 +155,7 @@ export class dfvController {
         var controlInst = new this.clas();
         controlInst.ctx = ctx;
         var paras: IOnRouteParas = {
-            valid: {ok: true, msg: "", val: null, defaul: null} as IFieldRes<any>,
+            valid: { ok: true, msg: "", val: null, defaul: null } as IFieldRes<any>,
             router: this,
             ctx: ctx,
             controller: controlInst,

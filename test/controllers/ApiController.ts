@@ -1,7 +1,7 @@
-import {dfvContext} from "../../src/dfvContext";
-import {route} from "../../src/control/route";
+import { dfvContext } from "../../src/dfvContext";
+import { route } from "../../src/control/route";
 export class ApiController {
-    ctx: dfvContext;
+    ctx!: dfvContext;
 
 
     @route.all()

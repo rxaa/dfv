@@ -1,5 +1,5 @@
 import * as React from './dfvReact'
-import {dfvFront} from "./dfvFront";
+import { dfvFront } from "./dfvFront";
 
 export interface PopWindowPara {
     /**
@@ -20,12 +20,12 @@ export interface PopWindowPara {
 export class dfvWindow {
 
     //主窗口
-    private dialog: HTMLDivElement | null;
+    private dialog: HTMLDivElement | undefined;
 
     //cover层
-    private divCover: HTMLDivElement | null;
+    private divCover: HTMLDivElement | undefined;
     //内容层
-    private divContent: HTMLDivElement | null;
+    private divContent: HTMLDivElement | undefined;
 
     static coverZ = 999;
 
@@ -86,16 +86,16 @@ export class dfvWindow {
             <div className={"pop_border anim_in " + c1}>
                 {
                     this.divContent =
-                        <div className="pop_cont">
-                            <div className="vmid pad5">
-                                {title}
-                            </div>
-                            {content ? <div style="margin-top: 10px">{content}</div> : null}
+                    <div className="pop_cont">
+                        <div className="vmid pad5">
+                            {title}
                         </div>
+                        {content ? <div style="margin-top: 10px">{content}</div> : null}
+                    </div>
                 }
                 <div className="absol_close">
                     <tt onclick={() => this.onButtonCancelClick()}
-                        className={"rotate_hover " + c2}/>
+                        className={"rotate_hover " + c2} />
                 </div>
             </div>
 
@@ -116,8 +116,8 @@ export class dfvWindow {
      * @returns {dfvWindow}
      */
     public showWithOk(title: string | HTMLElement,
-                      content: string | HTMLElement | null,
-                      onOk: (e: HTMLElement) => void) {
+        content: string | HTMLElement | null,
+        onOk: (e: HTMLElement) => void) {
         this.show(title, this.okWindow(content, onOk))
         return this;
     }
@@ -163,7 +163,7 @@ export class dfvWindow {
             this.divCover = null as any;
             this.divContent = null as any;
             let dia = this.dialog;
-            this.dialog = null;
+            this.dialog = undefined;
             if (window.history.pushState) {
                 dia.className += " anim_out";
                 setTimeout(() => {
