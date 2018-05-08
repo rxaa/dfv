@@ -1,6 +1,6 @@
 import assert = require('assert');
-import {valid} from "../../src/public/valid";
-import {dfvHttpClient} from "../../src/dfvHttpClient";
+import { valid } from "../../src/public/valid";
+import { dfvHttpClient } from "../../src/dfvHttpClient";
 
 
 require("../koa");
@@ -8,7 +8,6 @@ require("../express");
 
 
 describe('router Test', function () {
-
 
     const testFunc = async (port: number) => {
         let ht = new dfvHttpClient(`http://localhost:${port}/user/test1-333?name=abc&val=3`);

@@ -1,9 +1,9 @@
 import assert = require('assert');
-import {dfvHttpClient, HttpCookie} from "../../src/dfvHttpClient";
-import {array, ARRAY_TYPE, arrayNumber, arrayString, dfv} from "../../src/public/dfv";
-import {FuncParse} from "../../src/FuncParse";
+import { dfvHttpClient, HttpCookie } from "../../src/dfvHttpClient";
+import { array, ARRAY_TYPE, arrayNumber, arrayString, dfv } from "../../src/public/dfv";
+import { FuncParse } from "../../src/FuncParse";
 import * as fs from "fs";
-import {dfvFile} from "../../src/dfvFile";
+import { dfvFile } from "../../src/dfvFile";
 require("../../src/public/dfvFuncExt")
 class testP {
     a = 2;
@@ -13,6 +13,8 @@ class testP {
 class testSub {
     c = 1;
 }
+
+
 
 function testParse(a: any, b: any = (aaaa: any, vvv: any) => {
 }, c: any = "ss", d: any) {
@@ -162,7 +164,7 @@ describe('sdf Test', function () {
         assert.equal(a.binarySearch(r => 4 - r), -1);
         assert.equal(a.binarySearch(r => 5 - r), -1);
 
-        let b = [{a: "1"}, {a: "2"}, {a: "3"}];
+        let b = [{ a: "1" }, { a: "2" }, { a: "3" }];
 
         assert.equal(b.binarySearch(r => "1".localeCompare(r.a)), 0);
         assert.equal(b.binarySearch(r => "2".localeCompare(r.a)), 1);

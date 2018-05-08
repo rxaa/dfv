@@ -1,11 +1,10 @@
-import {IPoolConfig} from "mysql";
-import {MysqlConfig} from "../src/db/ISqlConnecter";
-import {MysqlConnecter} from "../src/db/MysqlConnecter";
-import {MongoCfg, MongoConnect} from "../src/db/MongoConnect";
-
+import { MysqlConfig } from "../src/db/ISqlConnecter";
+import { MysqlConnecter } from "../src/db/MysqlConnecter";
+import { MongoCfg, MongoConnect } from "../src/db/MongoConnect";
+import * as mysql from "mysql";
 
 export class db {
-    static configMysql: IPoolConfig & MysqlConfig = {
+    static configMysql: mysql.ConnectionConfig & MysqlConfig = {
         host: '127.0.0.1',
         user: 'root',
         password: '123456',

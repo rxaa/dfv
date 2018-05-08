@@ -10,7 +10,7 @@ import * as path from "path";
 import * as Router from "koa-router";
 
 dfvLib.init(__dirname);
-
+import bodyParser = require("koa-bodyparser");
 
 /**
  * 中间件集合：
@@ -55,6 +55,18 @@ app.use((ctx: Koa.Context, next: Function) => next().catch((err: Error) => {
 // }));
 
 
+
+app.use(bodyParser());
+
+let router = new Router();
+
+router.get("/user/test", async (ctx) => {
+    ctx.body = "ok";
+
+});
+app.use(router.routes());
+
+
 route.load(app, [{
     menu: path.join(dfv.root, 'controllers'),
     onRoute: async (dat) => {
@@ -78,14 +90,6 @@ route.load(app, [{
     }
 }]);
 
-
-let router = new Router();
-
-router.get("/user/test", async (ctx) => {
-    ctx.body = "ok";
-
-});
-app.use(router.routes());
 http.createServer(app.callback()).listen(3001, () => {
     console.log('koa server listening on port 3001');
 }).on('connection', function (socket: net.Socket) {

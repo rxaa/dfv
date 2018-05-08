@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import {dfv} from "./public/dfv";
+import { dfv } from "./public/dfv";
 
 export class dfvFile {
 

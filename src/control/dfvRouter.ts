@@ -1,10 +1,10 @@
-import {dfvController, IOnRouteParas} from "./dfvController";
+import { dfvController, IOnRouteParas } from "./dfvController";
 import * as fs from "fs";
 import * as path from "path";
-import {dfvLog} from "../dfvLog";
-import {IMenthodInfo, route} from "./route";
+import { dfvLog } from "../dfvLog";
+import { IMenthodInfo, route } from "./route";
 import * as http from "http";
-import {dfvContext} from "../dfvContext";
+import { dfvContext } from "../dfvContext";
 
 export interface RouterPara {
     /**
@@ -36,11 +36,11 @@ export class dfvRouter {
     constructor(/**
                  *  koa或express实例
                  */
-                public app: any,
-                /**
-                 * 路由参数
-                 */
-                public router: RouterPara) {
+        public app: any,
+        /**
+         * 路由参数
+         */
+        public router: RouterPara) {
         //通过context属性判断koa
         if (app.context) {
             const Router = require("koa-router");
@@ -111,7 +111,7 @@ export class dfvRouter {
      * @param method
      * @param info
      */
-    private addMethod(clas: { new (): any; }, method: string, info: IMenthodInfo) {
+    private addMethod(clas: { new(): any; }, method: string, info: IMenthodInfo) {
         let control = new dfvController(clas, method, info, this.router);
         dfvRouter.onRouterLoad(control);
         control.buildParasGetFunc();
@@ -132,13 +132,13 @@ export class dfvRouter {
      * @param method
      * @param info
      */
-    private addExpressMethod(clas: { new (): any; }, method: string, info: IMenthodInfo) {
+    private addExpressMethod(clas: { new(): any; }, method: string, info: IMenthodInfo) {
         let control = new dfvController(clas, method, info, this.router)
         dfvRouter.onRouterLoad(control);
         control.buildParasGetFunc();
 
         this.app[info.method](control.url, (req: any, resp: any, next: Function) => {
-            var ctx = {request: req, response: resp, isKoa: false} as any as dfvContext & ReqRes;
+            var ctx = { request: req, response: resp, isKoa: false } as any as dfvContext & ReqRes;
             if (!this.router.notJoinParamsAndQuery)
                 dfvRouter.joinObj(ctx.request.query, ctx.request.params);
 

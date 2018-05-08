@@ -1,14 +1,13 @@
-import {ISqlConnecter, IUpdateRes, MysqlConfig} from "./ISqlConnecter";
-import {IConnection, IPool, IPoolConfig} from "mysql";
+import { ISqlConnecter, IUpdateRes, MysqlConfig } from "./ISqlConnecter";
 import * as mysql from "mysql";
-import {dfvLib} from "../dfvLib";
-import {dfvLog} from "../dfvLog";
+import { dfvLib } from "../dfvLib";
+import { dfvLog } from "../dfvLog";
 
 
 export class MysqlConnecter implements ISqlConnecter {
 
 
-    constructor(public config: IPoolConfig & MysqlConfig, private pool: IPool = mysql.createPool(config)) {
+    constructor(public config: mysql.ConnectionConfig & MysqlConfig, private pool: mysql.Pool = mysql.createPool(config)) {
         if (config.maxCache === void 0) {
             config.maxCache = 10000;
         }
@@ -18,18 +17,19 @@ export class MysqlConnecter implements ISqlConnecter {
     /**
      * 事务链接，当开启事务模式时，该属性非空，且不能release()
      */
-    private transactionConn: IConnection | null = null;
+    private transactionConn: mysql.PoolConnection | null = null;
 
 
     query(sqlStr: string, res: (err: Error | null, rows: any[] | null) => void) {
         let errStack = new Error();
 
-        let queryFunc = (conn: IConnection) => {
+        let queryFunc = (conn: mysql.PoolConnection) => {
 
             //计时
             if (this.config.sqlSlowLog != null) {
                 var lastTime = dfvLib.getPreciseTime();
             }
+
 
             conn.query(sqlStr, (err, rows) => {
                 if (err) {
@@ -57,6 +57,7 @@ export class MysqlConnecter implements ISqlConnecter {
                     else
                         dfvLog.write(sqlStr);
                 }
+
 
                 if (!this.transactionConn)
                     conn.release();
@@ -100,9 +101,9 @@ export class MysqlConnecter implements ISqlConnecter {
     update(sqlStr: string, res: (err: Error | null, resault: IUpdateRes) => void) {
         var errStack = new Error();
 
-        let updateFunc = (conn: IConnection) => {
+        let updateFunc = (conn: mysql.PoolConnection) => {
             conn.query(sqlStr, (err, result) => {
-                var update: IUpdateRes = {affectCount: 0};
+                var update: IUpdateRes = { affectCount: 0 };
                 if (err) {
                     if (this.config.sqlErrorLog) {
                         errStack.message = err.message
@@ -142,7 +143,7 @@ export class MysqlConnecter implements ISqlConnecter {
                     if (this.config.sqlErrorLog) {
                         dfvLog.write("POOL getConnection error:\r\n" + sqlStr, err);
                     }
-                    res(err, {affectCount: 0});
+                    res(err, { affectCount: 0 });
                     return;
                 }
                 updateFunc(conn);
