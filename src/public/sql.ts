@@ -282,4 +282,17 @@ export class sql {
         return dfv.getData(table, "sql.tableName", "") as string;
     }
 
+    /**
+     * 将变量与函数体转换为浏览器可调用的字符串
+     * @param vari 传递的变量
+     * @param func 函数
+     */
+    static scriptVar(vari: Function, func: Function) {
+        let name = dfv.getFuncBody(vari);
+        let val = vari();
+        if (typeof val === "object")
+            return `<script>(function(){var ${name}=${JSON.stringify(val)};${dfv.getFuncBody(func)}})();</script>`
+        else
+            return `<script>(function(){var ${name}=${sql.filter(val)};${dfv.getFuncBody(func)}})();</script>`
+    }
 }

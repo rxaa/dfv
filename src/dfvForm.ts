@@ -1,11 +1,11 @@
 import * as formidable from "formidable";
-import {FileMultiple, IFieldRes, IncomingFormParse} from "./public/valid";
-import {dfv} from "./public/dfv";
+import { FileMultiple, IFieldRes, IncomingFormParse } from "./public/valid";
+import { dfv } from "./public/dfv";
 import * as fs from "fs";
-import {dfvLog} from "./dfvLog";
-import {dfvRouter} from "./control/dfvRouter";
-import {dfvContext} from "./dfvContext";
-import {dfvFile} from "./dfvFile";
+import { dfvLog } from "./dfvLog";
+import { dfvRouter } from "./control/dfvRouter";
+import { dfvContext } from "./dfvContext";
+import { dfvFile } from "./dfvFile";
 
 
 export class dfvForm {
@@ -18,7 +18,7 @@ export class dfvForm {
 
     static newForm() {
         let f = new formidable.IncomingForm() as formidable.IncomingForm & IncomingFormParse;
-        f.multipart = {fields: {}, files: {}}
+        f.multipart = { fields: {}, files: {} }
         return f;
     }
 
@@ -136,7 +136,6 @@ export class dfvForm {
             part.on('data', (buf: Buffer) => {
                 if (isFile) {
                     sizeCount += buf.length;
-                    console.log("data:" + buf.length);
                     if (form.maxFileSize && sizeCount > form.maxFileSize) {
                         form.emit("error", dfv.err("file size can not greater than : " + form.maxFileSize))
                     }
