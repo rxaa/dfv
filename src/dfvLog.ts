@@ -1,14 +1,14 @@
-import {dfv} from "./public/dfv";
+import { dfv } from "./public/dfv";
 import * as fs from "fs";
 import * as path from "path";
-import {dfvFile} from "./dfvFile";
+import { dfvFile } from "./dfvFile";
 export class dfvLog {
 
     /**
      * 日志目录
      * @type {string}
      */
-    static menu = dfv.root + "/runtime/logs";
+    static menuGet = () => dfv.root + "/runtime/logs";
 
     /**
      * 开启日志文件
@@ -41,7 +41,7 @@ export class dfvLog {
 
     static getCutFile(name: string) {
         let d = new Date();
-        return dfvLog.menu + "/" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + name;
+        return dfvLog.menuGet() + "/" + d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + name;
     }
 
 

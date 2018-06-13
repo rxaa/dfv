@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import {dfv} from "./public/dfv";
+import { dfv } from "./public/dfv";
 
 export class PreciseTime {
     constructor(private time: [number, number]) {
