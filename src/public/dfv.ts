@@ -1,4 +1,4 @@
-import {dfvFuncExtInit} from "./dfvFuncExt";
+import { dfvFuncExtInit } from "./dfvFuncExt";
 
 dfvFuncExtInit();
 
@@ -40,7 +40,7 @@ export function arrayString(val?: string[]): string[] {
     return val;
 }
 
-export function array<T>(type: { new (...paras: any[]): T }, val?: T[]): T[] {
+export function array<T>(type: { new(...paras: any[]): T }, val?: T[]): T[] {
     if (!val) {
         val = []
     }
@@ -635,6 +635,31 @@ export class dfv {
         return ret as Array<string>;
     }
 
+    /**
+     * 读取字串的所有行
+     * @param str 目标字串
+     * @param func 读取结果(返回false中断遍历)
+     */
+    static readLine(str: string, func: (line: string) => void | boolean) {
+        let line = "";
+        for (var i = 0; i < str.length; i++) {
+            var c = str[i];
+            if (c === "\n") {
+                if (func(line) === false)
+                    return;
+
+                line = "";
+                continue;
+            }
+
+            if (c === "\r")
+                continue;
+
+            line += c;
+        }
+        if (line.length > 0)
+            func(line);
+    }
 }
 
 

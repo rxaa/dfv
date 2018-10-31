@@ -67,8 +67,7 @@ class dfvWindow {
                 return;
             if (this.dialog.offsetWidth < document.documentElement.clientWidth) {
                 let w = document.documentElement.clientWidth - this.dialog.offsetWidth;
-                w = w & (~3);
-                this.dialog.style.marginLeft = (w >> 1) + "px";
+                this.dialog.style.marginLeft = ((w >> 1) & (~3)) + "px";
             }
             this.divContent.style.maxWidth = document.documentElement.clientWidth - 40 + "px";
             if (this.dialog.offsetHeight < document.documentElement.clientHeight) {

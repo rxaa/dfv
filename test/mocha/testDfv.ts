@@ -55,6 +55,19 @@ describe('sdf Test', function () {
         assert.equal(ao[ARRAY_TYPE], testSub);
         assert.equal(dfv.getArrayType(ao), testSub);
 
+        let s = "aaaa\r\nvvvvv\ndsdsd\rsdsdsdsds\ngfgfg\n\n"
+        let s2 = "";
+        let s3 = "\r\n";
+        let strRes = "";
+        dfv.readLine(s, line => { strRes += line + "-" });
+        assert.equal(strRes, "aaaa-vvvvv-dsdsdsdsdsdsds-gfgfg--");
+        strRes = "";
+        dfv.readLine(s2, line => { strRes += line + "-" });
+        assert.equal(strRes, "");
+        strRes = "";
+        dfv.readLine(s3, line => { strRes += line + "-" });
+        assert.equal(strRes, "-");
+
     });
 
 

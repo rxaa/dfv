@@ -193,18 +193,17 @@ export class dfvWindow {
         if (!this.dialog || !this.divContent)
             return;
 
-        if (this.dialog.offsetWidth < document.documentElement.clientWidth) {
-            let w = document.documentElement.clientWidth - this.dialog.offsetWidth;
-            w = w & (~3);
-            this.dialog.style.marginLeft = (w >> 1) + "px";
+        if (this.dialog.offsetWidth < document.documentElement!.clientWidth) {
+            let w = document.documentElement!.clientWidth - this.dialog.offsetWidth;
+            this.dialog.style.marginLeft = ((w >> 1) & (~3)) + "px";
         }
-        this.divContent.style.maxWidth = document.documentElement.clientWidth - 40 + "px";
-        if (this.dialog.offsetHeight < document.documentElement.clientHeight) {
-            let h = (Math.floor((document.documentElement.clientHeight - this.dialog.offsetHeight) / 3));
+        this.divContent.style.maxWidth = document.documentElement!.clientWidth - 40 + "px";
+        if (this.dialog.offsetHeight < document.documentElement!.clientHeight) {
+            let h = (Math.floor((document.documentElement!.clientHeight - this.dialog.offsetHeight) / 3));
             h = h & (~3);
             this.dialog.style.marginTop = h + "px";
         }
-        this.divContent.style.maxHeight = document.documentElement.clientHeight - 45 + "px";
+        this.divContent.style.maxHeight = document.documentElement!.clientHeight - 45 + "px";
     }
 
     private resizeTime: any;

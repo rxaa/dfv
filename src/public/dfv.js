@@ -506,6 +506,28 @@ class dfv {
         }
         return ret;
     }
+    /**
+     * 读取字串的所有行
+     * @param str 目标字串
+     * @param func 读取结果(返回false中断遍历)
+     */
+    static readLine(str, func) {
+        let line = "";
+        for (var i = 0; i < str.length; i++) {
+            var c = str[i];
+            if (c === "\n") {
+                if (func(line) === false)
+                    return;
+                line = "";
+                continue;
+            }
+            if (c === "\r")
+                continue;
+            line += c;
+        }
+        if (line.length > 0)
+            func(line);
+    }
 }
 dfv.root = "";
 dfv.meta = {

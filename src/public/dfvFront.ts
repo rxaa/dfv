@@ -1,4 +1,4 @@
-import {dfvWindow, PopWindowPara} from "./dfvWindow";
+import { dfvWindow, PopWindowPara } from "./dfvWindow";
 export enum HttpType {
     GET,
     POST,
@@ -62,7 +62,7 @@ export class dfvFront {
      * @param err
      */
     static onCatchError = (err: Error) => {
-        dfvFront.msgErr(err + "", {closeTime: 5 * 1000});
+        dfvFront.msgErr(err + "", { closeTime: 5 * 1000 });
         console.error(err);
     }
 
@@ -228,7 +228,7 @@ export class dfvFront {
                 dfvFront.addEle(elem, a);
             }
         }
-        else if ((args as Node).localName !== void 0) {
+        else if ((args as HTMLElement).localName !== void 0) {
             (elem as HTMLElement).appendChild(args);
         }
         else {
@@ -315,10 +315,10 @@ export class dfvFront {
         var elem = eleme as HTMLElement;
 
         if (typeof eleme === "string") {
-            elem = document.getElementById(eleme + "")  as HTMLElement;
+            elem = document.getElementById(eleme + "") as HTMLElement;
         }
         else if (typeof eleme === "number") {
-            elem = document.getElementById(eleme + "")  as HTMLElement;
+            elem = document.getElementById(eleme + "") as HTMLElement;
         }
 
         if (eleme == null)
