@@ -16,3 +16,4 @@
 /test/mocha/*.js
 /test/models/*.js
 /test/front/*.js
+/test/mocha/runtime

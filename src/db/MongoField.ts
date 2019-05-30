@@ -1,10 +1,10 @@
-import {MongoTable} from "./MongoTable";
-import {ObjectID} from "mongodb";
-import {dfv} from "../public/dfv";
-import {sql} from "../public/sql";
+import { MongoTable } from "./MongoTable";
+import { ObjectID } from "mongodb";
+import { dfv } from "../public/dfv";
+import { sql } from "../public/sql";
 export class MongoField {
 
-    private arrayType: MongoField|null = null;
+    private arrayType: MongoField | null = null;
 
 
     static getArrayType(val: any) {
@@ -26,9 +26,9 @@ export class MongoField {
     }
 
     constructor(public fieldName: string,
-                private table: MongoTable,
-                val: any,
-                private prevField?: MongoField|null) {
+        private table: MongoTable,
+        val: any,
+        private prevField?: MongoField | null) {
 
     }
 
@@ -160,10 +160,10 @@ export class MongoField {
 
         }
 
-        return MongoField.parseFunc({funStr: funStr, pos: pos, valList: valList, valCount: 0});
+        return MongoField.parseFunc({ funStr: funStr, pos: pos, valList: valList, valCount: 0 });
     }
 
-    static runFunc(table: MongoTable, func: (f: any)=>any, valList: any[], obj?: any) {
+    static runFunc(table: MongoTable, func: (f: any) => any, valList: any[], obj?: any) {
         let oldList = table.valList;
         valList.length = 0;
         table.valList = valList;
@@ -188,8 +188,8 @@ export class MongoField {
         table.valList = oldList;
     }
 
-    static parseFunc(dat: {funStr: string, pos: number,valList: any[],valCount: number}) {
-        let ret:any = {};
+    static parseFunc(dat: { funStr: string, pos: number, valList: any[], valCount: number }) {
+        let ret: any = {};
         // 当前操作符
         let op = "";
         let arr = Array<any>();
@@ -220,7 +220,7 @@ export class MongoField {
                 }
                 else if (op === "$or") {
                     let newArr = [arr.pop()];
-                    arr.push({$and: newArr});
+                    arr.push({ $and: newArr });
                     arr = newArr;
                 }
 
@@ -234,7 +234,7 @@ export class MongoField {
                 }
                 else if (op === "$and") {
                     arr = [ret];
-                    ret = {$or: arr};
+                    ret = { $or: arr };
                 }
 
                 op = "$or";
@@ -303,7 +303,7 @@ export class MongoField {
             this.table.valList.push(MongoField.getValue(this.fieldName, val));
             return 1;
         }
-        var obj:any = {};
+        var obj: any = {};
         obj[name] = MongoField.getValue(this.fieldName, val);
         this.table.valList.push(obj);
         return 1;
@@ -316,11 +316,11 @@ export class MongoField {
     $regex(val: string) {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$regex: val});
+            this.table.valList.push({ $regex: val });
             return 1;
         }
-        var obj:any = {};
-        obj[name] = {$regex: val};
+        var obj: any = {};
+        obj[name] = { $regex: val };
         this.table.valList.push(obj);
         return 1;
     }
@@ -355,13 +355,13 @@ export class MongoField {
     notEq(val: number): number {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$ne: MongoField.getValue(this.fieldName, val)});
+            this.table.valList.push({ $ne: MongoField.getValue(this.fieldName, val) });
             return 1;
         }
 
 
-        var obj:any = {};
-        obj[name] = {'$ne': MongoField.getValue(this.fieldName, val)};
+        var obj: any = {};
+        obj[name] = { '$ne': MongoField.getValue(this.fieldName, val) };
         this.table.valList.push(obj);
         return 1;
     }
@@ -373,12 +373,12 @@ export class MongoField {
     le(val: number): number {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$lt: MongoField.getValue(this.fieldName, val)});
+            this.table.valList.push({ $lt: MongoField.getValue(this.fieldName, val) });
             return 1;
         }
 
-        var obj:any = {};
-        obj[name] = {$lt: MongoField.getValue(this.fieldName, val)};
+        var obj: any = {};
+        obj[name] = { $lt: MongoField.getValue(this.fieldName, val) };
         this.table.valList.push(obj);
         return 1;
     }
@@ -390,12 +390,12 @@ export class MongoField {
     gt(val: number): number {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$gt: MongoField.getValue(this.fieldName, val)});
+            this.table.valList.push({ $gt: MongoField.getValue(this.fieldName, val) });
             return 1;
         }
 
-        var obj:any = {};
-        obj[name] = {$gt: MongoField.getValue(this.fieldName, val)};
+        var obj: any = {};
+        obj[name] = { $gt: MongoField.getValue(this.fieldName, val) };
         this.table.valList.push(obj);
         return 1;
     }
@@ -407,12 +407,12 @@ export class MongoField {
     leEq(val: number): number {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$lte: MongoField.getValue(this.fieldName, val)});
+            this.table.valList.push({ $lte: MongoField.getValue(this.fieldName, val) });
             return 1;
         }
 
-        var obj:any = {};
-        obj[name] = {$lte: MongoField.getValue(this.fieldName, val)};
+        var obj: any = {};
+        obj[name] = { $lte: MongoField.getValue(this.fieldName, val) };
         this.table.valList.push(obj);
         return 1;
     }
@@ -424,12 +424,12 @@ export class MongoField {
     gtEq(val: number): number {
         var name = this.getFieldName();
         if (name.length == 0) {
-            this.table.valList.push({$gte: MongoField.getValue(this.fieldName, val)});
+            this.table.valList.push({ $gte: MongoField.getValue(this.fieldName, val) });
             return 1;
         }
 
-        var obj:any = {};
-        obj[name] = {$gte: MongoField.getValue(this.fieldName, val)};
+        var obj: any = {};
+        obj[name] = { $gte: MongoField.getValue(this.fieldName, val) };
         this.table.valList.push(obj);
         return 1;
     }
@@ -496,13 +496,13 @@ export class MongoField {
             if (notEach)
                 this.addUpdate('$addToSet', MongoField.getValue(this.fieldName, val));
             else
-                this.addUpdate('$addToSet', {$each: MongoField.getValue(this.fieldName, val)});
+                this.addUpdate('$addToSet', { $each: MongoField.getValue(this.fieldName, val) });
         }
         else {
             if (notEach)
                 this.addUpdate('$addToSet', [MongoField.getValue(this.fieldName, val)]);
             else
-                this.addUpdate('$addToSet', {$each: [MongoField.getValue(this.fieldName, val)]});
+                this.addUpdate('$addToSet', { $each: [MongoField.getValue(this.fieldName, val)] });
         }
 
         return 1;
@@ -518,13 +518,13 @@ export class MongoField {
         return 1;
     }
 
-    elemMatch(func: (f: any)=>any) {
+    elemMatch(func: (f: any) => any) {
 
     }
 
-    pull(func: (f: any)=>any) {
+    pull(func: (f: any) => any) {
         if (this.arrayType == null) {
-            throw Error("未定义数组类型:" + this.table.tableName + "." + this.getFieldName())
+            throw Error("undefined array type:" + this.table.tableName + "." + this.getFieldName())
         }
 
         MongoField.setArrayTypeName(this.arrayType, "");
@@ -546,7 +546,7 @@ export class MongoField {
 
     get $() {
         if (this.arrayType == null) {
-            throw Error("未定义数组类型:" + this.table.tableName + "." + this.getFieldName())
+            throw Error("undefined array type:" + this.table.tableName + "." + this.getFieldName())
         }
         MongoField.setArrayTypeName(this.arrayType, "$");
         return this.arrayType;
@@ -554,7 +554,7 @@ export class MongoField {
 
     at(index: number) {
         if (this.arrayType == null) {
-            throw Error("未定义数组类型:" + this.table.tableName + "." + this.getFieldName())
+            throw Error("undefined array type:" + this.table.tableName + "." + this.getFieldName())
         }
 
         if (index === void 0) {
@@ -568,44 +568,44 @@ export class MongoField {
     }
 
 
-    in(val: number|number[]): number {
+    in(val: number | number[]): number {
         var name = this.getFieldName();
         if (name.length == 0) {
             if (val instanceof Array)
-                this.table.valList.push({$in: MongoField.getValue(this.fieldName, val)});
+                this.table.valList.push({ $in: MongoField.getValue(this.fieldName, val) });
             else
-                this.table.valList.push({$in: [MongoField.getValue(this.fieldName, val)]});
+                this.table.valList.push({ $in: [MongoField.getValue(this.fieldName, val)] });
 
             return 1;
         }
 
 
-        var obj:any = {};
+        var obj: any = {};
         if (val instanceof Array)
-            obj[name] = {$in: MongoField.getValue(this.fieldName, val)};
+            obj[name] = { $in: MongoField.getValue(this.fieldName, val) };
         else
-            obj[name] = {$in: [MongoField.getValue(this.fieldName, val)]};
+            obj[name] = { $in: [MongoField.getValue(this.fieldName, val)] };
         this.table.valList.push(obj);
         return 1;
     }
 
-    notIn(val: number|number[]): number {
+    notIn(val: number | number[]): number {
         var name = this.getFieldName();
         if (name.length == 0) {
             if (val instanceof Array)
-                this.table.valList.push({$nin: MongoField.getValue(this.fieldName, val)});
+                this.table.valList.push({ $nin: MongoField.getValue(this.fieldName, val) });
             else
-                this.table.valList.push({$nin: [MongoField.getValue(this.fieldName, val)]});
+                this.table.valList.push({ $nin: [MongoField.getValue(this.fieldName, val)] });
 
             return 1;
         }
 
 
-        var obj:any = {};
+        var obj: any = {};
         if (val instanceof Array)
-            obj[name] = {$nin: MongoField.getValue(this.fieldName, val)};
+            obj[name] = { $nin: MongoField.getValue(this.fieldName, val) };
         else
-            obj[name] = {$nin: [MongoField.getValue(this.fieldName, val)]};
+            obj[name] = { $nin: [MongoField.getValue(this.fieldName, val)] };
         this.table.valList.push(obj);
         return 1;
     }
@@ -617,17 +617,17 @@ export class MongoField {
      * @param boolMode 是否开启IN BOOLEAN MODE
      */
     matchAgainst(str: string, boolMode?: boolean): number {
-        var obj = {$text: {$search: MongoField.getValue(this.fieldName, str)}};
+        var obj = { $text: { $search: MongoField.getValue(this.fieldName, str) } };
         this.table.valList.push(obj);
         return 1;
     }
 
-    all(val: number|number[]): number {
-        var obj:any = {};
+    all(val: number | number[]): number {
+        var obj: any = {};
         if (val instanceof Array)
-            obj[this.getFieldName()] = {$all: MongoField.getValue(this.fieldName, val)};
+            obj[this.getFieldName()] = { $all: MongoField.getValue(this.fieldName, val) };
         else
-            obj[this.getFieldName()] = {$all: [MongoField.getValue(this.fieldName, val)]};
+            obj[this.getFieldName()] = { $all: [MongoField.getValue(this.fieldName, val)] };
 
         this.table.valList.push(obj);
         return 1;

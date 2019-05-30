@@ -339,7 +339,7 @@ export class MongoBuilder<TC extends any> {
                 this.filter_ = this.metaTableInfo().cacheWhere!(id as string);
             }
             else {
-                reject(Error("没有指定sql.cacheId字段或cacheWhere"))
+                reject(Error("no 'sql.cacheId' filed or 'cacheWhere' condition"))
                 return;
             }
 

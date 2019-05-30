@@ -1,11 +1,11 @@
-import {MongoField} from "./MongoField";
-import {array} from "../public/dfv";
-import {sql} from "../public/sql";
+import { MongoField } from "./MongoField";
+import { array } from "../public/dfv";
+import { sql } from "../public/sql";
 export class MongoTable {
     /**
      * 所有表的缓存
      */
-    static cacheMap = new Map<string,Map<string|number|null|undefined,any[]>>();
+    static cacheMap = new Map<string, Map<string | number | null | undefined, any[]>>();
 
     static allTable = array(MongoTable);
 
@@ -36,9 +36,9 @@ export class MongoTable {
 
     cacheId = "";
 
-    cacheWhere: ((id: string|number)=>string|Object)|null = null;
+    cacheWhere: ((id: string | number) => string | Object) | null = null;
 
-    constructor(public className: { new(): any ;}) {
+    constructor(public className: { new(): any; }) {
 
 
         this.classObj = new className();
@@ -51,7 +51,7 @@ export class MongoTable {
 
         this.cacheWhere = sql.getCacheWhere(className);
         if (this.cacheId && this.cacheWhere) {
-            throw Error("cacheId或cacheWhere只能有一个")
+            throw Error("'cacheId' and 'cacheWhere' cannot be used together!")
         }
 
         let i = 0;
@@ -91,11 +91,11 @@ export class MongoTable {
      * @param f 字段名
      * @param indexArr 输出结果
      */
-    static addIndex(className: { new(): any ;}, f: string, indexArr: any[]) {
+    static addIndex(className: { new(): any; }, f: string, indexArr: any[]) {
         let index = sql.getIndex(className, f);
         if (index != null) {
             if (typeof index === "number" || typeof index === "string") {
-                let newI:any = {};
+                let newI: any = {};
                 newI[f] = index;
                 indexArr.push(newI);
             }

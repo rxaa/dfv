@@ -1,5 +1,5 @@
 import * as mongodb from "mongodb";
-import {dfvLog} from "../dfvLog";
+import { dfvLog } from "../dfvLog";
 
 
 export interface MongoCfg {
@@ -59,7 +59,7 @@ export interface MongoCfg {
 
 export class MongoConnect {
 
-    conn: mongodb.Db|null = null;
+    conn: mongodb.Db | null = null;
 
 
     constructor(public cfg: MongoCfg) {
@@ -69,13 +69,13 @@ export class MongoConnect {
     }
 
 
-    connect(res: (err: Error|null, db: mongodb.Db)=>void) {
+    connect(res: (err: Error | null, db: mongodb.Db) => void) {
         if (this.conn) {
             res(null, this.conn);
             return;
         }
 
-        mongodb.MongoClient.connect(this.getConnectUrl(), (err, db)=> {
+        mongodb.MongoClient.connect(this.getConnectUrl(), (err, db) => {
             if (!err)
                 this.conn = db;
 
@@ -84,8 +84,8 @@ export class MongoConnect {
     }
 
     connectPromise(): Promise<mongodb.Db> {
-        return new Promise((reso, reject)=> {
-            this.connect((err, db)=> {
+        return new Promise((reso, reject) => {
+            this.connect((err, db) => {
                 if (err)
                     reject(err);
                 else
@@ -108,7 +108,7 @@ export class MongoConnect {
             }
             else {
                 if (this.cfg.errorLog)
-                    dfvLog.write("没有找到s.topology.isConnected函数")
+                    dfvLog.write("no s.topology.isConnected function")
                 this.conn.close(true)
                 this.conn = null;
             }

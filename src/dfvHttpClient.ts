@@ -67,10 +67,10 @@ export class HttpAgent {
             keepAliveMsecs: this.keepAliveMsecs,
             maxSockets: this.maxSockets,
         });
-        this.agents.keepAliveMsecs = keepAliveMsecs;
-        this.agents.maxSockets = maxSockets;
-        this.agents.keepAliveTimeout = 1000 * 60 * 60 * 24;
-        this.agents.timeout = this.agents.keepAliveTimeout * 2;
+        this.agents.options.keepAliveMsecs = keepAliveMsecs;
+        this.agents.options.maxSockets = maxSockets;
+        this.agents.options.keepAliveTimeout = 1000 * 60 * 60 * 24;
+        this.agents.options.timeout = this.agents.keepAliveTimeout * 2;
     }
 
 }

@@ -287,7 +287,10 @@ export class sql {
      * @param vari 传递的变量
      * @param func 函数
      */
-    static scriptVar(vari: Function, func: Function) {
+    static scriptVar(vari: Function | null, func: Function) {
+        if (vari == null) {
+            return `<script>(function(){${dfv.getFuncBody(func)}})();</script>`
+        }
         let name = dfv.getFuncBody(vari);
         let val = vari();
         if (typeof val === "object")

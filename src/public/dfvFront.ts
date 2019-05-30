@@ -152,7 +152,7 @@ export class dfvFront {
 
         dfvFront.loadStop();
         if (!msg) {
-            msg = "加载中"
+            msg = "Loading"
         }
 
         let ele = document.createElement("div");

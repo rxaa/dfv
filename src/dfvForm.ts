@@ -98,7 +98,7 @@ export class dfvForm {
                     if (dfv.isInt(subField)) {
                         subField = parseInt(subField) as any;
                         if ((subField as any) < 0 || (subField as any) > dfvForm.maxArrayIndex) {
-                            dfv.err(name + "index out of range : " + subField)
+                            dfv.err(name + " index out of range : " + subField)
                         }
                         if (val == null)
                             val = [];

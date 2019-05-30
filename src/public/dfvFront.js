@@ -124,7 +124,7 @@ class dfvFront {
         }
         dfvFront.loadStop();
         if (!msg) {
-            msg = "加载中";
+            msg = "Loading";
         }
         let ele = document.createElement("div");
         ele.className = "spinner anim_height";

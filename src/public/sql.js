@@ -228,6 +228,9 @@ class sql {
      * @param func 函数
      */
     static scriptVar(vari, func) {
+        if (vari == null) {
+            return `<script>(function(){${dfv_1.dfv.getFuncBody(func)}})();</script>`;
+        }
         let name = dfv_1.dfv.getFuncBody(vari);
         let val = vari();
         if (typeof val === "object")

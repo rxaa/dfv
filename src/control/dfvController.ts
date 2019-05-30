@@ -97,7 +97,7 @@ export class dfvController {
             let validFunc = valid.getFieldCheckMetaData(this.clas, this.methodName + i);
 
             if (type === Object) {
-                throw Error(this.clas.name + "." + this.methodName + `() 参数:${name} 需要指定具体类型！`);
+                throw Error(this.clas.name + "." + this.methodName + `() :${name} need specify type！`);
             }
             else if (type === String) {
                 func = this.buildString(func, name, fromUrl, fromBody, validFunc);
@@ -106,13 +106,13 @@ export class dfvController {
                 func = this.buildNumber(func, name, fromUrl, fromBody, validFunc);
             }
             else if (type === Boolean) {
-                throw Error(this.clas.name + "." + this.methodName + `() 参数:${name} 暂不支持该类型！`);
+                throw Error(this.clas.name + "." + this.methodName + `() :${name}  unsupported type！`);
             }
             else if (type instanceof Function) {
                 func = this.buildClass(func, type, name, fromUrl, fromBody, validFunc);
             }
             else {
-                throw Error(this.clas.name + "." + this.methodName + `() 参数:${name} 暂不支持该类型！`);
+                throw Error(this.clas.name + "." + this.methodName + `() :${name} unsupported type！`);
             }
             this.parasGetFunc.push(func as (ctx: dfvContext, valid: IFieldRes<any>) => void);
         }

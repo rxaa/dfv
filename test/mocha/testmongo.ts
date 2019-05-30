@@ -1,7 +1,8 @@
+/// <reference path="../../node_modules/@types/mocha/index.d.ts" />
 import assert = require('assert');
-import {sql} from "../../src/public/sql";
-import {MongoBuilder} from "../../src/db/MongoBuilder";
-import {db} from "../db";
+import { sql } from "../../src/public/sql";
+import { MongoBuilder } from "../../src/db/MongoBuilder";
+import { db } from "../db";
 
 
 class SqlBu {
