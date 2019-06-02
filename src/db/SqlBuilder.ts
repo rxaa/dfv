@@ -185,6 +185,17 @@ export class SqlBuilder<TC> {
     }
 
     /**
+    * 设置缓存结果排序
+    */
+    setCacheSort(func: (l: TC, r: TC) => number): this {
+        this.cacheSort = func;
+        return this;
+    }
+
+    private cacheSort?: (l: TC, r: TC) => number;
+
+
+    /**
      * 从缓存中获取cacheId或cacheWhere的数据
      * @param id
      */
@@ -218,6 +229,8 @@ export class SqlBuilder<TC> {
                 }
 
                 (res as ArrayCache).__ReadCount = 0;
+                if (this.cacheSort)
+                    res!.sort(this.cacheSort);
 
                 cacheMap.set(id, res)
                 reso(res);

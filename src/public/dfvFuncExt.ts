@@ -1,4 +1,4 @@
-import {IFieldRes, valid} from "./valid";
+import { IFieldRes, valid } from "./valid";
 export function dfvFuncExtInit() {
 
 }
@@ -60,6 +60,7 @@ declare global {
 
         /**
          * 二分查找,返回索引位置(未找到返回-1)
+         * 回调里返回（目标值-itm中间值）> 0为正序,搜索后半部分，反之倒序
          * @param func
          */
         binarySearch(func: (itm: T) => number): number;
