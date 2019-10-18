@@ -373,7 +373,7 @@ export class BindField {
 
             let oldSplice = obj.splice;
             obj.splice = function () {
-                let ret = oldSplice.apply(obj, arguments);
+                let ret = oldSplice.apply(obj, arguments as any);
                 if ((obj as any).__BindField__)
                     ((obj as any).__BindField__ as BindField).execWatcherList();
                 return ret;
