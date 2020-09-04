@@ -505,7 +505,9 @@ export class valid {
      * @param valids 当属性为valid的验证数据源
      * @returns {IFieldRes<T>}
      */
-    static checkObj<T extends any>(from: any, toObj: T, objRes?: IFieldRes<T>, from2?: any, valids?: any): IFieldRes<T> {
+    static checkObj<T extends { 
+        [key: string]: any ;
+      } >(from: any, toObj: T, objRes?: IFieldRes<T>, from2?: any, valids?: any): IFieldRes<T> {
         if (objRes == null) {
             objRes = new IFieldRes<T>();
         }
@@ -513,7 +515,7 @@ export class valid {
         objRes.ok = true;
 
         for (var key in toObj) {
-            objRes.defaul = toObj[key] as any;
+            objRes.defaul = toObj[key] ;
             var type = typeof objRes.defaul;
 
             if (type === "function")
@@ -526,7 +528,7 @@ export class valid {
                 objRes.msg = key + " " + valid.errMsg_;
                 objRes.ok = (objRes.defaul as any as valid).func(objRes);
 
-                toObj[key as any] = objRes.val;
+                toObj[key] = objRes.val as any;
                 //验证失败
                 if (!objRes.ok) {
                     break;
@@ -547,7 +549,7 @@ export class valid {
             if (func) {
                 objRes.ok = func(objRes);
 
-                toObj[key as any] = objRes.val;
+                toObj[key] = objRes.val as any;
 
                 //验证失败
                 if (!objRes.ok) {
@@ -585,7 +587,7 @@ export class valid {
                 }
             }
 
-            toObj[key as any] = objRes.val;
+            toObj[key] = objRes.val as any;
         }
 
         objRes.val = toObj;

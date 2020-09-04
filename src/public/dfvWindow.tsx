@@ -164,7 +164,7 @@ export class dfvWindow {
             this.divContent = null as any;
             let dia = this.dialog;
             this.dialog = undefined;
-            if (window.history.pushState) {
+            if (window.history.pushState != null) {
                 dia.className += " anim_out";
                 setTimeout(() => {
                     //窗口已关闭

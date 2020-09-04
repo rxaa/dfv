@@ -8,14 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
 const valid_1 = require("../../src/public/valid");
@@ -173,94 +165,92 @@ describe('valid Test', function () {
         assert.equal(notRes.ok, true);
         assert.equal(JSON.stringify(notRes.val), `{"bbb":[22,11,33],"cccc":["1","2","3"],"ddd":[{"id":1,"val":"2","aaa":2,"bbb":"b"},{"id":1,"val":"2","aaa":2,"bbb":"b"}]}`);
     });
-    it('valid route 入参验证', function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            let notRes = valid_1.valid.checkObj({}, new NotVaild());
-            assert.equal(notRes.ok, true);
-            let res = valid_1.valid.checkObj({
-                aaa: 2,
+    it('valid route 入参验证', async function () {
+        let notRes = valid_1.valid.checkObj({}, new NotVaild());
+        assert.equal(notRes.ok, true);
+        let res = valid_1.valid.checkObj({
+            aaa: 2,
+            bbb: "123",
+        }, new ReqTest());
+        assert.equal(res.ok, true);
+        assert.equal(res.val.id, 1);
+        assert.equal(res.val.val, "2");
+        res = valid_1.valid.checkObj({
+            aaa: 2,
+            bbb: "aaa",
+        }, new ReqTest());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "bbb错误");
+        res = valid_1.valid.checkObj({
+            aaa: 0,
+            bbb: "123",
+        }, new ReqTest());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "aaa必须大于0");
+        res = valid_1.valid.checkObj({
+            aaa: 1,
+        }, new ReqTest2());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
+        let re2 = valid_1.valid.checkObj({
+            bbb: {
+                aaa: 10,
                 bbb: "123",
-            }, new ReqTest());
-            assert.equal(res.ok, true);
-            assert.equal(res.val.id, 1);
-            assert.equal(res.val.val, "2");
-            res = valid_1.valid.checkObj({
-                aaa: 2,
-                bbb: "aaa",
-            }, new ReqTest());
-            assert.equal(res.ok, false);
-            assert.equal(res.msg, "bbb错误");
-            res = valid_1.valid.checkObj({
+            }
+        }, new ReqTest3());
+        assert.equal(re2.ok, true);
+        re2 = valid_1.valid.checkObj({
+            bbb: {
                 aaa: 0,
                 bbb: "123",
-            }, new ReqTest());
-            assert.equal(res.ok, false);
-            assert.equal(res.msg, "aaa必须大于0");
-            res = valid_1.valid.checkObj({
-                aaa: 1,
-            }, new ReqTest2());
-            assert.equal(res.ok, false);
-            assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
-            let re2 = valid_1.valid.checkObj({
-                bbb: {
-                    aaa: 10,
-                    bbb: "123",
-                }
-            }, new ReqTest3());
-            assert.equal(re2.ok, true);
-            re2 = valid_1.valid.checkObj({
-                bbb: {
-                    aaa: 0,
-                    bbb: "123",
-                }
-            }, new ReqTest3());
-            assert.equal(re2.ok, false);
-            assert.equal(re2.msg, "aaa必须大于0");
-            re2 = valid_1.valid.checkObj({
-                bbb: {}
-            }, new ReqTest3());
-            assert.equal(re2.ok, false);
-            assert.equal(re2.msg, "aaa必须大于0");
-            re2 = valid_1.valid.checkObj({
-                bbb: {
-                    aaa: 1,
-                    bbb: "",
-                }
-            }, new ReqTest4());
-            assert.equal(re2.ok, false);
-            assert.equal(re2.msg, "bbb.bbb 不能为空");
-            re2 = valid_1.valid.checkObj({
-                bbb: {
-                    aaa: 1,
-                    bbb: "1",
-                }
-            }, new ReqTest4());
-            assert.equal(re2.ok, true);
-            res = valid_1.valid.checkObj({
-                aaa: 1,
-            }, new ReqSub());
-            assert.equal(res.ok, false);
-            assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
-            res = valid_1.valid.checkObj({
+            }
+        }, new ReqTest3());
+        assert.equal(re2.ok, false);
+        assert.equal(re2.msg, "aaa必须大于0");
+        re2 = valid_1.valid.checkObj({
+            bbb: {}
+        }, new ReqTest3());
+        assert.equal(re2.ok, false);
+        assert.equal(re2.msg, "aaa必须大于0");
+        re2 = valid_1.valid.checkObj({
+            bbb: {
                 aaa: 1,
                 bbb: "",
-            }, new ReqSub());
-            assert.equal(res.ok, true);
-            let rrr = valid_1.valid.checkObj({
-                id: [1, 2, 3]
-            }, new ReqTest6);
-            assert.equal(res.ok, true);
-            assert.equal(JSON.stringify(rrr.val), "{\"id\":[1,2,3]}");
-            rrr = valid_1.valid.checkObj({
-                id: 123
-            }, new ReqTest6);
-            assert.equal(res.ok, true);
-            assert.equal(JSON.stringify(rrr.val), `{"id":[1,2]}`);
-            let bi = dfvBind_1.dfvBind(e => true, { onSet: val => val });
-            assert.equal(yield bi.onSet(1, bi, {}), 1);
-            bi = dfvBind_1.dfvBind(e => true, { onSet: (val) => __awaiter(this, void 0, void 0, function* () { return val; }) });
-            assert.equal(yield bi.onSet(2, bi, {}), 2);
-        });
+            }
+        }, new ReqTest4());
+        assert.equal(re2.ok, false);
+        assert.equal(re2.msg, "bbb.bbb 不能为空");
+        re2 = valid_1.valid.checkObj({
+            bbb: {
+                aaa: 1,
+                bbb: "1",
+            }
+        }, new ReqTest4());
+        assert.equal(re2.ok, true);
+        res = valid_1.valid.checkObj({
+            aaa: 1,
+        }, new ReqSub());
+        assert.equal(res.ok, false);
+        assert.equal(res.msg, "bbb" + valid_1.valid.errMsg_);
+        res = valid_1.valid.checkObj({
+            aaa: 1,
+            bbb: "",
+        }, new ReqSub());
+        assert.equal(res.ok, true);
+        let rrr = valid_1.valid.checkObj({
+            id: [1, 2, 3]
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), "{\"id\":[1,2,3]}");
+        rrr = valid_1.valid.checkObj({
+            id: 123
+        }, new ReqTest6);
+        assert.equal(res.ok, true);
+        assert.equal(JSON.stringify(rrr.val), `{"id":[1,2]}`);
+        let bi = dfvBind_1.dfvBind(e => true, { onSet: val => val });
+        assert.equal(await bi.onSet(1, bi, {}), 1);
+        bi = dfvBind_1.dfvBind(e => true, { onSet: async (val) => val });
+        assert.equal(await bi.onSet(2, bi, {}), 2);
     });
 });
 //# sourceMappingURL=testValid.js.map

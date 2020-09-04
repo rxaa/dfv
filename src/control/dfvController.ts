@@ -81,7 +81,7 @@ export class dfvController {
      */
     buildParasGetFunc() {
         this.multipart = route.getMultipart(this.clas, this.methodName);
-        if (this.multipart) {
+        if (this.multipart != null) {
             this.onRoute = this.onRouteAsync
         }
         let func = (ctx: dfvContext & ReqRes, valid: IFieldRes<any>) => {

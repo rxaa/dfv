@@ -10,14 +10,14 @@ import { dfvLib, PreciseTime } from "../dfvLib";
 
 
 export type SelectMongoFieldType<T> = {
-    [P in keyof T]: IMongoSelectField<T[P]> & number & SelectMongoFieldType<T[P]>
+    [P in keyof T]: IMongoSelectField<T[P]> & SelectMongoFieldType<T[P]>
 };
 
 export type SelectMongoOrderType<T> = {
-    [P in keyof T]: IMongoOrderField & number & SelectMongoOrderType<T[P]>
+    [P in keyof T]: IMongoOrderField  & SelectMongoOrderType<T[P]>
 };
 
-export class MongoBuilder<TC extends any> {
+export class MongoBuilder<TC extends  { [key: string]:any }> {
     //查询或删除条件
     filter_: any = null;
     private skip_: number | null = null;

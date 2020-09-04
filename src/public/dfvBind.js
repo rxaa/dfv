@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BindField = exports.dfvBindDom = exports.dfvBind = exports.BindFieldType = void 0;
 const dfv_1 = require("./dfv");
 const dfvFront_1 = require("./dfvFront");
 const valid_1 = require("./valid");
@@ -359,6 +360,7 @@ class BindField {
         }
     }
 }
+exports.BindField = BindField;
 /**
  * 用于从对象get属性获取BindField
  * @type {any}
@@ -366,5 +368,4 @@ class BindField {
 BindField.getBindList = null;
 BindField.bindListMap = {};
 BindField.autoId = 0;
-exports.BindField = BindField;
 //# sourceMappingURL=dfvBind.js.map

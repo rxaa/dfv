@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dfvFront = exports.InputType = exports.LocalName = exports.HttpType = void 0;
 const dfvWindow_1 = require("./dfvWindow");
 var HttpType;
 (function (HttpType) {
@@ -311,6 +312,7 @@ class dfvFront {
         return ret;
     }
 }
+exports.dfvFront = dfvFront;
 /**
  * 公共异常处理函数
  * @param err
@@ -319,5 +321,4 @@ dfvFront.onCatchError = (err) => {
     dfvFront.msgErr(err + "", { closeTime: 5 * 1000 });
     console.error(err);
 };
-exports.dfvFront = dfvFront;
 //# sourceMappingURL=dfvFront.js.map

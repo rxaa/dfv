@@ -73,12 +73,12 @@ export class dfvFile {
     };
 
 
-    static writeFile(filename: string, data: any, options: { encoding?: string; mode?: string; flag?: string; } = {}) {
+    static writeFile(filename: string, data: any, options: { encoding?: BufferEncoding; mode?: string; flag?: string; } = {}) {
         return new Promise<void>((reso, reject) =>
             fs.writeFile(filename, data, options, (err) => err ? reject(err) : reso()));
     }
 
-    static appendFile(filename: string, data: any, options: { encoding?: string; mode?: string; flag?: string; } = {}) {
+    static appendFile(filename: string, data: any, options: { encoding?: BufferEncoding; mode?: string; flag?: string; } = {}) {
         return new Promise<void>((reso, reject) =>
             fs.appendFile(filename, data, options, (err) => err ? reject(err) : reso()));
     }
@@ -91,8 +91,8 @@ export class dfvFile {
      */
     static readFile(filename: string): Promise<string>
     static readFile(filename: string, options: { flag?: string; }): Promise<string>
-    static readFile(filename: string, options: { encoding: string; flag?: string; }): Promise<Buffer>
-    static readFile(filename: string, options: { encoding?: string; flag?: string; } = {}): Promise<Buffer | string> {
+    static readFile(filename: string, options: { encoding: BufferEncoding; flag?: string; }): Promise<Buffer>
+    static readFile(filename: string, options: { encoding?: BufferEncoding; flag?: string; } = {}): Promise<Buffer | string> {
         return new Promise<any>((reso, reject) =>
             fs.readFile(filename, options, (err, res) => err ? reject(err) : reso(res)));
     }

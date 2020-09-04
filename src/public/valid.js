@@ -1,13 +1,6 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.valid = exports.IFieldRes = exports.validType = void 0;
 const dfv_1 = require("./dfv");
 const dfvBind_1 = require("./dfvBind");
 var validType;
@@ -493,71 +486,69 @@ class valid {
      * @param objRes IFieldRes
      * @returns {IFieldRes<T>}
      */
-    static checkObjAsync(from, toObj, objRes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!objRes)
-                objRes = new IFieldRes();
-            objRes.ok = true;
-            var bindList = [];
-            for (var key in from) {
-                dfvBind_1.BindField.initGetBindList(bl => {
-                    objRes.defaul = from[key];
-                    bindList = bl;
-                });
-                var type = typeof objRes.defaul;
-                if (type === "function")
-                    continue;
-                objRes.val = objRes.defaul;
-                objRes.msg = key + " " + valid.errMsg_;
-                if (bindList.length > 0) {
-                    for (let it of bindList) {
-                        for (let bind of it.htmlBind) {
-                            if (bind.html && bind.editAble && bind.onSet) {
-                                try {
-                                    bind.isEditOnSet = false;
-                                    yield bind.onSet(objRes.val, bind, it);
-                                }
-                                catch (e) {
-                                    objRes.msg = e.message;
-                                    objRes.ok = false;
-                                    return objRes;
-                                }
+    static async checkObjAsync(from, toObj, objRes) {
+        if (!objRes)
+            objRes = new IFieldRes();
+        objRes.ok = true;
+        var bindList = [];
+        for (var key in from) {
+            dfvBind_1.BindField.initGetBindList(bl => {
+                objRes.defaul = from[key];
+                bindList = bl;
+            });
+            var type = typeof objRes.defaul;
+            if (type === "function")
+                continue;
+            objRes.val = objRes.defaul;
+            objRes.msg = key + " " + valid.errMsg_;
+            if (bindList.length > 0) {
+                for (let it of bindList) {
+                    for (let bind of it.htmlBind) {
+                        if (bind.html && bind.editAble && bind.onSet) {
+                            try {
+                                bind.isEditOnSet = false;
+                                await bind.onSet(objRes.val, bind, it);
                             }
-                        }
-                    }
-                }
-                if (objRes.defaul && type == "object") {
-                    valid.checkObj(objRes.defaul, objRes.defaul, objRes);
-                    //验证失败
-                    if (!objRes.ok) {
-                        return objRes;
-                    }
-                }
-                if (objRes.defaul && objRes.defaul instanceof Array) {
-                    for (let arr of objRes.defaul) {
-                        if (arr && typeof arr == "object") {
-                            valid.checkObj(arr, arr, objRes);
-                            //验证失败
-                            if (!objRes.ok) {
+                            catch (e) {
+                                objRes.msg = e.message;
+                                objRes.ok = false;
                                 return objRes;
                             }
                         }
                     }
                 }
-                //回调函数验证
-                var func = valid.getFieldCheckMetaData(from.constructor, key);
-                if (func) {
-                    objRes.ok = func(objRes);
-                    //验证失败
-                    if (!objRes.ok) {
-                        return objRes;
+            }
+            if (objRes.defaul && type == "object") {
+                valid.checkObj(objRes.defaul, objRes.defaul, objRes);
+                //验证失败
+                if (!objRes.ok) {
+                    return objRes;
+                }
+            }
+            if (objRes.defaul && objRes.defaul instanceof Array) {
+                for (let arr of objRes.defaul) {
+                    if (arr && typeof arr == "object") {
+                        valid.checkObj(arr, arr, objRes);
+                        //验证失败
+                        if (!objRes.ok) {
+                            return objRes;
+                        }
                     }
                 }
             }
-            return objRes;
-        });
+            //回调函数验证
+            var func = valid.getFieldCheckMetaData(from.constructor, key);
+            if (func) {
+                objRes.ok = func(objRes);
+                //验证失败
+                if (!objRes.ok) {
+                    return objRes;
+                }
+            }
+        }
+        return objRes;
     }
 }
-valid.errMsg_ = " : invalid!";
 exports.valid = valid;
+valid.errMsg_ = " : invalid!";
 //# sourceMappingURL=valid.js.map

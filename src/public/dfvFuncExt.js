@@ -1,13 +1,6 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dfvFuncExtInit = void 0;
 const valid_1 = require("./valid");
 function dfvFuncExtInit() {
 }
@@ -186,28 +179,24 @@ else if (!Array.prototype.eachToInt) {
         writable: true,
     });
     Object.defineProperty(Array.prototype, "mapPromise", {
-        value: function (callbackfn) {
-            return __awaiter(this, void 0, void 0, function* () {
-                var arr = new Array();
-                for (var i = 0; i < this.length; i++) {
-                    arr.push(yield callbackfn(this[i], i, arr));
-                }
-                return arr;
-            });
+        value: async function (callbackfn) {
+            var arr = new Array();
+            for (var i = 0; i < this.length; i++) {
+                arr.push(await callbackfn(this[i], i, arr));
+            }
+            return arr;
         },
         enumerable: false,
     });
     Object.defineProperty(Array.prototype, "mapStringPromise", {
-        value: function (callbackfn) {
-            return __awaiter(this, void 0, void 0, function* () {
-                var str = "";
-                for (var i = 0; i < this.length; i++) {
-                    var ret = yield callbackfn(this[i], i);
-                    if (ret != null)
-                        str += ret;
-                }
-                return str;
-            });
+        value: async function (callbackfn) {
+            var str = "";
+            for (var i = 0; i < this.length; i++) {
+                var ret = await callbackfn(this[i], i);
+                if (ret != null)
+                    str += ret;
+            }
+            return str;
         },
         enumerable: false,
     });

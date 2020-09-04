@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sql = void 0;
 const dfv_1 = require("./dfv");
 class sql {
     constructor(func) {

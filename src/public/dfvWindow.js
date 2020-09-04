@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dfvWindow = void 0;
 const React = require("./dfvReact");
 const dfvFront_1 = require("./dfvFront");
 class dfvWindow {
@@ -36,7 +37,7 @@ class dfvWindow {
                 this.divContent = null;
                 let dia = this.dialog;
                 this.dialog = undefined;
-                if (window.history.pushState) {
+                if (window.history.pushState != null) {
                     dia.className += " anim_out";
                     setTimeout(() => {
                         //窗口已关闭
@@ -165,6 +166,6 @@ class dfvWindow {
                 React.createElement("button", { class: "button_blue pad6-12 mar5t font_0 bold", onclick: e => onOk(e.currentTarget) }, this.buttonOkText))));
     }
 }
-dfvWindow.coverZ = 999;
 exports.dfvWindow = dfvWindow;
+dfvWindow.coverZ = 999;
 //# sourceMappingURL=dfvWindow.js.map

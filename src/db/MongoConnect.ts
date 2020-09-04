@@ -59,7 +59,9 @@ export interface MongoCfg {
 
 export class MongoConnect {
 
-    conn: mongodb.Db | null = null;
+    conn: mongodb.MongoClient | null = null;
+
+    db: mongodb.Db | null = null;
 
 
     constructor(public cfg: MongoCfg) {
@@ -70,16 +72,17 @@ export class MongoConnect {
 
 
     connect(res: (err: Error | null, db: mongodb.Db) => void) {
-        if (this.conn) {
-            res(null, this.conn);
+        if (this.db) {
+            res(null, this.db);
             return;
         }
 
-        mongodb.MongoClient.connect(this.getConnectUrl(), (err, db) => {
-            if (!err)
-                this.conn = db;
-
-            res(err, db);
+        mongodb.MongoClient.connect(this.getConnectUrl(), (err, con) => {
+            if (!err) {
+                this.conn = con;
+                this.db = con.db(this.cfg.database);
+            }
+            res(err, this.db!);
         });
     }
 
@@ -88,8 +91,10 @@ export class MongoConnect {
             this.connect((err, db) => {
                 if (err)
                     reject(err);
-                else
+                else {
                     reso(db);
+                }
+
             })
         });
     }

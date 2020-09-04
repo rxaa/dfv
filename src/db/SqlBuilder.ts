@@ -341,7 +341,7 @@ export class SqlBuilder<TC> {
      * @param func on 条件表达式
      * @returns {SqlBuilder}
      */
-    innerJoin<T1>(right: { new(): T1; }, func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1>
+    innerJoin<T1>(right: { new(): T1; }, func: (l: SelectFieldTypeBuilder<TC>, r: SelectFieldTypeBuilder<T1>
         & T1) => any): SqlJoin3<TC, T1> {
         this.makeJoin(right, func, " inner join ");
         return this as any;
@@ -915,24 +915,24 @@ export interface ISqlJoin {
 
 export interface SqlJoin3<T1, T2> extends ISqlJoin {
 
-    innerJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    innerJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    leftJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    leftJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 
-    rightJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    rightJoin<T3>(right: { new(): T3; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3) => any): SqlJoin4<T1, T2, T3>;
 }
 
 export interface SqlJoin4<T1, T2, T3> extends ISqlJoin {
 
-    innerJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    innerJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    leftJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    leftJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 
-    rightJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1> & T1, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
+    rightJoin<T4>(right: { new(): T4; }, func: (p1: SelectFieldTypeBuilder<T1>, p2: SelectFieldTypeBuilder<T2> & T2, p3: SelectFieldTypeBuilder<T3>
         & T3, p4: SelectFieldTypeBuilder<T4>) => any): ISqlJoin;
 }

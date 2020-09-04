@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dfv = exports.array = exports.arrayString = exports.arrayNumber = exports.ARRAY_TYPE = void 0;
 const dfvFuncExt_1 = require("./dfvFuncExt");
 dfvFuncExt_1.dfvFuncExtInit();
 exports.ARRAY_TYPE = "_ARR_TYPE";
@@ -529,6 +530,7 @@ class dfv {
             func(line);
     }
 }
+exports.dfv = dfv;
 dfv.root = "";
 dfv.meta = {
     type: "design:type",
@@ -538,5 +540,4 @@ dfv.meta = {
 dfv.funcReg = /function\s*(\w*)/i;
 dfv.autoInc = 0;
 dfv.hexString = "0123456789abcdefghijklmnopqrstuvwxyz";
-exports.dfv = dfv;
 //# sourceMappingURL=dfv.js.map

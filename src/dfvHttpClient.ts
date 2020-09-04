@@ -192,7 +192,7 @@ export class dfvHttpClient {
 
     cookie: HttpCookie | undefined;
 
-    charset = "UTF-8";
+    charset: BufferEncoding = "utf-8";
 
 
     private options: RequestOptions = {
@@ -217,7 +217,7 @@ export class dfvHttpClient {
     }
 
     getUrl() {
-        return this.url.href
+        return this.url?.href ?? "";
     }
 
     getHostName() {
@@ -238,15 +238,15 @@ export class dfvHttpClient {
         return this.options.headers! as IHttpHeaders;
     }
 
-    private url: Url = {};
+    private url: Url | null = null;
     static boundary = "QqxOjrnJnKZsMzD50plVIund0KyjL"
 
     isHttps() {
-        return this.url.protocol === "https:";
+        return this.url?.protocol === "https:" ?? false;
     }
 
     isHttp() {
-        return this.url.protocol === "http:";
+        return this.url?.protocol === "http:" ?? false;
     }
 
     /**

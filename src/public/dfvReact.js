@@ -1,6 +1,7 @@
 "use strict";
 /// <reference path="../reactExp.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.singleTag = void 0;
 const dfvBind_1 = require("./dfvBind");
 const dfvFront_1 = require("./dfvFront");
 const dfv_1 = require("./dfv");
