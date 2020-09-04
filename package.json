@@ -24,7 +24,7 @@
     "agentkeepalive": "^4.0.2",
     "formidable": "^1.2.1",
     "koa-router": "^7.4.0",
-    "mongodb": "^2.2.36",
+    "mongodb": "^3.6.1",
     "mysql": "^2.17.1",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.13"
