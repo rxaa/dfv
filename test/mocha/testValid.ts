@@ -152,7 +152,6 @@ describe('valid Test', function () {
         let notRes = valid.checkObj({}, new NotVaild());
         assert.equal(notRes.ok, true);
 
-
         let res = valid.checkObj({
             aaa: 2,
             bbb: "123",

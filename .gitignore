@@ -1,5 +1,6 @@
 /node_modules
 /.idea
+/out
 *.js.map
 *.d.ts
 /src/*.js

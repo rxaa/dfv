@@ -70,6 +70,10 @@ export class dfvRouter {
             let router = new dfvRouter(http, m);
 
             fs.readdirSync(routesPath).forEach((file) => {
+                if(file.endsWith(".d.ts")){
+                    return;
+                }
+
                 if (file.endsWith(".js")) {
                     var routePath = path.join(routesPath, file);
                     try {

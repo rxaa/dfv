@@ -9,7 +9,7 @@
                 "--timeout",
                 "999999",
                 "--colors",
-                "${workspaceFolder}/test/mocha"
+                "${workspaceFolder}/test/mocha/*.js"
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "name": "Mocha Tests",
@@ -25,10 +25,19 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\index.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register/transpile-only"
+            ],
+            "args": [
+                "index.ts",
+                "--example",
+                "hello"
+            ],
+            "cwd": "${workspaceRoot}",
+            "skipFiles": ["<node_internals>/**", "node_modules/**"]
         }
     ]
 }
