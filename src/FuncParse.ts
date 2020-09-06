@@ -1,8 +1,8 @@
 /**
  * 词法解析类型
  */
-import {dfv} from "./public/dfv";
-export enum opType{
+import { dfv } from "./public/dfv";
+export enum opType {
     //操作符
     operator,
     var,//单词
@@ -22,7 +22,7 @@ export class FuncParse {
     paras: string[] = [];
     body: string = "";
     //函数名
-    funcName: string="";
+    funcName: string = "";
     /**
      * 函数体(去除形参部分)起始位置
      * @type {number}
@@ -82,6 +82,10 @@ export class FuncParse {
             for (let m of par) {
                 code += "\r\n" + m
             }
+
+            if ((clas as any)._omit) {
+                code += "\r\n" + (clas as any)._omit;
+            }
         }
 
 
@@ -104,7 +108,36 @@ export class FuncParse {
             return true;
         }, true);
 
-        return comment.replace(/(?:\r\n|\r|\n| +)/g, ' ');
+        if (comment.startsWith("*\r\n")) {
+            let newComm = "";
+            let line = "";
+            let hasAsterisk = false;
+            for (let i = 3; i < comment.length; i++) {
+                let c = comment[i];
+                if (c == '\r') {
+                    continue;
+                }
+                if (c == '*') {
+                    hasAsterisk = true;
+                    continue;
+                }
+                if (c == '\n') {
+                    hasAsterisk = false;
+                    if (newComm.length > 0) {
+                        newComm += "\r\n";
+                    }
+                    newComm += line;
+                    line = "";
+                    continue;
+                }
+
+                if (hasAsterisk)
+                    line += c;
+            }
+            return newComm;
+        }
+
+        return comment;
     }
 
 

@@ -166,6 +166,32 @@ export class dfv {
         }
     }
 
+    /**
+    * 从指定类中排除字段,生成新类
+    * @param obj 指定类
+    * @param p1 排除的字段集合
+    */
+    static classOmit<T, T2 extends keyof T>(obj: { new(): T }, ...p1: T2[]): { new(obj?: T): Omit<T, T2> } {
+        let fMap: {
+            [key: string]: boolean;
+        } = {};
+
+        for (let f of p1) {
+            fMap[f as string] = true;
+        }
+
+        let OmitClass: any = function (this: T, dat?: T) {
+            if (dat == null)
+                dat = new obj();
+            for (let k in dat) {
+                if (!fMap[k])
+                    this[k] = dat[k];
+            }
+        };
+        OmitClass._omit = obj;
+
+        return OmitClass;
+    }
 
     /**
      * 将所有obj合并到v1里

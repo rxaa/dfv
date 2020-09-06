@@ -11,6 +11,10 @@ class testP {
 
 
 class testSub {
+    /**
+     * 注释测试,
+     * 测试
+     */
     c = 1;
 }
 
@@ -35,8 +39,22 @@ function testParse(a: any, b: any = (aaaa: any, vvv: any) => {
 }
 
 
+class TestComm {
+
+    /**
+     * 注释测试,
+     * sss sas ddd
+     * 测试
+     */
+    ccc = 1;
+}
+
 describe('sdf Test', function () {
     it("array type", async () => {
+
+        let ret = FuncParse.readComment(TestComm, "this.ccc", 1);
+        console.log(ret);
+
         let a = arrayString();
         let count = 0;
         for (let k in a) {

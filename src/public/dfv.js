@@ -125,6 +125,27 @@ class dfv {
             }
         }
     }
+    /**
+    * 从指定类中排除字段,生成新类
+    * @param obj 指定类
+    * @param p1 排除的字段集合
+    */
+    static classOmit(obj, ...p1) {
+        let fMap = {};
+        for (let f of p1) {
+            fMap[f] = true;
+        }
+        let OmitClass = function (dat) {
+            if (dat == null)
+                dat = new obj();
+            for (let k in dat) {
+                if (!fMap[k])
+                    this[k] = dat[k];
+            }
+        };
+        OmitClass._omit = obj;
+        return OmitClass;
+    }
     static joinObjFast(...values) {
         var first = values[0];
         for (var i = 1; i < values.length; i++) {
