@@ -3,14 +3,21 @@ import { MapString } from "../public/dfv";
 import { sql } from "../public/sql";
 
 
-export class SqlTableInfo {
+export type TableObject<T> = {
+    [P in keyof T]: SqlTableField<T[P], T>
+};
+
+export class SqlTableInfo<ClassT> {
+
+
 
     /**
      * 字段列表,号分隔
      * @type {string}
      */
     fieldsStr = "";
-    fieldList: SqlTableField[] = [];
+
+    fieldList: SqlTableField<any, ClassT>[] = [];
 
     /**
      * 主键索引
@@ -18,8 +25,12 @@ export class SqlTableInfo {
      */
     pkIndex = -1;
 
+    //主键字段(object中的属性名)
     primaryKeyName = "";
 
+    getPriKeyFieldName() {
+        return this.fieldList[this.pkIndex].getFieldName();
+    }
 
     /**
      * b保存非别名自增长字段
@@ -29,14 +40,8 @@ export class SqlTableInfo {
 
     tableName = "";
 
-    /**
-     * 生成sql语句中的值列表
-     * @type {Array}
-     */
-    valList: string[] = [];
-
-    //
-    classObj: any;
+    //原始对象转为SqlTableField对象
+    classObj: TableObject<ClassT>;
 
     /**
      * 表达式中的字段是否附加表名前缀
@@ -46,16 +51,44 @@ export class SqlTableInfo {
 
     cacheId = "";
 
+    sqlStr = ""
+
+    commaPrefix = false;
+
     cacheWhere: ((id: string | number | null) => string | Object) | null = null;
 
+
+    /**
+    * 生成sql语句值列表
+    * @param func 单参数lambda
+    */
+    makeFunc(func: (f: TableObject<ClassT>) => any, comma = false): string {
+        let old = this.sqlStr;
+        let oldComma = this.commaPrefix;
+        this.sqlStr = "";
+        this.commaPrefix = comma;
+        let ret = func(this.classObj)
+        if (this.sqlStr.length == 0 && ret) {
+            if (ret instanceof SqlTableField) {
+                this.sqlStr += ret.toString();
+            }
+            else if (ret instanceof sql) {
+                this.sqlStr += (ret as sql).func();
+            }
+        }
+        let retSql = this.sqlStr;
+        this.sqlStr = old;
+        this.commaPrefix = oldComma;
+        return retSql;
+    }
 
     /**
      * 获取指定键的字段信息
      * @param key
      * @returns {SqlTableField}
      */
-    getField(key: string) {
-        return this.classObj[key] as SqlTableField
+    getField(key: string | keyof ClassT) {
+        return (this.classObj as any)[key] as SqlTableField<any, ClassT>
     }
 
     constructor(public className: { new(): any; }) {
@@ -69,8 +102,9 @@ export class SqlTableInfo {
         this.tableName = sql.getTableName(className);
         if (!this.tableName)
             this.tableName = className.name;
-
+        this.tableName = "`" + this.tableName + "`";
         let tableName = this.tableName;
+
         this.classObj.toString = function () {
             return tableName;
         }
@@ -89,12 +123,15 @@ export class SqlTableInfo {
                 this.autoIncrementMap[field] = true;
             }
 
-            let fi = new SqlTableField(field,
-                sql.getFieldName(this.className, field),
+            let rawName = sql.getFieldName(this.className, field);
+            let fi = new SqlTableField(
+                this.classObj,
+                field,
+                rawName ? rawName : field,
                 sql.getFieldTable(this.className, field),
                 this);
 
-            this.fieldsStr += fi.getFieldAsName() + ",";
+            this.fieldsStr += (rawName ? fi.getFieldAsName() : fi.getFieldName()) + ",";
             this.fieldList.push(fi);
             this.classObj[field] = fi;
 

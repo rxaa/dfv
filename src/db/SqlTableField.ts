@@ -1,151 +1,54 @@
-import {SqlBuilder} from "./SqlBuilder";
-import {SqlTableInfo} from "./SqlTableInfo";
-import {sql} from "../public/sql";
-import {dfv} from "../public/dfv";
+import { SqlBuilder } from "./SqlBuilder";
+import { SqlTableInfo, TableObject } from "./SqlTableInfo";
+import { sql } from "../public/sql";
+import { dfv } from "../public/dfv";
 
-export class SqlTableField {
+export class SqlTableField<FieldT, ClassT> {
 
 
     /**
      *
-     * @param fieldName class中的字段名
+     * @param fieldName class中的字段名,或者作为sum(),count()等函数表达式
      * @param rawName 数据库中的字段名
      * @param fromTable 数据库表名
      * @param table
      */
-    constructor(public fieldName: string,
-                public rawName: string | null,
-                public fromTable: string | null,
-                private table: SqlTableInfo) {
+    constructor(
+        public classObj: TableObject<ClassT>,
+        public fieldName: string,
+        public rawName: string | null,
+        public fromTable: string | null,
+        private table: SqlTableInfo<ClassT>) {
     }
 
-    /**
-     * 不为空的数据库字段名
-     * @type {string}
-     */
-    public realName = this.rawName ? this.rawName : this.fieldName;
-
     toString() {
-        this.table.valList.push(this.getFieldName());
         return this.getFieldName();
     }
 
     valueOf() {
-        this.table.valList.push(this.getFieldName());
         return this.getFieldName();
     }
 
     getFieldName() {
         if (this.fromTable) {
-            return this.fromTable + "." + this.realName;
+            return "`" + this.fromTable + "`.`" + this.rawName + "`";
         }
 
         if (this.table.tableNamePrefix)
-            return this.table.tableName + "." + this.realName;
+            return "`" + this.table.tableName + "`.`" + this.rawName + "`";
 
-        return this.realName;
+        if (this.rawName)
+            return "`" + this.rawName + "`";
+
+        return this.fieldName;
     }
 
     getFieldAsName() {
         if (this.rawName)
-            return this.getFieldName() + " as " + this.fieldName;
-
+            return this.getFieldName() + " as `" + this.fieldName + "`";;
         return this.getFieldName();
     }
 
-    /**
-     * 解析并生成where语句
-     * @param func
-     * @param valList
-     * @returns {any}
-     */
-    static makeWhere(func: Function, valList: string[]) {
-        if (valList.length < 1)
-            return "";
-
-        /**
-         * 只有一个值时不做词法解析
-         */
-        if (valList.length === 1) {
-            return valList[0];
-        }
-
-        var funStr = func + "";
-
-        //字串当前解析位置
-        var pos = 0;
-        var c = 0;
-        for (; pos < funStr.length; pos++) {
-            c = funStr.charCodeAt(pos);
-            //c == ">" || c == "{"
-            if (c == 62 || c == 123) {
-                pos++;
-                break;
-            }
-        }
-
-        var valCount = 0;
-
-        var where = "";
-        for (; pos < funStr.length; pos++) {
-            c = funStr.charCodeAt(pos);
-            //c === " " || c === "\r"  || c === "\t" || c === "\n" || c === "{" || c === "}"
-            if (c >= 9 && c <= 32 || c == 123 || c == 125)
-                continue;
-
-            if (c == 40) {
-                where += "(";
-                continue;
-            }
-
-            if (c == 41) {
-                where += ")";
-                continue;
-            }
-
-            if (c == 33) {
-                where += "!";
-                continue;
-            }
-
-            //c === "&" || c === "+"
-            if (c == 38 || c == 43) {
-                where += " and ";
-                continue;
-            }
-
-            //c === "|"
-            if (c == 124) {
-                where += " or ";
-                continue;
-            }
-
-            if (valCount >= valList.length)
-                break;
-
-            //一个值表达式
-            where += valList[valCount];
-            valCount++;
-            pos++;
-            var bracketCount = 0;
-            for (; pos < funStr.length; pos++) {
-                c = funStr.charCodeAt(pos);
-                //c === "("
-                if (c == 40) {
-                    bracketCount++;
-                }
-                //c === ")"
-                else if (c == 41) {
-                    bracketCount--;
-                    if (bracketCount <= 0) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return where;
-    }
 
     static getValue(val: any): string {
         if (val instanceof sql) {
@@ -166,110 +69,160 @@ export class SqlTableField {
         return sql.filter(val);
     }
 
+    private genSql(str: string): TableObject<ClassT> {
+        if (this.table.commaPrefix) {
+            if (this.table.sqlStr.length > 0) {
+                this.table.sqlStr += ",";
+            }
+        }
+        this.table.sqlStr += " " + str + " ";
+        return this.table.classObj;
+    }
+
+    //and 逻辑操作
+    get and(): TableObject<ClassT> {
+        if (this.table.commaPrefix)
+            return this.table.classObj;
+        else
+            return this.genSql("and");
+    }
+
+    //or 逻辑操作
+    get or(): TableObject<ClassT> {
+        if (this.table.commaPrefix)
+            return this.table.classObj;
+        else
+            return this.genSql("or");
+    }
+
+    /**
+     * and操作并将func入参表达式放入()括号内
+     * @param func 
+     */
+    andWrap(func: (f: TableObject<ClassT>) => any): TableObject<ClassT> {
+        if (this.table.commaPrefix)
+            return this.genSql("(" + this.table.makeFunc(func, this.table.commaPrefix) + ")");
+        else
+            return this.genSql("and (" + this.table.makeFunc(func, this.table.commaPrefix) + ")");
+    }
+
+    /**
+     * 
+     * @param func 
+     */
+    orWrap(func: (f: TableObject<ClassT>) => any): TableObject<ClassT> {
+        if (this.table.commaPrefix)
+            return this.genSql("(" + this.table.makeFunc(func, this.table.commaPrefix) + ")");
+        else
+            return this.genSql("or (" + this.table.makeFunc(func, this.table.commaPrefix) + ")");
+    }
     /**
      * 等于
      * @param val
      */
-    eq(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "=" + SqlTableField.getValue(val) + " ");
-        return 1;
+    eq(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " = " + SqlTableField.getValue(val));
+        return this;
     }
 
-    $eq(val: number): number {
-        return this.eq(val);
-    }
-
-    findInSet(val: string) {
-        this.table.valList.push(` FIND_IN_SET(${SqlTableField.getValue(val)},${this.getFieldName()}) `);
-        return 1;
+    findInSet(val: string): this {
+        this.genSql(`FIND_IN_SET(${SqlTableField.getValue(val)},${this.getFieldName()})`);
+        return this;
     }
 
     /**
      * 不等于
      * @param val
      */
-    notEq(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "!=" + SqlTableField.getValue(val) + " ");
-        return 1;
+    notEq(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " != " + SqlTableField.getValue(val));
+        return this;
     }
 
     /**
      * 小于
      * @param val
      */
-    le(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "<" + SqlTableField.getValue(val) + " ");
-        return 1;
+    le(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " < " + SqlTableField.getValue(val));
+        return this;
     }
+
 
     /**
      * 大于
      * @param val
      */
-    gt(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + ">" + SqlTableField.getValue(val) + " ");
-        return 1;
+    gt(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " > " + SqlTableField.getValue(val));
+        return this;
     }
 
     /**
      * 小于等于
      * @param val
      */
-    leEq(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "<=" + SqlTableField.getValue(val) + " ");
-        return 1;
+    leEq(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " <= " + SqlTableField.getValue(val));
+        return this;
     }
 
     /**
      * 大于等于
      * @param aa
      */
-    gtEq(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + ">=" + SqlTableField.getValue(val) + " ");
-        return 1;
+    gtEq(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): this {
+        this.genSql(this.getFieldName() + " >= " + SqlTableField.getValue(val));
+        return this;
     }
 
-    in(val: number | number[], op = " in"): number {
+    in(val: FieldT | FieldT[] | SqlTableField<any, any> | SqlBuilder<any, any>, op = " in"): this {
         if (Array.isArray(val)) {
-            let str = " ";
+            let str = "";
             for (let u of val) {
-                str += SqlTableField.getValue(u) + ",";
+                if (str.length > 0)
+                    str += ",";
+                str += SqlTableField.getValue(u);
             }
-            this.table.valList.push(" " + this.getFieldName() + op + " (" + str.removeLast() + ") ");
+            this.genSql(this.getFieldName() + op + " (" + str + ")");
         }
         else {
-            this.table.valList.push(" " + this.getFieldName() + op + " (" + SqlTableField.getValue(val) + ") ");
+            this.genSql(this.getFieldName() + op + " (" + SqlTableField.getValue(val) + ")");
         }
-        return 1;
+        return this;
     }
 
-    notIn(val: number | number[]) {
+    notIn(val: FieldT | FieldT[] | SqlTableField<any, any> | SqlBuilder<any, any>): this {
         return this.in(val, " not in");
     }
+
+    concat(left: FieldT | SqlTableField<any, any>, right: FieldT | SqlTableField<any, any>): this {
+        this.genSql(this.getFieldName() + "=concat(" + SqlTableField.getValue(left) + "," + SqlTableField.getValue(right) + ")");
+        return this;
+    }
+
 
     /**
      *  set用于update
      * @param val
      */
-    set(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "=" + SqlTableField.getValue(val) + " ");
-        return 1;
+    set(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): TableObject<ClassT> {
+        return this.genSql(this.getFieldName() + " = " + SqlTableField.getValue(val));
     }
 
     /**
      * +=
      * @param val
      */
-    addSet(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "=" + this.fieldName + "+" + SqlTableField.getValue(val) + " ");
-        return 1;
+    addSet(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>, op = "+"): TableObject<ClassT> {
+        return this.genSql(this.getFieldName() + " = " + this.getFieldName() + op + SqlTableField.getValue(val));
     }
 
     /**
      * +=
      * @param val
      */
-    inc(val: number): number {
+    inc(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): TableObject<ClassT> {
         return this.addSet(val);
     }
 
@@ -277,7 +230,7 @@ export class SqlTableField {
      * -=
      * @param val
      */
-    dec(val: number): number {
+    dec(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): TableObject<ClassT> {
         return this.subSet(val);
     }
 
@@ -285,107 +238,29 @@ export class SqlTableField {
      * -=
      * @param val
      */
-    subSet(val: number): number {
-        this.table.valList.push(" " + this.getFieldName() + "=" + this.fieldName + "-" + SqlTableField.getValue(val) + " ");
-        return 1;
+    subSet(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): TableObject<ClassT> {
+        return this.addSet(val, "-");
     }
+
+
 
     /**
      * 正序,用于order by
      */
-    asc(): number {
-        this.table.valList.push(" " + this.getFieldName() + " asc ");
-        return 1;
+    get asc(): TableObject<ClassT> {
+        return this.genSql(this.getFieldName() + " asc");
     }
 
     /**
      * 倒序,用于order by
      */
-    desc(): number {
-        this.table.valList.push(" " + this.getFieldName() + " desc ");
-        return 1;
+    get desc(): TableObject<ClassT> {
+        return this.genSql(this.getFieldName() + " desc");
     }
 
 
-    like(val: string): number {
-        this.table.valList.push(" " + this.getFieldName() + " like " + SqlTableField.getValue(val) + " ");
-        return 1;
-    }
-
-    /**
-     * 用于select
-     */
-    sum(): SqlTableField {
-        // this.table.valList.push(" sum(" + this.fieldName + ") ");
-        return new SqlTableField(" sum(" + this.getFieldName() + ") ", null, null, this.table);
-    }
-
-    /**
-     * 用于select
-     */
-    max(): SqlTableField {
-        // this.table.valList.push(" max(" + this.fieldName + ") ");
-        return new SqlTableField(" max(" + this.getFieldName() + ") ", null, null, this.table);
-    }
-
-    /**
-     * 用于select
-     */
-    avg(): SqlTableField {
-        // this.table.valList.push(" avg(" + this.fieldName + ") ");
-        return new SqlTableField(" avg(" + this.getFieldName() + ") ", null, null, this.table);
-    }
-
-    /**
-     * 用于select
-     */
-    min(): SqlTableField {
-        // this.table.valList.push(" min(" + this.fieldName + ") ");
-        return new SqlTableField(" min(" + this.getFieldName() + ") ", null, null, this.table);
-    }
-
-    /**
-     * 用于select
-     */
-    count(): SqlTableField {
-        // this.table.valList.push(" count(" + this.fieldName + ") ");
-        return new SqlTableField(" count(" + this.getFieldName() + ") ", null, null, this.table);
-    }
-
-    /**
-     * +
-     */
-    add(val: number | SqlTableField): SqlTableField {
-        // this.table.valList.push(" count(" + this.fieldName + ") ");
-        return new SqlTableField(" " + this.getFieldName() + "+" + SqlTableField.getValue(val) + " ", null, null, this.table);
-    }
-
-    /**
-     * -
-     */
-    sub(val: number | SqlTableField): SqlTableField {
-        // this.table.valList.push(" count(" + this.fieldName + ") ");
-        return new SqlTableField(" " + this.getFieldName() + "-" + SqlTableField.getValue(val) + " ", null, null, this.table);
-    }
-
-    /**
-     * *
-     */
-    mul(val: number | SqlTableField): SqlTableField {
-        // this.table.valList.push(" count(" + this.fieldName + ") ");
-        return new SqlTableField(" " + this.getFieldName() + "*" + SqlTableField.getValue(val) + " ", null, null, this.table);
-    }
-
-    /**
-     * /
-     */
-    div(val: number | SqlTableField): SqlTableField {
-        // this.table.valList.push(" count(" + this.fieldName + ") ");
-        return new SqlTableField(" " + this.getFieldName() + "/" + SqlTableField.getValue(val) + " ", null, null, this.table);
-    }
-
-    concat(left: SqlTableField | string, right: SqlTableField | string): SqlTableField {
-        return new SqlTableField(" " + this.getFieldName() + "=concat(" + SqlTableField.getValue(left) + "," + SqlTableField.getValue(right) + ")", null, null, this.table);
+    like(val: FieldT | SqlTableField<any, any> | SqlBuilder<any, any>): TableObject<ClassT> {
+        return this.genSql(this.getFieldName() + " like " + SqlTableField.getValue(val));
     }
 
     /**
@@ -393,10 +268,77 @@ export class SqlTableField {
      * @param str
      * @param boolMode 是否开启IN BOOLEAN MODE
      */
-    matchAgainst(str: string, boolMode?: boolean): SqlTableField {
+    matchAgainst(str: string, boolMode?: boolean): TableObject<ClassT> {
         if (boolMode)
-            return new SqlTableField(` MATCH(${this.getFieldName()}) AGAINST (${SqlTableField.getValue(str)} IN BOOLEAN MODE)`, null, null, this.table);
+            return this.genSql(`MATCH(${this.getFieldName()}) AGAINST (${SqlTableField.getValue(str)} IN BOOLEAN MODE)`);
         else
-            return new SqlTableField(` MATCH(${this.getFieldName()}) AGAINST (${SqlTableField.getValue(str)})`, null, null, this.table);
+            return this.genSql(`MATCH(${this.getFieldName()}) AGAINST (${SqlTableField.getValue(str)})`);
     }
+
+    /**
+     * 用于select
+     */
+    sum(): number {
+        return new SqlTableField(this.classObj, " sum(" + this.getFieldName() + ") ", null, null, this.table) as any;
+    }
+
+    /**
+     * 用于select
+     */
+    max(): number {
+        return new SqlTableField(this.classObj, " max(" + this.getFieldName() + ") ", null, null, this.table) as any;
+    }
+
+    /**
+     * 用于select
+     */
+    avg(): number {
+        return new SqlTableField(this.classObj, " avg(" + this.getFieldName() + ") ", null, null, this.table) as any;
+    }
+
+    /**
+     * 用于select
+     */
+    min(): number {
+        return new SqlTableField(this.classObj, " min(" + this.getFieldName() + ") ", null, null, this.table) as any;
+    }
+
+    /**
+     * 用于select
+     */
+    count(): number {
+        return new SqlTableField(this.classObj, " count(" + this.getFieldName() + ") ", null, null, this.table) as any;
+    }
+
+    /**
+     * +加
+     */
+    add(val: FieldT | SqlTableField<any, any>): SqlTableField<FieldT, ClassT> {
+        return new SqlTableField(this.classObj, " " + this.getFieldName() + "+" + SqlTableField.getValue(val) + " ", null, null, this.table);
+    }
+
+    /**
+     * -减
+     */
+    sub(val: FieldT | SqlTableField<any, any>): SqlTableField<FieldT, ClassT> {
+        return new SqlTableField(this.classObj, " " + this.getFieldName() + "-" + SqlTableField.getValue(val) + " ", null, null, this.table);
+    }
+
+    /**
+     * *乘
+     */
+    mul(val: FieldT | SqlTableField<any, any>): SqlTableField<FieldT, ClassT> {
+        return new SqlTableField(this.classObj, " " + this.getFieldName() + "*" + SqlTableField.getValue(val) + " ", null, null, this.table);
+    }
+
+    /**
+     * /除
+     */
+    div(val: FieldT | SqlTableField<any, any>): SqlTableField<FieldT, ClassT> {
+        return new SqlTableField(this.classObj, " " + this.getFieldName() + "/" + SqlTableField.getValue(val) + " ", null, null, this.table);
+    }
+
+
+
+
 }

@@ -80,8 +80,8 @@ export class sql {
      * @param template
      * @param substitutions
      */
-    static src(template: TemplateStringsArray, ...substitutions: any[]): any {
-        return <any>new sql(() => {
+    static src(template: TemplateStringsArray, ...substitutions: any[]): sql {
+        return new sql(() => {
             var ret = ""
             var i = 0
             for (; i < substitutions.length; i++) {

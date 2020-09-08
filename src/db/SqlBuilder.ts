@@ -1,5 +1,5 @@
 import { SqlTableField } from "./SqlTableField";
-import { SqlTableInfo } from "./SqlTableInfo";
+import { SqlTableInfo, TableObject } from "./SqlTableInfo";
 import { ISqlConnecter } from "./ISqlConnecter";
 import { ArrayCache, sql } from "../public/sql";
 import { ISqlSelectField, SelectOrderType } from "./ISqlField";
@@ -22,7 +22,7 @@ export type SelectFieldTypeBuilder<T> = {
     [P in keyof T]: ISqlSelectFieldBuilder<T[P]> & number
 };
 
-export class SqlBuilder<TC> {
+export class SqlBuilder<TC, SubT = TC> {
 
     /**
      * 所有表的缓存
@@ -35,17 +35,11 @@ export class SqlBuilder<TC> {
      */
     private sqlStr = "";
     private whereStr = "";
+    private orderStr = "";
+    private groupByStr = "";
     private limitStr: string | undefined;
-    private orderStr: string | undefined;
-    private groupByStr: string | undefined;
     private selectStr: string | undefined;
     private setStr: string | undefined;
-
-    /**
-     * 储存func条件表达式中的值列表
-     * @type {Array}
-     */
-    private valList: string[] = [];
 
     /**
      * 表名
@@ -100,10 +94,10 @@ export class SqlBuilder<TC> {
      * @returns {SqlTableInfo}
      */
     private metaTableInfo() {
-        return (this.className as any)._tableInfo_ as SqlTableInfo;
+        return (this.className as any)._tableInfo_ as SqlTableInfo<TC>;
     }
 
-    private setMetaTableInfo(table: SqlTableInfo) {
+    private setMetaTableInfo(table: SqlTableInfo<TC>) {
         (this.className as any)._tableInfo_ = table;
     }
 
@@ -112,9 +106,9 @@ export class SqlBuilder<TC> {
     }
 
     private getTableCacheMap() {
-        let map = (this.metaTableInfo() as any)[this.getCacheTable()] as Map<string | number | null | undefined, TC[]>;
+        let map = (this.metaTableInfo() as any)[this.getCacheTable()] as Map<string | number | null | undefined, SubT[]>;
         if (!map) {
-            map = new Map<string | number | null | undefined, TC[]>();
+            map = new Map<string | number | null | undefined, SubT[]>();
             (this.metaTableInfo() as any)[this.getCacheTable()] = map;
             SqlBuilder.cacheMap.set(this.getCacheTable(), map);
         }
@@ -140,7 +134,6 @@ export class SqlBuilder<TC> {
      */
     copyTo(name?: string): SqlBuilder<TC> {
         let m = new SqlBuilder<TC>(this.className, this.sqlCon, name);
-        m.valList = this.valList;
         m.sqlStr = this.sqlStr
         m.whereStr = this.whereStr
         m.limitStr = this.limitStr
@@ -156,7 +149,7 @@ export class SqlBuilder<TC> {
      * 从缓存中获取cacheId为字串类型
      * @param id
      */
-    cacheGetString(id: string): Promise<TC[]> {
+    cacheGetString(id: string): Promise<SubT[]> {
         return this.cacheGet(id + "");
     }
 
@@ -164,7 +157,7 @@ export class SqlBuilder<TC> {
      * 从缓存中获取cacheId为整数类型
      * @param id
      */
-    cacheGetInt(id: number): Promise<TC[]> {
+    cacheGetInt(id: number): Promise<SubT[]> {
         return this.cacheGet(parseInt(id as any));
     }
 
@@ -172,34 +165,34 @@ export class SqlBuilder<TC> {
      * 从缓存中获取cacheId为浮点类型
      * @param id
      */
-    cacheGetFloat(id: number): Promise<TC[]> {
+    cacheGetFloat(id: number): Promise<SubT[]> {
         return this.cacheGet(parseFloat(id as any));
     }
 
     /**
      * 从缓存中获取,无cacheId
-     * @returns {Promise<TC[]>}
+     * @returns {Promise<SubT[]>}
      */
-    cacheGetNull(): Promise<TC[]> {
+    cacheGetNull(): Promise<SubT[]> {
         return this.cacheGet(null);
     }
 
     /**
     * 设置缓存结果排序
     */
-    setCacheSort(func: (l: TC, r: TC) => number): this {
+    setCacheSort(func: (l: SubT, r: SubT) => number): this {
         this.cacheSort = func;
         return this;
     }
 
-    private cacheSort?: (l: TC, r: TC) => number;
+    private cacheSort?: (l: SubT, r: SubT) => number;
 
 
     /**
      * 从缓存中获取cacheId或cacheWhere的数据
      * @param id
      */
-    private cacheGet(id: string | number | null): Promise<TC[]> {
+    private cacheGet(id: string | number | null): Promise<SubT[]> {
         return new Promise((reso, reject) => {
             let cacheMap = this.getTableCacheMap();
             let list = cacheMap.get(id);
@@ -308,31 +301,30 @@ export class SqlBuilder<TC> {
     /**
      * 记录多表链接的对象
      */
-    private joinObjs: Array<SqlTableInfo> | undefined
+    private joinObjs: Array<SqlTableInfo<any>> | undefined
 
     private makeJoin<T1>(right: { new(): T1; },
         func: (l: SelectFieldTypeBuilder<TC> & TC, r: SelectFieldTypeBuilder<T1> & T1) => any,
         where: string) {
 
-        if (!this.joinObjs)
-            this.joinObjs = [this.metaTableInfo()];
+        // if (!this.joinObjs)
+        //     this.joinObjs = [this.metaTableInfo()];
 
-        let build = new SqlBuilder(right, this.sqlCon);
-        build.valList = this.valList;
+        // let build = new SqlBuilder(right, this.sqlCon);
 
-        this.joinObjs.push(build.metaTableInfo())
+        // this.joinObjs.push(build.metaTableInfo())
 
-        this.joinObjs.forEach(it => it.tableNamePrefix = true);
+        // this.joinObjs.forEach(it => it.tableNamePrefix = true);
 
-        this.makeFuncs(func, this.joinObjs);
+        // this.makeFuncs(func, this.joinObjs);
 
-        this.joinObjs.forEach(it => it.tableNamePrefix = false);
+        // this.joinObjs.forEach(it => it.tableNamePrefix = false);
 
-        if (this.whereStr.length == 0) {
-            this.whereStr = this.tableName
-        }
+        // if (this.whereStr.length == 0) {
+        //     this.whereStr = this.tableName
+        // }
 
-        this.whereStr += where + build.getTableName() + " on " + SqlTableField.makeWhere(func, this.valList);
+        // this.whereStr += where + build.getTableName() + " on " + SqlTableField.makeWhere(func, this.valList);
     }
 
     /**
@@ -378,14 +370,14 @@ export class SqlBuilder<TC> {
             // this.whereStr = "";
         }
 
-        if (this.groupByStr) {
-            this.sqlStr += this.groupByStr;
-            this.groupByStr = undefined;
+        if (this.groupByStr.length > 0) {
+            this.sqlStr += " group by " + this.groupByStr;
+            this.groupByStr = "";
         }
 
-        if (this.orderStr) {
-            this.sqlStr += this.orderStr;
-            this.orderStr = undefined;
+        if (this.orderStr.length > 0) {
+            this.sqlStr += " order by " + this.orderStr;
+            this.orderStr = "";
         }
 
         if (this.limitStr) {
@@ -420,63 +412,23 @@ export class SqlBuilder<TC> {
      * 生成sql语句值列表
      * @param func 单参数lambda
      */
-    protected makeFunc(func: (f: any) => any) {
-        let meta = this.metaTableInfo();
-        var oldList = meta.valList;
-        this.valList.length = 0;
-        meta.valList = this.valList;
-        var ret = func(meta.classObj)
-        if (ret) {
-            if (ret instanceof SqlTableField) {
-                ret.toString()
-            }
-            else if (ret instanceof sql) {
-                var res = (ret as sql).func();
-                this.valList.length = 0;
-                this.valList.push(res);
-            }
-        }
-        meta.valList = oldList;
+    protected makeFunc(func: (f: TableObject<TC>) => any, comma = false): string {
+        return this.metaTableInfo().makeFunc(func, comma);
     }
 
 
-    /**
-     * 生成sql语句值列表
-     * @param func 多参数lambda
-     * @param obj
-     */
-    protected makeFuncs(func: (...paras: Array<any>) => any, obj: Array<SqlTableInfo>) {
-        let meta = this.metaTableInfo();
-        var oldList = meta.valList;
-        this.valList.length = 0;
-        meta.valList = this.valList;
-        var ret = func.apply(this, obj.map(it => it.classObj))
-        if (ret) {
-            if (ret instanceof SqlTableField) {
-                ret.toString()
-            }
-            else if (ret instanceof sql) {
-                var res = (ret as sql).func();
-                this.valList.length = 0;
-                this.valList.push(res);
-            }
-        }
-        meta.valList = oldList;
-    }
 
     toString() {
         return this.sqlStr;
     }
-
 
     /**
      * 重置where条件
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    where(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
-        this.whereStr = SqlTableField.makeWhere(func, this.valList);
+    where(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
+        this.whereStr = this.makeFunc(func);
         return this;
     }
 
@@ -485,11 +437,10 @@ export class SqlBuilder<TC> {
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    and(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
+    and(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
         if (this.whereStr.length > 0)
             this.whereStr += " and ";
-        this.whereStr += SqlTableField.makeWhere(func, this.valList);
+        this.whereStr += this.makeFunc(func);
         return this;
     }
 
@@ -498,59 +449,41 @@ export class SqlBuilder<TC> {
      * @param func 条件lambda表达式
      * @returns {SqlBuilder}
      */
-    or(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
+    or(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
         if (this.whereStr.length > 0)
             this.whereStr += " or ";
-        this.whereStr += SqlTableField.makeWhere(func, this.valList);
+        this.whereStr += this.makeFunc(func);
         return this;
-    }
-
-    private builderList(str: string, op: string) {
-        for (let v of this.valList) {
-            str += v + op
-        }
-        return str.removeLast();
     }
 
     /**
      * 指定select字段
      * @param func 字段表达式
      */
-    select(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
-        this.selectStr = this.builderList(" ", ",")
-        return this;
-    }
-
-    /**
-     * 选定指定对象的字段
-     * @param obj
-     * @returns {any}
-     */
-    selectObj<K extends keyof TC>(obj: Record<K, any>): SqlBuilder<TC> {
-        let str = "";
-        for (let k in obj) {
-            str += this.metaTableInfo().getField(k).getFieldAsName() + ","
+    select<FieldT extends keyof TC>(...fields: FieldT[]): SqlBuilder<TC, Pick<TC, FieldT>> {
+        this.selectStr = "";
+        for (let k of fields) {
+            if (this.selectStr.length > 0)
+                this.selectStr += ",";
+            this.selectStr += this.metaTableInfo().getField(k).getFieldName()
         }
-        this.selectStr = str.removeLast();
-        return this;
+        return this as SqlBuilder<TC, any>;
     }
 
     /**
      * select指定as别名
      * @param func
      */
-    selectAs<T>(func: (f: SelectFieldTypeBuilder<TC>) => T): SqlBuilder<T> {
+    selectAs<T>(func: (f: TableObject<TC>) => T): SqlBuilder<TC, T> {
         let ret = func(this.metaTableInfo().classObj);
         let str = "";
         for (let k in ret) {
             let v = ret[k];
-            str += SqlTableField.getValue(v) + " as " + k + ",";
+            str += SqlTableField.getValue(v) + " as `" + k + "`,";
         }
         this.selectStr = str.removeLast();
 
-        return this as any;
+        return this as SqlBuilder<TC, any>;
     }
 
     /**
@@ -558,44 +491,55 @@ export class SqlBuilder<TC> {
      * @param func
      * @returns {SqlBuilder}
      */
-    unselect(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
-        var fMap: any = {};
-        this.valList.forEach(it => fMap[it] = true);
+    unselect<FieldT extends keyof TC>(...fields: FieldT[]): SqlBuilder<TC, Omit<TC, FieldT>> {
+        var fMap: { [key: string]: boolean } = {};
+        for (let it of fields) {
+            fMap[it as string] = true
+        }
+
         this.selectStr = " ";
         this.metaTableInfo().fieldList.forEach(f => {
-            if (!fMap[f.getFieldName()]) {
+            if (!fMap[f.fieldName]) {
                 this.selectStr += f.getFieldName() + ","
             }
         });
         this.selectStr = this.selectStr.removeLast();
-        return this;
+        return this as SqlBuilder<TC, any>;
     }
 
     /**
      * 添加order by条件
      * @param func 字段表达式
      */
-    order(func: (f: SelectOrderType<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
-        if (this.orderStr)
-            this.orderStr += this.builderList(",", ",");
-        else
-            this.orderStr = this.builderList(" order by ", ",");
+    order(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
+        if (this.orderStr.length > 0)
+            this.orderStr += ",";
+        this.orderStr += this.makeFunc(func, true);
         return this;
     }
 
-
     /**
-     * 添加groupBy条件
+     * 添加groupBy lmabda条件
      * @param func 字段表达式
      */
-    groupBy(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
-        this.makeFunc(func);
-        if (this.groupByStr)
-            this.groupByStr += this.builderList(",", ",");
-        else
-            this.groupByStr = this.builderList(" group by ", ",");
+    group(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
+        if (this.groupByStr.length > 0)
+            this.groupByStr += ",";
+
+        this.groupByStr += this.makeFunc(func, true);
+        return this;
+    }
+
+    /**
+     * 添加groupBy 字段集合
+     * @param fields 字段集合
+     */
+    groupBy<FieldT extends keyof TC>(...fields: FieldT[]): SqlBuilder<TC, SubT> {
+        for (let k of fields) {
+            if (this.groupByStr.length > 0)
+                this.groupByStr += ",";
+            this.groupByStr += this.metaTableInfo().getField(k).getFieldName()
+        }
         return this;
     }
 
@@ -606,7 +550,7 @@ export class SqlBuilder<TC> {
      * @param count 个数
      * @returns {SqlBuilder}
      */
-    limit(start: number, count?: number): SqlBuilder<TC> {
+    limit(start: number, count?: number): SqlBuilder<TC, SubT> {
         if (count == null)
             this.limitStr = " limit " + start;
         else
@@ -620,13 +564,12 @@ export class SqlBuilder<TC> {
      * @param func 条件表达式
      * @returns {SqlBuilder}
      */
-    set(func: (f: SelectFieldTypeBuilder<TC>) => any): SqlBuilder<TC> {
+    set(func: (f: TableObject<TC>) => any): SqlBuilder<TC, SubT> {
         if (this.setStr)
             this.setStr += ",";
         else
             this.setStr = "";
-        this.makeFunc(func);
-        this.setStr += this.builderList("", ",");
+        this.setStr += this.makeFunc(func, true);
         return this;
     }
 
@@ -635,7 +578,7 @@ export class SqlBuilder<TC> {
      * @param func set表达式
      * @returns {Promise<T>}  影响行数,失败抛reject异常
      */
-    update(func?: (f: SelectFieldTypeBuilder<TC>) => any): Promise<number> {
+    update(func?: (f: TableObject<TC>) => any): Promise<number> {
         return new Promise((resolve, reject) => {
             this.getUpdate(func)
             this.sqlCon.update(this.sqlStr, (err, res) => {
@@ -647,16 +590,15 @@ export class SqlBuilder<TC> {
         });
     }
 
-    private getUpdate(func?: (f: SelectFieldTypeBuilder<TC>) => any) {
+    private getUpdate(func?: (f: TableObject<TC>) => any) {
         this.sqlStr = "update " + this.tableName + " set "
         if (this.setStr)
             this.sqlStr += this.setStr;
 
         if (func) {
-            this.makeFunc(func);
             if (this.setStr)
                 this.sqlStr += ",";
-            this.sqlStr += this.builderList("", ",");
+            this.sqlStr += this.makeFunc(func, true);
         }
 
         this.addCondition();
@@ -674,17 +616,15 @@ export class SqlBuilder<TC> {
             this.sqlStr = "update " + this.tableName + " set ";
 
             for (let key in field) {
-                let fieldKey = this.metaTableInfo().getField(key).getFieldName();
-
-                if (fieldKey === this.metaTableInfo().primaryKeyName)
+                if (key === this.metaTableInfo().primaryKeyName)
                     continue;
-
+                let fieldKey = this.metaTableInfo().getField(key).getFieldName();
                 this.sqlStr += fieldKey + "=" + SqlTableField.getValue(field[key]) + ",";
             }
             this.sqlStr = this.sqlStr.removeLast();
 
             this.sqlStr += " where "
-                + this.metaTableInfo().primaryKeyName + "="
+                + this.metaTableInfo().getPriKeyFieldName() + "="
                 + SqlTableField.getValue((field as any)[this.metaTableInfo().primaryKeyName]);
 
             this.sqlCon.update(this.sqlStr, (err, res) => {
@@ -694,7 +634,6 @@ export class SqlBuilder<TC> {
                     resolve(res.affectCount)
             });
 
-
         });
     }
 
@@ -703,7 +642,7 @@ export class SqlBuilder<TC> {
      * 获取单行一个对象(limit 1)
      * @returns {Promise<T>} 结果对象,或者null,失败抛reject异常
      */
-    toOne(): Promise<TC | null> {
+    toOne(): Promise<SubT | null> {
         return new Promise<any>((resolve, reject) => {
 
             this.limit(1);
@@ -728,7 +667,7 @@ export class SqlBuilder<TC> {
      * 获取多个结果
      * @returns {Promise<T>} 对象数组,失败抛reject异常
      */
-    toArray(): Promise<TC[]> {
+    toArray(): Promise<SubT[]> {
         return new Promise((resolve, reject) => {
             this.getSelectSql();
             this.sqlCon.query(this.sqlStr, (err, data) => {
@@ -751,7 +690,7 @@ export class SqlBuilder<TC> {
      * @param eachFunc
      * @returns {Promise<void>}
      */
-    forEach(eachFunc: (row: TC) => void | Promise<void>): Promise<void> {
+    forEach(eachFunc: (row: SubT) => void | Promise<void>): Promise<void> {
         this.getSelectSql();
         return this.sqlCon.queryEach(this.sqlStr, (row) => {
             Object.setPrototypeOf(row, this.className.prototype)
@@ -785,7 +724,7 @@ export class SqlBuilder<TC> {
     private initInsertSql(field: TC) {
         this.sqlStr = "insert into " + this.tableName + "( "
         for (let key in field) {
-            this.sqlStr += this.metaTableInfo().getField(key).realName + ",";
+            this.sqlStr += this.metaTableInfo().getField(key).getFieldName() + ",";
         }
         this.sqlStr = this.sqlStr.removeLast() + ") values";
     }
